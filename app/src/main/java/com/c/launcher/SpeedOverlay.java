@@ -42,6 +42,9 @@ public class SpeedOverlay {
 
     private volatile boolean attached = false;
     private long lastContrastAt = 0L;
+    /** 传输活跃标记：有流量时切珊瑚粉 */
+    private boolean downActive = false;
+    private boolean upActive = false;
 
     /** 一个胶囊：窗口 + 文字 + 当前配色状态 */
     private final class Pill {
@@ -128,6 +131,12 @@ public class SpeedOverlay {
                 if (!attached) return;
                 setText(down, "\u2193 ", fmt(dlMbps));
                 setText(up, "\u2191 ", fmt(ulMbps));
+                boolean dAct = dlMbps >= 0.05d;
+                boolean uAct = ulMbps >= 0.05d;
+                boolean changed = (dAct != downActive) || (uAct != upActive);
+                downActive = dAct;
+                upActive = uAct;
+                if (changed) refreshContrast(true);
                 long now = System.currentTimeMillis();
                 if (now - lastContrastAt > 2000L) {
                     lastContrastAt = now;
@@ -157,33 +166,26 @@ public class SpeedOverlay {
         applyPill(up, force, accent);
     }
 
+    /**
+     * 深海与微光规范：
+     *  默认 —— 海盐灰文字 + 玻璃底，低调不抢视线
+     *  传输中 —— 珊瑚粉文字 + 珊瑚粉描边
+     * 不再按壁纸明暗切黑白：胶囊自带深色玻璃底，任何壁纸上都可读。
+     */
     private void applyPill(Pill p, boolean force, int accent) {
         if (p.root == null || p.text == null) return;
-        try {
-            int[] loc = new int[2];
-            p.root.getLocationOnScreen(loc);
-            RectF r = new RectF(loc[0], loc[1],
-                    loc[0] + p.root.getWidth(), loc[1] + p.root.getHeight());
+        boolean active = (p == down) ? downActive : upActive;
+        int want = active ? ThemeManager.ACCENT2 : ThemeManager.TEXT_SUB;
+        if (!force && want == p.style) return;
+        p.style = want;
 
-            if (!contrast.ready()) {
-                contrast.updateScreenSize(ctx);
-            }
-            float lum = contrast.sampleLuminance(ctx, r);
+        p.text.setTextColor(want);
 
-            int want = (lum < 0f || lum < AutoContrast.LUMINANCE_THRESHOLD)
-                    ? AutoContrast.STYLE_WHITE : AutoContrast.STYLE_BLACK;
-            if (!force && want == p.style) return;
-            p.style = want;
-
-            int[] colors = AutoContrast.styleFor(lum);
-            p.text.setTextColor(colors[0]);
-
-            GradientDrawable bg = new GradientDrawable();
-            bg.setCornerRadius(dp(999));
-            bg.setColor(colors[1]);
-            bg.setStroke(dp(1), accent);
-            p.text.setBackgroundDrawable(bg);
-        } catch (Throwable ignored) { }
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(dp(999));
+        bg.setColor(0xB3161C2C);
+        bg.setStroke(dp(1), active ? ThemeManager.ACCENT2 : 0x26FFFFFF);
+        p.text.setBackgroundDrawable(bg);
     }
 
     public void detach() {
