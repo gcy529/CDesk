@@ -88,4 +88,15 @@
     <string name="wechat_name">韭菜超先生</string>
     <string name="wechat_body">关注公众号获取更新动态和使用技巧。</string>
     <string name="wp_pick">选一张（遥控器移动，按 OK 确认）</string>
+    <string name="live_title">直播</string>
+    <string name="vod_title">点播</string>
+    <string name="music_title">音乐</string>
+    <string name="shell_src_hint">在这里粘贴你自己导入的列表地址</string>
+    <string name="shell_load">导入</string>
+    <string name="shell_empty">还没导入列表</string>
+    <string name="shell_loading">加载中…</string>
+    <string name="shell_loaded">已加载</string>
+    <string name="shell_failed">加载失败</string>
+    <string name="shell_play_failed">播放失败，换个源试试</string>
+    <string name="music_none">未在播放</string>
 </resources>
