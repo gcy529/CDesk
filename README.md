@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/icon-512.png" width="88" alt="C桌面"></p>
+
 # C桌面 / CDesk
 
 [中文](README.md) | [English](README.en.md)
