@@ -100,4 +100,5 @@
     <string name="music_none">未在播放</string>
     <string name="wp_custom">自訂圖片</string>
     <string name="wp_custom_pick">選擇圖片</string>
+    <string name="wp_custom_hint">最多 3 張 · 點一下用這張 · 長按刪除</string>
 </resources>
