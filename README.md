@@ -30,6 +30,11 @@
 
 > 也可以直接进 QQ 群「**C桌面会员群**」（群号 **970805386**）：<https://qm.qq.com/q/aNyk2ZG3ZK> —— 安装求助、功能许愿、新版本先发群里。
 
+<p align="center">
+  <img src="assets/wechat-account.png" width="200" alt="公众号：韭菜超先生"><br>
+  <sub>微信扫码关注「韭菜超先生」</sub>
+</p>
+
 ---
 
 ## 安装
@@ -143,7 +148,9 @@ app/src/main/
 
 如果这个项目让你的老车机多活了几年，欢迎打赏。**打赏不解锁任何功能，所有功能永远免费。**
 
-![赞赏码](app/src/main/res/drawable-nodpi/qr_wechat.jpg)
+<p align="center">
+  <img src="assets/donate-qr.jpg" width="200" alt="赞赏码">
+</p>
 
 **打赏不解锁任何功能；打赏码就是一张静态图片，不接任何支付 SDK。**
 
