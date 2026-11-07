@@ -40,7 +40,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
@@ -56,31 +56,37 @@
         </activity>
 
         <activity
+            android:screenOrientation="landscape"
             android:name=".DisclaimerActivity"
             android:exported="false" />
 
         <activity
+            android:screenOrientation="landscape"
             android:name=".WallpaperSettingsActivity"
             android:exported="false" />
 
         <activity
+            android:screenOrientation="landscape"
             android:name=".SetupActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/setup_title" />
 
         <activity
+            android:screenOrientation="landscape"
             android:name=".DonateActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/donate" />
 
         <activity
+            android:screenOrientation="landscape"
             android:name=".ShellPlaceholderActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden" />
 
         <activity
+            android:screenOrientation="landscape"
             android:name=".TransferActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -88,18 +94,22 @@
 
         <!-- 影音壳：播放器 + 直播 / 点播 / 音乐 三个导入页（不含任何内容源） -->
         <activity
+            android:screenOrientation="landscape"
             android:name=".PlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme" />
         <activity
+            android:screenOrientation="landscape"
             android:name=".LiveShellActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme" />
         <activity
+            android:screenOrientation="landscape"
             android:name=".VodShellActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme" />
         <activity
+            android:screenOrientation="landscape"
             android:name=".MusicShellActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme" />
