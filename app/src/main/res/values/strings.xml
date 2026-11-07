@@ -101,4 +101,5 @@
     <string name="music_none">未在播放</string>
     <string name="wp_custom">自定义图片</string>
     <string name="wp_custom_pick">选择图片</string>
+    <string name="wp_custom_hint">最多 3 张 · 点一下用这张 · 长按删除</string>
 </resources>
