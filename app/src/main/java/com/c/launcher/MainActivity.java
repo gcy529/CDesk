@@ -156,9 +156,10 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (page == PAGE_MEDIA) {
                     String type = mediaAdapter.typeAt(position);
-                    Intent i = new Intent(MainActivity.this, ShellPlaceholderActivity.class);
-                    i.putExtra("type", type);
-                    startActivity(i);
+                    Class<?> target = "live".equals(type) ? LiveShellActivity.class
+                            : "audio".equals(type) ? MusicShellActivity.class
+                            : VodShellActivity.class;
+                    startActivity(new Intent(MainActivity.this, target));
                 } else {
                     launchApp(adapter.getItem(position));
                 }
@@ -442,8 +443,27 @@ public class MainActivity extends Activity {
     }
 
     /** 启动被点中的第三方应用；失败就提示，不让桌面卡住 */
-    private void launchApp(AppAdapter.AppItem it) {
+    private void launchApp(final AppAdapter.AppItem it) {
         if (it == null) return;
+
+        // 启动动效：下压回弹后切出（深海与微光 · 模块5）
+        final View focused = getCurrentFocus();
+        if (focused != null) {
+            focused.animate().scaleX(0.92f).scaleY(0.92f).setDuration(70)
+                    .withEndAction(new Runnable() {
+                        @Override public void run() {
+                            focused.animate().scaleX(1.06f).scaleY(1.06f).setDuration(90)
+                                    .withEndAction(new Runnable() {
+                                        @Override public void run() { doLaunch(it); }
+                                    }).start();
+                        }
+                    }).start();
+            return;
+        }
+        doLaunch(it);
+    }
+
+    private void doLaunch(AppAdapter.AppItem it) {
 
         // 点自己：不是再启动一次，而是唤出系统的「选择桌面」窗口。
         // 系统没有默认桌面时会弹出"始终 / 仅此一次"，
