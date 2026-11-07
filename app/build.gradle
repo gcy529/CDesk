@@ -9,6 +9,19 @@ android {
     namespace 'com.c.launcher'
     compileSdk 34
 
+    // 固定调试签名：CI 注入 keystore 路径与口令，保证每次发版签名一致，
+    // 用户升级不用卸载重装。本地没有这些参数时退回默认 debug 签名。
+    if (project.hasProperty('ksFile')) {
+        signingConfigs {
+            cdesk {
+                storeFile file(project.property('ksFile'))
+                storePassword project.property('ksPass')
+                keyAlias project.property('keyAlias')
+                keyPassword project.property('keyPass')
+            }
+        }
+    }
+
     defaultConfig {
         applicationId project.hasProperty('appId') ? project.property('appId') : "com.c.launcher"
         minSdk 16
@@ -29,6 +42,9 @@ android {
         }
         debug {
             minifyEnabled false
+            if (project.hasProperty('ksFile')) {
+                signingConfig signingConfigs.cdesk
+            }
         }
     }
 
