@@ -3,7 +3,7 @@
 > **C = Car · Clean · Cheap**
 > 给老车机、电视盒子、Android TV 用的一块干净桌面。没有广告，没有推荐流，一个 APK 从 Android 4.0 跑到 15。
 
-![preview](shots/desk-preview.png)
+![桌面布局](shots/FINAL_desk_mockup.png)
 
 ---
 
