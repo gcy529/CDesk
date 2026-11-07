@@ -22,5 +22,5 @@
         android:singleLine="true"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#E2E8F0" />
+        android:textColor="#F8FAFC" />
 </LinearLayout>
