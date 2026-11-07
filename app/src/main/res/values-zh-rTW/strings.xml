@@ -108,4 +108,5 @@
     <string name="app_version">0.2.2</string>
     <string name="update_found">發現新版本 v%1$s，點此直接下載</string>
     <string name="update_go">更新</string>
+    <string name="shell_reconnect">訊號中斷，正在重連…</string>
 </resources>
