@@ -33,6 +33,9 @@
 <p align="center">
   <img src="assets/wechat-account.png" width="200" alt="公众号：韭菜超先生"><br>
   <sub>微信扫码关注「韭菜超先生」</sub>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/qq-group-qr.png" width="200" alt="QQ 群：C桌面会员群"><br>
+  <sub>QQ 群 970805386 · <a href="https://qm.qq.com/q/aNyk2ZG3ZK">一键加群</a></sub>
 </p>
 
 ---
