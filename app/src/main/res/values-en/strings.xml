@@ -88,4 +88,15 @@
     <string name="wechat_name">韭菜超先生 (JiuCai Chao)</string>
     <string name="wechat_body">Follow the channel for updates and tips.</string>
     <string name="wp_pick">Pick one (move with D-pad, press OK)</string>
+    <string name="live_title">Live TV</string>
+    <string name="vod_title">On demand</string>
+    <string name="music_title">Music</string>
+    <string name="shell_src_hint">Paste the playlist URL you imported</string>
+    <string name="shell_load">Import</string>
+    <string name="shell_empty">No playlist yet</string>
+    <string name="shell_loading">Loading…</string>
+    <string name="shell_loaded">Loaded</string>
+    <string name="shell_failed">Load failed</string>
+    <string name="shell_play_failed">Playback failed, try another source</string>
+    <string name="music_none">Not playing</string>
 </resources>
