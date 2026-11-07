@@ -81,12 +81,6 @@
 
         <activity
             android:screenOrientation="landscape"
-            android:name=".ShellPlaceholderActivity"
-            android:exported="false"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-
-        <activity
-            android:screenOrientation="landscape"
             android:name=".TransferActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden"
