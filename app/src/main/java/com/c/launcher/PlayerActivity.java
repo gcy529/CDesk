@@ -2,8 +2,10 @@ package com.c.launcher;
 
 import android.app.Activity;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import java.util.HashMap;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ public class PlayerActivity extends Activity {
     private VideoView vv;
     private ProgressBar bar;
     private TextView tip;
+    private int retries = 0;
 
     @Override
     protected void attachBaseContext(android.content.Context base) {
@@ -67,6 +70,16 @@ public class PlayerActivity extends Activity {
         vv.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override public boolean onError(MediaPlayer mp, int what, int extra) {
                 bar.setVisibility(View.GONE);
+                retries++;
+                if (retries <= 2) {
+                    // 直播流常见瞬断：自动重连两次
+                    tip.setText(R.string.shell_reconnect);
+                    try {
+                        vv.resume();
+                        bar.setVisibility(View.VISIBLE);
+                        return true;
+                    } catch (Throwable ignored) { }
+                }
                 tip.setText(R.string.shell_play_failed);
                 Toast.makeText(PlayerActivity.this, R.string.shell_play_failed, Toast.LENGTH_LONG).show();
                 return true;
@@ -79,11 +92,10 @@ public class PlayerActivity extends Activity {
         });
 
         try {
-            vv.setVideoPath(url);
+            HashMap<String, String> headers = new HashMap<String, String>();
+            headers.put("User-Agent", "CDesk/1.0");
+            vv.setVideoURI(Uri.parse(url), headers);
             bar.setVisibility(View.VISIBLE);
-            new Handler().postDelayed(new Runnable() {
-                @Override public void run() { bar.setVisibility(View.GONE); }
-            }, 8000);
         } catch (Exception e) {
             Toast.makeText(this, R.string.shell_play_failed, Toast.LENGTH_LONG).show();
             finish();
