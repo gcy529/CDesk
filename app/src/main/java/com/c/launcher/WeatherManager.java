@@ -1,6 +1,7 @@
 package com.c.launcher;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.JsonReader;
 
 import java.io.ByteArrayOutputStream;
