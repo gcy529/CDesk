@@ -53,5 +53,38 @@ jobs:
           name: ${{ steps.appid.outputs.value }}
           path: app/build/outputs/apk/debug/*.apk
 
+      - name: Compute SHA-256
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: sha
+        run: |
+          APK=$(ls app/build/outputs/apk/debug/*.apk | head -n 1)
+          SUM=$(sha256sum "$APK" | awk '{print $1}')
+          echo "apk=$(basename "$APK")" >> $GITHUB_OUTPUT
+          echo "sum=$SUM" >> $GITHUB_OUTPUT
+          echo "SHA-256: $SUM"
+
+      - name: Write release body
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          cat > release_body.md <<'EOF'
+          ## 下载（三选一，速度不同）
+          - GitHub 直链（海外快）：见下方 Assets
+          - GHFast 加速（国内推荐）：https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/TAGNAME/APKNAME
+          - GH-Proxy 加速（备用）：https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/TAGNAME/APKNAME
+
+          SHA-256: SHASUM
+
+          反馈/找回：公众号「韭菜超先生」
+          EOF
+          sed -i "s/TAGNAME/${{ github.ref_name }}/g; s/APKNAME/${{ steps.sha.outputs.apk }}/g; s/SHASUM/${{ steps.sha.outputs.sum }}/g" release_body.md
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/debug/*.apk
+          body_path: release_body.md
+          draft: false
+          prerelease: false
       - name: Report size
         run: ls -lh app/build/outputs/apk/debug/*.apk
