@@ -18,8 +18,9 @@ import android.widget.TextView;
 public class MediaAdapter extends BaseAdapter {
 
     private static final String[] TYPES = new String[] { "live", "video", "audio" };
-    /** 只保留极淡的色相区分，主体一律玻璃面（规范：摒弃花哨彩色块） */
-    private static final int[] COLORS = new int[] { 0x33FF7E9D, 0x334D6BFE, 0x3316A34A };
+    /** 卡片：深色玻璃实底 + 彩色描边。之前用 20% 透明色块，在壁纸上几乎隐形（真 bug） */
+    private static final int FILL = 0xF2161C2C;
+    private static final int[] STROKES = new int[] { 0xFFFF7E9D, 0xFF4D6BFE, 0xFF2DD4BF };
     private static final int[] LABELS = new int[] { R.string.live_title, R.string.vod_title, R.string.music_title };
 
     private final Context ctx;
@@ -53,7 +54,8 @@ public class MediaAdapter extends BaseAdapter {
         TextView tv = (TextView) v.findViewById(R.id.tvMediaName);
         GradientDrawable g = new GradientDrawable();
         g.setCornerRadius(dp(24));
-        g.setColor(COLORS[position % COLORS.length]);
+        g.setColor(FILL);
+        g.setStroke(dp(2), STROKES[position % STROKES.length]);
         if (iv != null) iv.setImageDrawable(g);
         if (tv != null) {
             tv.setText(LABELS[position % LABELS.length]);
