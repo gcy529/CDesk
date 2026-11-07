@@ -82,7 +82,7 @@
     <string name="wp_none">Solid color (follow theme)</string>
     <string name="wp_auto">Auto day/night</string>
     <string name="disclaimer_title">Terms of Use</string>
-    <string name="disclaimer_body">This app is a free personal work provided as-is, without warranty of any kind. The author is not liable for any direct or indirect loss arising from its use. The app ships with no media sources, music sources, or content services; the Media page is only an entry to a local player shell. Content access and compliance remain the user's responsibility. Please follow the laws of your region.</string>
+    <string name="disclaimer_body">This app is a free personal work provided as-is, without warranty of any kind. The author is not liable for any direct or indirect loss arising from its use. The app ships with no media sources, music sources, or content services; the Media page is only an entry to a local player shell. Content access and compliance remain the user\'s responsibility. Please follow the laws of your region.</string>
     <string name="disclaimer_ok">I have read and agree</string>
     <string name="wechat_title">WeChat Channel</string>
     <string name="wechat_name">韭菜超先生 (JiuCai Chao)</string>
