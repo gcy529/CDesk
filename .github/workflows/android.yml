@@ -44,11 +44,31 @@ jobs:
           echo "value=$ID" >> $GITHUB_OUTPUT
           echo "building with applicationId = $ID"
 
+      - name: Restore fixed debug keystore
+        shell: bash
+        env:
+          KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::warning::DEBUG_KEYSTORE_B64 未配置，回退随机调试签名（升级需卸载重装）"
+            exit 0
+          fi
+          echo "$KEYSTORE_B64" | base64 -d > $HOME/.cdesk-debug.keystore
+          echo "KS=$HOME/.cdesk-debug.keystore" >> $GITHUB_ENV
+          echo "fixed keystore restored"
+
       - name: Build debug APK
+        env:
+          KS: ${{ env.KS }}
         run: |
           chmod +x gradlew || true
           gradle wrapper --gradle-version 7.5 || true
-          ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} --stacktrace
+          if [ -n "$KS" ]; then
+            ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} \
+              -PksFile=$KS -PksPass=cdesk2026 -PkeyAlias=cdesk -PkeyPass=cdesk2026 --stacktrace
+          else
+            ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} --stacktrace
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -71,13 +91,14 @@ jobs:
         run: |
           cat > release_body.md <<'EOF'
           ## 下载（三选一，速度不同）
+          - 官网（国内直连）：https://gcy5.cn.mt
           - GitHub 直链（海外快）：见下方 Assets
           - GHFast 加速（国内推荐）：https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/TAGNAME/APKNAME
           - GH-Proxy 加速（备用）：https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/TAGNAME/APKNAME
 
           SHA-256: SHASUM
 
-          反馈/找回：公众号「韭菜超先生」
+          反馈/找回：公众号「韭菜超先生」 · QQ 群 970805386
           EOF
           sed -i "s/TAGNAME/${{ github.ref_name }}/g; s/APKNAME/${{ steps.sha.outputs.apk }}/g; s/SHASUM/${{ steps.sha.outputs.sum }}/g" release_body.md
 
