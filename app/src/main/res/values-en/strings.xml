@@ -84,7 +84,7 @@
     <string name="disclaimer_title">Terms of Use</string>
     <string name="disclaimer_body">This application is a free tool independently developed by an individual developer and is provided "AS IS", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and non-infringement. You use this application entirely at your own risk. To the maximum extent permitted by law, the author shall not be liable for any direct, indirect, incidental, special or consequential damages arising from the use of, or inability to use, this application.
 
-This application does not provide, host, index, search, recommend or distribute any audio or video content, nor any content source, and does not provide any subscription, paid, live or on-demand service. The media pages are merely entry points to a generic playback capability; all played content is imported solely by the user, who is solely responsible for verifying its lawful origin, copyright ownership and authorization to use. Users must ensure their conduct complies with applicable local laws and third-party terms of service.
+This application ships no content of any kind; the media pages are player entry points only. Content is imported and used at the user's own responsibility, in compliance with local law.
 
 This application is not affiliated with, authorized by, or in partnership with any content platform, rights holder or device manufacturer. All trademarks and names mentioned belong to their respective owners.</string>
     <string name="disclaimer_ok">I have read and agree</string>
@@ -110,4 +110,7 @@ This application is not affiliated with, authorized by, or in partnership with a
     <string name="update_found">New version v%1$s available — tap to download</string>
     <string name="update_go">Update</string>
     <string name="shell_reconnect">Stream interrupted, reconnecting…</string>
+    <string name="weather_manual">Manual city</string>
+    <string name="weather_hint_city">City name (e.g. Shenzhen)</string>
+    <string name="weather_auto">Back to auto</string>
 </resources>
