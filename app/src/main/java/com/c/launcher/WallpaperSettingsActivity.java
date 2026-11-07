@@ -1,15 +1,24 @@
 package com.c.launcher;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.util.List;
 
 /** 壁纸设置：缩略图卡片选壁纸 + 日夜自动开关 + 公众号 + 重看须知 */
 public class WallpaperSettingsActivity extends Activity {
@@ -51,16 +60,7 @@ public class WallpaperSettingsActivity extends Activity {
         View customCard = findViewById(R.id.cardWpCustom);
         if (customCard != null) {
             customCard.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                    i.addCategory(Intent.CATEGORY_OPENABLE);
-                    i.setType("image/*");
-                    try {
-                        startActivityForResult(Intent.createChooser(i, getString(R.string.wp_custom_pick)), 41);
-                    } catch (Exception e) {
-                        Toast.makeText(WallpaperSettingsActivity.this, R.string.shell_failed, Toast.LENGTH_SHORT).show();
-                    }
-                }
+                @Override public void onClick(View v) { showCustomPicker(); }
             });
         }
 
@@ -79,10 +79,10 @@ public class WallpaperSettingsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 41 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            String path = copyToFiles(data.getData());
-            if (path != null) {
+            File saved = CustomWallpapers.add(this, data.getData());
+            if (saved != null) {
                 WPManager.setAuto(this, false);
-                WPManager.setCustomPath(this, path);
+                WPManager.setCustomPath(this, saved.getAbsolutePath());
                 Toast.makeText(this, R.string.wallpaper, Toast.LENGTH_SHORT).show();
                 finish();
             } else {
@@ -91,23 +91,97 @@ public class WallpaperSettingsActivity extends Activity {
         }
     }
 
-    /** 把选中的图片复制到内部存储，避免重启后 URI 失效 */
-    private String copyToFiles(Uri uri) {
+    /**
+     * 自定义壁纸选择器：最多 3 格。
+     *  点已有的图 = 用它   ·   点 ＋ = 从相册加一张   ·   长按已有的图 = 删除
+     */
+    private void showCustomPicker() {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(20), dp(20), dp(20), dp(20));
+
+        List<File> files = CustomWallpapers.list(this);
+        for (int k = 0; k < files.size(); k++) {
+            final File f = files.get(k);
+            ImageView iv = new ImageView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(128), dp(128));
+            lp.rightMargin = dp(12);
+            iv.setLayoutParams(lp);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv.setImageBitmap(thumbnail(f));
+            iv.setBackgroundResource(R.drawable.bg_focus);
+            iv.setFocusable(true);
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    WPManager.setAuto(WallpaperSettingsActivity.this, false);
+                    WPManager.setCustomPath(WallpaperSettingsActivity.this, f.getAbsolutePath());
+                    Toast.makeText(WallpaperSettingsActivity.this, R.string.wallpaper, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+            iv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override public boolean onLongClick(View v) {
+                    CustomWallpapers.remove(WallpaperSettingsActivity.this, f);
+                    Toast.makeText(WallpaperSettingsActivity.this, R.string.wp_custom_hint, Toast.LENGTH_SHORT).show();
+                    pickDialog.dismiss();
+                    showCustomPicker();
+                    return true;
+                }
+            });
+            row.addView(iv);
+        }
+
+        if (files.size() < CustomWallpapers.MAX) {
+            TextView add = new TextView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(128), dp(128));
+            add.setLayoutParams(lp);
+            add.setText("＋");
+            add.setTextSize(34f);
+            add.setGravity(Gravity.CENTER);
+            add.setTextColor(ThemeManager.TEXT_SUB);
+            add.setBackgroundResource(R.drawable.bg_focus);
+            add.setFocusable(true);
+            add.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { openImagePicker(); }
+            });
+            row.addView(add);
+        }
+
+        pickDialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.wp_custom)
+                .setView(row)
+                .setMessage(R.string.wp_custom_hint)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+        pickDialog.show();
+    }
+
+    private AlertDialog pickDialog;
+
+    private void openImagePicker() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("image/*");
         try {
-            java.io.InputStream in = getContentResolver().openInputStream(uri);
-            java.io.File dir = new java.io.File(getFilesDir(), "wallpaper");
-            if (!dir.exists()) dir.mkdirs();
-            java.io.File out = new java.io.File(dir, "custom.jpg");
-            java.io.FileOutputStream fos = new java.io.FileOutputStream(out);
-            byte[] buf = new byte[16384];
-            int n;
-            while ((n = in.read(buf)) > 0) fos.write(buf, 0, n);
-            fos.close();
-            in.close();
-            return out.getAbsolutePath();
+            startActivityForResult(Intent.createChooser(i, getString(R.string.wp_custom_pick)), 41);
         } catch (Exception e) {
+            Toast.makeText(this, R.string.shell_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Bitmap thumbnail(File f) {
+        try {
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inSampleSize = 8;
+            return BitmapFactory.decodeFile(f.getAbsolutePath(), o);
+        } catch (Throwable t) {
             return null;
         }
+    }
+
+    private int dp(int v) {
+        return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
     }
 
     private void card(int id, final int value) {
