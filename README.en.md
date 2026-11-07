@@ -5,8 +5,6 @@
 
 [中文](README.md) | [English](README.en.md)
 
-![preview](shots/UI_A_black_bold.png)
-
 ## What is this
 
 Millions of car head units and TV boxes made between 2015–2022 still work fine, but their stock
@@ -19,8 +17,11 @@ launchers are slow, ugly, and full of ads. **CDesk does four things:**
 | 📶 Live network speed | Floating badges in both bottom corners, pure `TrafficStats` sampling |
 | 📁 LAN file transfer | Built-in HTTP server — scan a QR code from your phone and send APKs to the unit |
 
-Also: in-app language switch (Simplified / Traditional / English), IP-based weather, donation code,
-first-launch terms of use.
+Also: in-app language switch (Simplified / Traditional / English), IP-based weather, first-launch
+terms of use.
+
+> Wallpapers, updates, bug reports and suggestions: WeChat official account **韭菜超先生 (JiuCai Chao)** —
+> if you lost your APK, you can get it back there too.
 
 ## Install
 
@@ -40,18 +41,14 @@ install it. 4K wallpapers decode with an `inSampleSize` guard against OOM on 108
 
 ## Theming
 
-12 hand-tuned palettes (Aurora, Neon Sea, Mint Night, Sakura Pink, Volcano, Volt, Pure Black,
-Blue Night + 4 light ones), colors derived from the Tailwind CSS v4 palette. Text auto-inverts
-against the wallpaper by perceived brightness.
+A few palettes cycle in solid-color mode; text auto-inverts against the wallpaper.
 
 ## Support / Donate
 
 If CDesk gave your old head unit a few more years, a donation is appreciated. **Donations unlock
 nothing — everything is free forever.** WeChat QR code:
 
-![donate](app/src/main/res/drawable-nodpi/qr_wechat.jpg)
-
-No payment SDK, no "donate to unlock" — just a static image. Swap the code by replacing one file.
+No payment SDK, no "donate to unlock" — just a static image.
 
 ## AI assets
 
@@ -61,4 +58,4 @@ sides get a small credit bonus; mainland China networks only).
 
 ## License
 
-[MIT](LICENSE)
+[CC BY-NC-ND 4.0](LICENSE)
