@@ -61,6 +61,12 @@ public final class WPManager {
 
     public static String customPath(Context c) { return prefs(c).getString(KEY_CUSTOM, ""); }
 
+    /** 图片被删了：清掉引用，回到金色时刻 */
+    public static void clearCustom(Context c) {
+        prefs(c).edit().remove(KEY_CUSTOM).commit();
+        if (which(c) == WP_CUSTOM) setWhich(c, WP_SUNSET);
+    }
+
     /** 当前时刻实际该显示哪张 */
     public static int effective(Context c) {
         if (!isAuto(c)) return which(c);
