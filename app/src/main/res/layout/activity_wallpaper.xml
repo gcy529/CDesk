@@ -56,7 +56,7 @@
                     style="@style/WpCard">
                     <ImageView android:id="@+id/thumbCustom" style="@style/WpThumb"
                         android:contentDescription="@string/wp_custom"
-                        android:src="@drawable/ic_launcher" />
+                        android:src="@mipmap/ic_launcher" />
                     <TextView style="@style/WpLabel" android:text="@string/wp_custom" />
                 </LinearLayout>
 
