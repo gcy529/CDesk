@@ -271,7 +271,7 @@ public class MainActivity extends Activity {
         page = ((p % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT;
         boolean media = page == PAGE_MEDIA;
         gridApps.setAdapter(media ? mediaAdapter : adapter);
-        gridApps.setNumColumns(media ? 2 : 6);
+        gridApps.setNumColumns(media ? 3 : 6);
         gridApps.setSelection(0);
 
         List<AppAdapter.AppItem> all = adapter.allItems();
