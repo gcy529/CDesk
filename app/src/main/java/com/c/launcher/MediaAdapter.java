@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,7 +18,8 @@ import android.widget.TextView;
 public class MediaAdapter extends BaseAdapter {
 
     private static final String[] TYPES = new String[] { "live", "video", "audio" };
-    private static final int[] COLORS = new int[] { 0xFFDC2626, 0xFFF59E0B, 0xFF16A34A };
+    /** 只保留极淡的色相区分，主体一律玻璃面（规范：摒弃花哨彩色块） */
+    private static final int[] COLORS = new int[] { 0x33FF7E9D, 0x334D6BFE, 0x3316A34A };
     private static final int[] LABELS = new int[] { R.string.live_title, R.string.vod_title, R.string.music_title };
 
     private final Context ctx;
@@ -36,21 +38,26 @@ public class MediaAdapter extends BaseAdapter {
         if (v == null) {
             v = LayoutInflater.from(ctx).inflate(R.layout.item_media, parent, false);
         }
+        v.setScaleX(1f);
+        v.setScaleY(1f);
         v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override public void onFocusChange(View vv, boolean has) {
-                float s = has ? 1.05f : 1f;
-                vv.animate().scaleX(s).scaleY(s).setDuration(120).start();
+                float s = has ? 1.1f : 1f;
+                vv.animate().scaleX(s).scaleY(s)
+                        .setDuration(150)
+                        .setInterpolator(new OvershootInterpolator(has ? 1.2f : 0.6f))
+                        .start();
             }
         });
         ImageView iv = (ImageView) v.findViewById(R.id.ivMediaIcon);
         TextView tv = (TextView) v.findViewById(R.id.tvMediaName);
         GradientDrawable g = new GradientDrawable();
-        g.setCornerRadius(dp(26));
+        g.setCornerRadius(dp(24));
         g.setColor(COLORS[position % COLORS.length]);
         if (iv != null) iv.setImageDrawable(g);
         if (tv != null) {
             tv.setText(LABELS[position % LABELS.length]);
-            tv.setTextColor(ThemeManager.current(ctx).isLight ? 0xFF3C3836 : 0xFFE8E8EF);
+            tv.setTextColor(ThemeManager.TEXT_MAIN);
         }
         return v;
     }
