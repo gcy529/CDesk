@@ -111,6 +111,24 @@ public class MainActivity extends Activity {
         btnTransfer = (Button) findViewById(R.id.btnTransfer);
         btnDonate = (Button) findViewById(R.id.btnDonate);
         gridApps = (GridView) findViewById(R.id.gridApps);
+        
+        // 更新提醒：每天最多查一次，静默失败
+        UpdateChecker.checkIfNeeded(this, new UpdateChecker.Callback() {
+            @Override public void onUpdate(String ver, String url) {
+                if (tvBadge != null) {
+                    tvBadge.setText(getString(R.string.update_found, ver));
+                    tvBadge.setTextColor(ThemeManager.ACCENT2);
+                    tvBadge.setOnClickListener(new View.OnClickListener() {
+                        @Override public void onClick(View v) {
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                            } catch (Exception ignored) { }
+                        }
+                    });
+                }
+            }
+        });
+
         btnPagePrev = (Button) findViewById(R.id.btnPagePrev);
         btnPageNext = (Button) findViewById(R.id.btnPageNext);
         tvPageTitle = (TextView) findViewById(R.id.tvPageTitle);
