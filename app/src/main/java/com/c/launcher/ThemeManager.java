@@ -26,8 +26,7 @@ public class ThemeManager {
     public static final String KEY_NIGHT = "palette_night"; // 夜里选中的下标（深色池内）
 
     /** 浅色池从第 8 个开始（0-7 深，8-11 浅） */
-    public static final int LIGHT_BASE = 8;
-    private static final int DAY_START = 6;
+        private static final int DAY_START = 6;
     private static final int DAY_END = 18;
 
     /** 一套配色：bgTop/bgBottom 背景渐变两端，accent 强调色，
