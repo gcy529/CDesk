@@ -7,6 +7,8 @@
 > **C = Car · Clean · Cheap**
 > 给老车机、电视盒子、Android TV 用的一块干净桌面。没有广告，没有推荐流。
 
+**官网（国内直连）：[https://gcy5.cn.mt](https://gcy5.cn.mt)** —— 功能介绍、安装步骤、常见问题、加群/反馈都在这。
+
 ![preview](shots/FINAL_desk_mockup.png)
 
 ---
@@ -43,6 +45,8 @@
 ## 安装
 
 ### 下载 APK（国内推荐加速线路）
+
+**可以先去官网 [gcy5.cn.mt](https://gcy5.cn.mt) 看一眼再决定装不装** —— 页面底部有完整下载入口。
 
 最新版见 [Releases](https://github.com/gcy529/CDesk/releases/latest)：
 
