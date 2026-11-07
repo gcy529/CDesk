@@ -105,4 +105,7 @@
     <string name="wp_custom">自訂圖片</string>
     <string name="wp_custom_pick">選擇圖片</string>
     <string name="wp_custom_hint">最多 3 張 · 點一下用這張 · 長按刪除</string>
+    <string name="app_version">0.2.2</string>
+    <string name="update_found">發現新版本 v%1$s，點此直接下載</string>
+    <string name="update_go">更新</string>
 </resources>
