@@ -16,9 +16,9 @@ import android.widget.TextView;
  */
 public class MediaAdapter extends BaseAdapter {
 
-    private static final String[] TYPES = new String[] { "video", "audio" };
-    private static final int[] COLORS = new int[] { 0xFFDC2626, 0xFF16A34A };
-    private static final int[] LABELS = new int[] { R.string.media_play, R.string.media_music };
+    private static final String[] TYPES = new String[] { "live", "video", "audio" };
+    private static final int[] COLORS = new int[] { 0xFFDC2626, 0xFFF59E0B, 0xFF16A34A };
+    private static final int[] LABELS = new int[] { R.string.live_title, R.string.vod_title, R.string.music_title };
 
     private final Context ctx;
 
