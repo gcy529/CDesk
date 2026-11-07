@@ -86,6 +86,24 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/transfer_title" />
 
+        <!-- 影音壳：播放器 + 直播 / 点播 / 音乐 三个导入页（不含任何内容源） -->
+        <activity
+            android:name=".PlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".LiveShellActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".VodShellActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".MusicShellActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/AppTheme" />
+
         <!-- foregroundServiceType 只在 targetSdk 34+ 生效，低版本自动忽略 -->
         <service
             android:name=".SpeedService"
