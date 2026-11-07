@@ -55,43 +55,7 @@
 
 **minSdk 14 / targetSdk 34** —— 从 2011 年的机器到最新系统，同一个 APK。
 
----
 
-## 自动黑白是怎么做的
-
-悬浮窗挂在任意壁纸上，蓝色或白色文字总有一种会看不清，所以颜色必须**从壁纸本身算**：
-
-```
-1. WallpaperManager.getDrawable() 取壁纸（缓存 30s）
-2. 按悬浮窗的屏幕坐标裁出它下面那一小块
-3. 缩到 8x8，读 64 个像素
-4. 感知亮度 = (0.299R + 0.587G + 0.114B) / 255
-5. 亮度 < 0.62 → 白字 + 深色胶囊
-   亮度 ≥ 0.62 → 黑字 + 浅色胶囊
-6. 每 2 秒重采样一次
-```
-
-一次采样不到 0.5ms，2 秒才一次，老车机毫无压力。
-
----
-
-## 撞色 / 幸运色
-
-12 组**手工挑过**的配色（不是色相环算出来的，公式调出来的经常发脏）：
-
-```
-深海荧光  #0B1020 → #1E2A4A  强调 #FACC15
-暗夜冰蓝  #0B1020 → #16243D  强调 #38BDF8
-幻紫霓虹  #2B1055 → #3B1E6E  强调 #4ADE80
-墨黑樱粉  #0C0F16 → #1A1F2E  强调 #F472B6
-...共 12 组
-```
-
-- **今日幸运色**：`hash("2026-11-07") % 12`，同一天所有设备同色，次日自动轮换
-- **我的幸运色**：手动点过就存 `SharedPreferences`，盖过今日
-- **切换动画**：300ms 颜色流动，不是硬切
-
-强调色只染时钟 / 胶囊描边 / 选中框，**不碰正文**，所以永远不会花。
 
 ---
 
@@ -148,7 +112,6 @@ app/src/main/
 │   ├── SpeedService.java      前台服务，每秒采样 TrafficStats
 │   ├── SpeedOverlay.java      左右下角两个悬浮胶囊
 │   ├── AutoContrast.java      壁纸亮度采样 → 自动黑白
-│   ├── ThemeManager.java      12 组撞色 + 今日幸运色 + 颜色动画
 │   └── TransferActivity.java  局域网 HTTP 文件接收
 ├── assets/transfer.html       手机端上传页面（内嵌服务端返回）
 └── res/                       双语文案 + 布局 + 矢量图标
@@ -162,10 +125,7 @@ app/src/main/
 - [x] 左右下角网速悬浮窗
 - [x] 自动黑白 + 撞色 / 幸运色
 - [x] 局域网传输
-- [ ] 高德车机版四灯接入
 - [ ] 音乐播放平替（桌面内嵌）
-- [ ] PCDN 上传异常提醒（持续 > 2Mbps 超 10 分钟）
-- [ ] 自定义壁纸 + 撞色自动提取
 
 ---
 
@@ -231,17 +191,7 @@ a small quota. It does not change what you pay.
 
 *桌面布局示意 —— 真机图标为设备内应用的真实图标，此处仅示意*
 
-**默认壁纸「金色时刻」**
-
-![默认壁纸](shots/FINAL_wallpaper_4k.jpg)
-
-**备选「鲸夜」**
-
-![鲸夜](shots/FINAL_wallpaper_night.jpg)
-
-**备选「晨光」**
-
-![晨光](shots/FINAL_wallpaper_day.jpg)
+壁纸可以 搜索 WeChat 微信公众号 韭菜超先生 获取
 
 
 [![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)
