@@ -30,14 +30,17 @@
 
 ## 安装
 
-### 方式一：GitHub Actions 云构建（推荐，无需本地环境）
+### 下载 APK（国内推荐加速线路）
 
-1. Fork 或推送到 GitHub
-2. 打开 [Actions](.github/workflows/android.yml)，等「Build APK」跑完
-3. 在构建产物（Artifacts）里下载 `cdesk-com.c.launcher`
-4. 传到车机/盒子上安装
+最新版见 [Releases](https://github.com/gcy529/CDesk/releases/latest)：
 
-### 方式二：本地构建
+- [GitHub 直链](https://github.com/gcy529/CDesk/releases/latest)（海外快）
+- [GHFast 加速](https://ghfast.top/https://github.com/gcy529/CDesk/releases/latest)（国内推荐）
+- [GH-Proxy 加速](https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/latest)（备用）
+
+每个版本附 SHA-256 校验值。装不上、下不动，到公众号「韭菜超先生」反馈。
+
+### 本地构建
 
 ```bash
 # 需要 JDK 17 + Android SDK
