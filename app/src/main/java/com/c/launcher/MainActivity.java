@@ -2,6 +2,7 @@ package com.c.launcher;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -449,6 +450,10 @@ public class MainActivity extends Activity {
                     });
                 }
             });
+            // 点天气 → 手动城市（IP 不准时的后路）
+            tvWeather.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { showWeatherCityDialog(); }
+            });
         }
         tvBadge.setText(p.name);
         tvBadge.setTextColor(p.accent);
@@ -461,6 +466,76 @@ public class MainActivity extends Activity {
     }
 
     /** 启动被点中的第三方应用；失败就提示，不让桌面卡住 */
+    /** 手动城市：城市名 + 纬度 + 经度，三行输入。留空城市名 = 回到自动 */
+    private void showWeatherCityDialog() {
+        final android.widget.EditText etCity = new android.widget.EditText(this);
+        etCity.setHint(R.string.weather_hint_city);
+        if (WeatherManager.manualCityName(this) != null) etCity.setText(WeatherManager.manualCityName(this));
+        final android.widget.EditText etLat = new android.widget.EditText(this);
+        etLat.setHint("lat (22.55)");
+        final android.widget.EditText etLon = new android.widget.EditText(this);
+        etLon.setHint("lon (114.05)");
+        if (WeatherManager.manualLatLng(this) != null) {
+            double[] ll = WeatherManager.manualLatLng(this);
+            etLat.setText(String.valueOf(ll[0]));
+            etLon.setText(String.valueOf(ll[1]));
+        }
+        android.widget.LinearLayout box = new android.widget.LinearLayout(this);
+        box.setOrientation(android.widget.LinearLayout.VERTICAL);
+        int pad = dp(20);
+        box.setPadding(pad, dp(8), pad, 0);
+        etCity.setSingleLine(true);
+        etLat.setSingleLine(true);
+        etLon.setSingleLine(true);
+        box.addView(etCity);
+        box.addView(etLat);
+        box.addView(etLon);
+
+        new android.app.AlertDialog.Builder(this)
+                .setTitle(R.string.weather_manual)
+                .setView(box)
+                .setPositiveButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener() {
+                    @Override public void onClick(android.content.DialogInterface d, int w) {
+                        String city = etCity.getText() == null ? "" : etCity.getText().toString().trim();
+                        if (city.length() == 0) {
+                            WeatherManager.setAutoCity(MainActivity.this);
+                            WeatherManager.fetch(MainActivity.this, weatherRefresh());
+                            return;
+                        }
+                        try {
+                            double lat = Double.parseDouble(etLat.getText().toString().trim());
+                            double lon = Double.parseDouble(etLon.getText().toString().trim());
+                            WeatherManager.setManualCity(MainActivity.this, city, lat, lon);
+                            WeatherManager.fetch(MainActivity.this, weatherRefresh());
+                        } catch (NumberFormatException e) {
+                            android.widget.Toast.makeText(MainActivity.this,
+                                    R.string.shell_failed, android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNeutralButton(R.string.weather_auto, new android.content.DialogInterface.OnClickListener() {
+                    @Override public void onClick(android.content.DialogInterface d, int w) {
+                        WeatherManager.setAutoCity(MainActivity.this);
+                        WeatherManager.fetch(MainActivity.this, weatherRefresh());
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private WeatherManager.Callback weatherRefresh() {
+        return new WeatherManager.Callback() {
+            @Override public void onResult(final String line) {
+                ui.post(new Runnable() {
+                    @Override public void run() {
+                        if (isFinishing() || tvWeather == null) return;
+                        tvWeather.setText(line == null ? "" : line);
+                    }
+                });
+            }
+        };
+    }
+
     private void launchApp(final AppAdapter.AppItem it) {
         if (it == null) return;
 
