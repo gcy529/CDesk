@@ -9,7 +9,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * 天气：IP 自动定位，零配置零 UI。
+ * 天气：IP 自动定位，支持手动城市。
+ *
+ * 手动城市存在 prefs（名字 + 经纬度），一旦设置就永远优先于 IP 定位，
+ * IP 定位再飘也不影响 —— 车机基本不动，手动一次就够了。
  *
  * 链路（全部 HTTPS、免费、无 key，任何国家自动适配）：
  *   ipwho.is        -> 经纬度 + 城市名（IP 定位，不需要枚举国家）
@@ -27,8 +30,44 @@ public final class WeatherManager {
 
     private static final long CACHE_MS = 30L * 60L * 1000L;
     private static final String PREFS = "cdesk_weather";
+    private static final String KEY_MODE = "mode";       // auto | manual
+    private static final String KEY_CITY = "manual_city";
+    private static final String KEY_LAT = "manual_lat";
+    private static final String KEY_LON = "manual_lon";
 
     private WeatherManager() { }
+
+    /** 手动城市：设置后永久覆盖 IP 定位 */
+    public static void setManualCity(Context c, String name, double lat, double lon) {
+        c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString(KEY_MODE, "manual").putString(KEY_CITY, name)
+                .putString(KEY_LAT, String.valueOf(lat)).putString(KEY_LON, String.valueOf(lon))
+                .putString("line", null).putLong("at", 0L).commit();
+    }
+
+    /** 回到 IP 自动 */
+    public static void setAutoCity(Context c) {
+        c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString(KEY_MODE, "auto").putString("line", null).putLong("at", 0L).commit();
+    }
+
+    public static boolean isManual(Context c) {
+        return "manual".equals(c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_MODE, "auto"));
+    }
+
+    /** 手动城市经纬度，没设置返回 null */
+    public static double[] manualLatLng(Context c) {
+        SharedPreferences p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        try {
+            return new double[] {
+                    Double.parseDouble(p.getString(KEY_LAT, "")),
+                    Double.parseDouble(p.getString(KEY_LON, "")) };
+        } catch (Throwable t) { return null; }
+    }
+
+    public static String manualCityName(Context c) {
+        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_CITY, null);
+    }
 
     /** 有缓存先用缓存，过期才走网络；回调一定回到调用线程，由 UI 自己 post */
     public static void fetch(final Context ctx, final Callback cb) {
@@ -42,6 +81,7 @@ public final class WeatherManager {
         Thread t = new Thread(new Runnable() {
             @Override public void run() {
                 String line = load(app);
+                // 手动模式但没填城市 → 静默回退 IP
                 if (line != null) {
                     app.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                         .edit().putString("line", line)
@@ -56,11 +96,17 @@ public final class WeatherManager {
 
     private static String load(Context ctx) {
         try {
-            String geo = get("https://ipwho.is/");
-            if (geo == null) return null;
-            double[] ll = new double[2];
+            double[] ll;
             String[] city = new String[1];
-            if (!parseGeo(geo, ll, city)) return null;
+            if (isManual(ctx)) {
+                ll = manualLatLng(ctx);
+                city[0] = manualCityName(ctx);
+                if (ll == null || city[0] == null) return null;
+            } else {
+                String geo = get("https://ipwho.is/");
+                if (geo == null) return null;
+                if (!parseGeo(geo, ll = new double[2], city)) return null;
+            }
 
             String wx = get("https://api.open-meteo.com/v1/forecast?latitude="
                     + ll[0] + "&longitude=" + ll[1] + "&current_weather=true");
