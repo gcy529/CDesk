@@ -52,7 +52,6 @@ public class TransferActivity extends Activity {
     private File saveDir;
 
     @Override
-    @Override
     protected void attachBaseContext(android.content.Context base) {
         super.attachBaseContext(LangManager.wrap(base));
     }
