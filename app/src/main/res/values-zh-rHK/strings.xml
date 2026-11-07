@@ -98,4 +98,6 @@
     <string name="shell_failed">載入失敗</string>
     <string name="shell_play_failed">播放失敗，換個源試下</string>
     <string name="music_none">未播放</string>
+    <string name="wp_custom">自訂圖片</string>
+    <string name="wp_custom_pick">揀選圖片</string>
 </resources>
