@@ -101,4 +101,5 @@
     <string name="music_none">Not playing</string>
     <string name="wp_custom">Custom photo</string>
     <string name="wp_custom_pick">Pick image</string>
+    <string name="wp_custom_hint">Up to 3 · tap to use · long-press to delete</string>
 </resources>
