@@ -91,15 +91,8 @@ public class ThemeManager {
     }
 
     public static int currentIndex(Context ctx) {
-        boolean day = isDayNow();
-        int poolSize = day ? PALETTES.length - LIGHT_BASE : LIGHT_BASE;
-        String key = day ? KEY_DAY : KEY_NIGHT;
-        SharedPreferences sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        int saved = sp.getInt(key, -1);
-        if (saved < 0 || saved >= poolSize) {
-            saved = day ? (todayHash() % 4) : (todayHash() % LIGHT_BASE);
-        }
-        return (day ? LIGHT_BASE : 0) + saved;
+        // 池子只有一深一浅：按时段取对应兜底组
+        return isDayNow() ? 1 : 0;
     }
 
     /** 换肤：在当前时段的池子里循环 */
