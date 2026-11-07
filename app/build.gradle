@@ -13,8 +13,8 @@ android {
         applicationId project.hasProperty('appId') ? project.property('appId') : "com.c.launcher"
         minSdk 16
         targetSdk 34
-        versionCode 2
-        versionName "0.2.0"
+        versionCode 3
+        versionName "0.2.1"
         // 只要中文和英文，砍掉其它语言能省几百 KB
         resConfigs "zh", "zh-rTW", "zh-rHK", "en"
     }
