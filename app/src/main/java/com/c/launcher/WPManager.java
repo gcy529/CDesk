@@ -29,10 +29,12 @@ public final class WPManager {
     // 默认 = WP_SUNSET（金色时刻）：用户钦定
     public static final int WP_DAY = 2;    // 晨光（睁眼窗光）
     public static final int WP_SUNSET = 3; // 金色时刻（日落）
+    public static final int WP_CUSTOM = 4; // 用户自己的图片（局域网传入或本地选择）
 
     private static final String PREFS = "cdesk_wallpaper";
     private static final String KEY_WP = "which";
     private static final String KEY_AUTO = "auto";
+    private static final String KEY_CUSTOM = "custom_path";
 
     private WPManager() { }
 
@@ -51,9 +53,19 @@ public final class WPManager {
 
     public static void setAuto(Context c, boolean v) { prefs(c).edit().putBoolean(KEY_AUTO, v).commit(); }
 
+    /** 自定义图片：记住路径，decode 时读文件 */
+    public static void setCustomPath(Context c, String path) {
+        prefs(c).edit().putString(KEY_CUSTOM, path).commit();
+        setWhich(c, WP_CUSTOM);
+    }
+
+    public static String customPath(Context c) { return prefs(c).getString(KEY_CUSTOM, ""); }
+
     /** 当前时刻实际该显示哪张 */
     public static int effective(Context c) {
         if (!isAuto(c)) return which(c);
+        // 自定义图片不参与日夜自动（用户的照片没有日夜之分）
+        if (which(c) == WP_CUSTOM) return WP_CUSTOM;
         int h = new java.util.Date().getHours();
         return (h >= 6 && h < 18) ? WP_DAY : WP_SUNSET;
     }
@@ -80,11 +92,37 @@ public final class WPManager {
             colorBg2.setVisibility(View.VISIBLE);
             return false;
         }
-        int res = wp == WP_NIGHT ? R.drawable.wall_night
-                : wp == WP_DAY ? R.drawable.wall_day : R.drawable.wall_sunset;
-        int w = a.getResources().getDisplayMetrics().widthPixels;
-        int h = a.getResources().getDisplayMetrics().heightPixels;
-        Bitmap b = decode(a, res, w, h);
+        Bitmap b = null;
+        if (wp == WP_CUSTOM) {
+            String path = customPath(a);
+            if (path.length() > 0) {
+                try {
+                    BitmapFactory.Options o = new BitmapFactory.Options();
+                    o.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(path, o);
+                    int w0 = a.getResources().getDisplayMetrics().widthPixels;
+                    int h0 = a.getResources().getDisplayMetrics().heightPixels;
+                    int s = 1;
+                    while ((o.outWidth / (s * 2)) >= w0 && (o.outHeight / (s * 2)) >= h0) s *= 2;
+                    BitmapFactory.Options o2 = new BitmapFactory.Options();
+                    o2.inSampleSize = s;
+                    o2.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    b = BitmapFactory.decodeFile(path, o2);
+                } catch (Throwable t) { b = null; }
+            }
+            if (b == null) {
+                // 自定义图丢了：退回金色时刻
+                setWhich(a, WP_SUNSET);
+                wp = WP_SUNSET;
+            }
+        }
+        if (b == null) {
+            int res = wp == WP_NIGHT ? R.drawable.wall_night
+                    : wp == WP_DAY ? R.drawable.wall_day : R.drawable.wall_sunset;
+            int w = a.getResources().getDisplayMetrics().widthPixels;
+            int h = a.getResources().getDisplayMetrics().heightPixels;
+            b = decode(a, res, w, h);
+        }
         bg.setScaleType(ImageView.ScaleType.CENTER_CROP);
         bg.setImageDrawable(new BitmapDrawable(a.getResources(), b));
         bg.setVisibility(View.VISIBLE);
@@ -95,6 +133,6 @@ public final class WPManager {
 
     /** 壁纸是深色还是浅色（决定桌面文字用白还是深灰）：金色时刻/鲸夜深底，晨光浅底 */
     public static boolean isDarkWallpaper(int wp) {
-        return wp != WP_DAY;
+        return wp == WP_CUSTOM ? true : wp != WP_DAY;
     }
 }
