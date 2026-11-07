@@ -361,12 +361,7 @@ public class MainActivity extends Activity {
         Toast.makeText(this, nameRes, Toast.LENGTH_SHORT).show();
     }
 
-    private void nextPalette() {
-        ThemeManager.Palette p = ThemeManager.next(this);
-        applyPalette(p, true);
-        if (SpeedService.overlay() != null) SpeedService.overlay().applyTheme();
-        Toast.makeText(this, p.name, Toast.LENGTH_SHORT).show();
-    }
+
 
     /** 把整套配色刷到所有界面元素（含 Dock、天气行、按钮） */
     private void applyPalette(ThemeManager.Palette p, boolean animate) {
