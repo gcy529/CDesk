@@ -19,7 +19,7 @@
             android:text="@string/transfer_title"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#E2E8F0" />
+            android:textColor="#F8FAFC" />
 
         <Button
             android:id="@+id/btnBack"
@@ -30,7 +30,7 @@
             android:paddingRight="18dp"
             android:text="@string/transfer_back"
             android:textSize="13sp"
-            android:textColor="#38BDF8" />
+            android:textColor="#4D6BFE" />
     </LinearLayout>
 
     <TextView
@@ -40,7 +40,7 @@
         android:layout_marginTop="14dp"
         android:text="@string/transfer_idle"
         android:textSize="14sp"
-        android:textColor="#94A3B8" />
+        android:textColor="#8E9BAE" />
 
     <TextView
         android:id="@+id/tvAddr"
@@ -52,7 +52,7 @@
         android:textSize="34sp"
         android:textStyle="bold"
         android:fontFamily="monospace"
-        android:textColor="#38BDF8" />
+        android:textColor="#4D6BFE" />
 
     <TextView
         android:layout_width="match_parent"
@@ -75,7 +75,7 @@
         android:text="@string/transfer_start"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#38BDF8" />
+        android:textColor="#4D6BFE" />
 
     <ImageView
         android:id="@+id/ivQr"
