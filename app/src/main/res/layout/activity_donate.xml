@@ -22,7 +22,7 @@
             android:text="@string/donate_title"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="#38BDF8" />
+            android:textColor="#4D6BFE" />
 
         <TextView
             android:layout_width="match_parent"
@@ -31,7 +31,7 @@
             android:lineSpacingExtra="6dp"
             android:text="@string/donate_body"
             android:textSize="15sp"
-            android:textColor="#94A3B8" />
+            android:textColor="#8E9BAE" />
 
         <TextView
             android:layout_width="match_parent"
@@ -61,7 +61,7 @@
             android:paddingRight="30dp"
             android:text="@string/donate_back"
             android:textSize="14sp"
-            android:textColor="#38BDF8" />
+            android:textColor="#4D6BFE" />
     </LinearLayout>
 
     <!-- 右：二维码白卡（以后加支付宝就再复制一个同样的 FrameLayout） -->
