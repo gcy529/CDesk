@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -103,9 +104,26 @@ public class AppAdapter extends BaseAdapter {
         }
         AppItem it = getItem(position);
         ImageView iv = (ImageView) v.findViewById(R.id.ivIcon);
-        TextView tv = (TextView) v.findViewById(R.id.tvName);
+        final TextView tv = (TextView) v.findViewById(R.id.tvName);
         if (iv != null) iv.setImageDrawable(it.icon);
-        if (tv != null) tv.setText(it.label);
+        if (tv != null) {
+            tv.setText(it.label);
+            tv.setTextColor(ThemeManager.TEXT_SUB);
+        }
+        v.setScaleX(1f);
+        v.setScaleY(1f);
+        v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override public void onFocusChange(View vv, boolean has) {
+                float s = has ? 1.1f : 1f;
+                vv.animate().scaleX(s).scaleY(s)
+                        .setDuration(150)
+                        .setInterpolator(new OvershootInterpolator(has ? 1.2f : 0.6f))
+                        .start();
+                if (tv != null) {
+                    tv.setTextColor(has ? ThemeManager.PRIMARY : ThemeManager.TEXT_SUB);
+                }
+            }
+        });
         return v;
     }
 }
