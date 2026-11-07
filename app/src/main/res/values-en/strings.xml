@@ -99,4 +99,6 @@
     <string name="shell_failed">Load failed</string>
     <string name="shell_play_failed">Playback failed, try another source</string>
     <string name="music_none">Not playing</string>
+    <string name="wp_custom">Custom photo</string>
+    <string name="wp_custom_pick">Pick image</string>
 </resources>
