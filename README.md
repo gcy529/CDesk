@@ -1,5 +1,7 @@
 # C桌面 / CDesk
 
+[中文](README.md) | [English](README.en.md)
+
 > **C = Car · Clean · Cheap**
 > 给老车机、电视盒子、Android TV 用的一块干净桌面。没有广告，没有推荐流。
 
@@ -170,6 +172,9 @@ app/src/main/
 [网页注册 minekuai.cn/r/MVQ5W8MT](https://minekuai.cn/r/MVQ5W8MT) · 或扫码：
 
 <img src="shots/minekuai-qr.png" width="176" alt="麦块云注册二维码">
+
+<details>
+<summary><b>About Minekuai (referral link, mainland China networks)</b> — English note, click to expand</summary>
 
 **About Minekuai (referral link, mainland China networks)**
 
