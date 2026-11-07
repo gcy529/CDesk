@@ -47,13 +47,20 @@ public final class LangManager {
         a.recreate();
     }
 
-    /** 语言按钮上显示的文字（语言名用它自己的文字写，全世界通用） */
+    /** 语言按钮上显示的文字：三项全展示，当前语言高亮，让人一眼知道支持哪三种 */
     public static String label(Context c) {
         int i = index(c);
-        if (i == SIMP) return "简";
-        if (i == TRAD) return "繁";
-        if (i == ENG) return "EN";
-        return c.getString(R.string.lang_auto);
+        if (i == FOLLOW) {
+            // 跟随系统时不加标记，靠后缀说明
+            return "简·繁·EN";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(i == SIMP ? "【简】" : "简");
+        sb.append(" ");
+        sb.append(i == TRAD ? "【繁】" : "繁");
+        sb.append(" ");
+        sb.append(i == ENG ? "【EN】" : "EN");
+        return sb.toString();
     }
 
     /** 在每个 Activity 的 attachBaseContext 里调用 */
