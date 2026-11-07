@@ -4,25 +4,32 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:padding="8dp"
+    android:padding="6dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:background="@drawable/bg_focus">
 
-    <ImageView
-        android:id="@+id/ivIcon"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:scaleType="fitCenter" />
+    <FrameLayout
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@drawable/bg_tile">
+
+        <ImageView
+            android:id="@+id/ivIcon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="7dp"
         android:gravity="center"
         android:singleLine="true"
         android:ellipsize="end"
         android:textSize="11sp"
-        android:textColor="#E2E8F0" />
+        android:textColor="#8E9BAE" />
 </LinearLayout>
