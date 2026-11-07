@@ -79,6 +79,8 @@ public abstract class BaseShellActivity extends Activity {
 
         adapter = new ShellAdapter();
         lvItems.setAdapter(adapter);
+        lvItems.setItemsCanFocus(true);
+        lvItems.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
         lvItems.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
             @Override public void onItemClick(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 Object o = adapter.getItem(position);
