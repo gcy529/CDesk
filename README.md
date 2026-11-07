@@ -5,8 +5,6 @@
 > **C = Car · Clean · Cheap**
 > 给老车机、电视盒子、Android TV 用的一块干净桌面。没有广告，没有推荐流。
 
-![preview](shots/UI_A_black_bold.png)
-
 ---
 
 ## 这是什么
@@ -130,8 +128,8 @@ app/src/main/
 - [x] 内置 4K 壁纸 + 日夜自动
 - [x] 局域网传输 + 二维码
 - [x] 简繁英切换 + 使用须知
-- [ ] 影视壳（TVBox 兼容源格式）
-- [ ] 音乐壳
+- [ ] 影视壳 / 直播壳（空壳设计：不内置任何源，用户自行导入点播/直播订阅）
+- [ ] 音乐壳（同上，空壳）
 
 ---
 
@@ -184,24 +182,6 @@ skip this part; it has no effect on using CDesk. The link is an explicit referra
 get a small credit bonus and the author receives a small quota. It does not change what you pay.
 
 </details>
-
-### 项目形象 / Mascot
-
-![桌面布局](shots/UI_A_black_bold.png)
-
-*桌面布局示意 —— 真机图标为设备内应用的真实图标，此处仅示意*
-
-**默认壁纸「金色时刻」**
-
-![默认壁纸](shots/FINAL_wallpaper_4k.jpg)
-
-**备选「鲸夜」**
-
-![鲸夜](shots/FINAL_wallpaper_night.jpg)
-
-**备选「晨光」**
-
-![晨光](shots/FINAL_wallpaper_day.jpg)
 
 ---
 
