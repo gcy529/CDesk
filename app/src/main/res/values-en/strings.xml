@@ -106,4 +106,7 @@ This application is not affiliated with, authorized by, or in partnership with a
     <string name="wp_custom">Custom photo</string>
     <string name="wp_custom_pick">Pick image</string>
     <string name="wp_custom_hint">Up to 3 · tap to use · long-press to delete</string>
+    <string name="app_version">0.2.2</string>
+    <string name="update_found">New version v%1$s available — tap to download</string>
+    <string name="update_go">Update</string>
 </resources>
