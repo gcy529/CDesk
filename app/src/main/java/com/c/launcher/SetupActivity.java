@@ -36,7 +36,6 @@ public class SetupActivity extends Activity {
     private Button btnOverlay;
 
     @Override
-    @Override
     protected void attachBaseContext(android.content.Context base) {
         super.attachBaseContext(LangManager.wrap(base));
     }
