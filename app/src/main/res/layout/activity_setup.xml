@@ -18,7 +18,7 @@
             android:text="@string/setup_title"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="#38BDF8" />
+            android:textColor="#4D6BFE" />
 
         <!-- Beta 警告 -->
         <LinearLayout
@@ -55,7 +55,7 @@
             android:text="@string/setup_step1"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#E2E8F0" />
+            android:textColor="#F8FAFC" />
 
         <TextView
             android:id="@+id/tvState"
@@ -64,7 +64,7 @@
             android:layout_marginTop="10dp"
             android:text="@string/setup_state_unknown"
             android:textSize="15sp"
-            android:textColor="#94A3B8" />
+            android:textColor="#8E9BAE" />
 
         <TextView
             android:id="@+id/tvHint"
@@ -91,7 +91,7 @@
                 android:background="@drawable/bg_pill"
                 android:text="@string/setup_open_settings"
                 android:textSize="14sp"
-                android:textColor="#38BDF8" />
+                android:textColor="#4D6BFE" />
 
             <Button
                 android:id="@+id/btnRecheck"
@@ -101,7 +101,7 @@
                 android:background="@drawable/bg_pill"
                 android:text="@string/setup_recheck"
                 android:textSize="14sp"
-                android:textColor="#38BDF8" />
+                android:textColor="#4D6BFE" />
         </LinearLayout>
 
         <!-- 第二步 -->
@@ -112,7 +112,7 @@
             android:text="@string/setup_step2"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#E2E8F0" />
+            android:textColor="#F8FAFC" />
 
         <TextView
             android:id="@+id/tvOverlayState"
@@ -122,7 +122,7 @@
             android:lineSpacingExtra="6dp"
             android:text="@string/setup_state_unknown"
             android:textSize="13sp"
-            android:textColor="#94A3B8" />
+            android:textColor="#8E9BAE" />
 
         <Button
             android:id="@+id/btnOverlay"
@@ -134,7 +134,7 @@
             android:paddingRight="26dp"
             android:text="@string/setup_grant_overlay"
             android:textSize="14sp"
-            android:textColor="#38BDF8" />
+            android:textColor="#4D6BFE" />
 
         <!-- 底部 -->
         <Button
@@ -146,6 +146,6 @@
             android:text="@string/setup_enter"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#38BDF8" />
+            android:textColor="#4D6BFE" />
     </LinearLayout>
 </ScrollView>
