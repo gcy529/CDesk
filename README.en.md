@@ -2,6 +2,8 @@
 
 > **C = Car · Clean · Cheap**
 > A clean, ad-free home screen for old car head units, TV boxes, and Android TV.
+>
+> **Official site (direct access from mainland China): [https://gcy5.cn.mt](https://gcy5.cn.mt)**
 
 [中文](README.md) | [English](README.en.md)
 
@@ -59,3 +61,16 @@ sides get a small credit bonus; mainland China networks only).
 ## License
 
 [CC BY-NC-ND 4.0](LICENSE)
+
+
+---
+
+## Disclaimer
+
+**1. Nature of the work.** CDesk is a free tool independently developed by an individual developer and is provided "AS IS", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and non-infringement. Use is entirely at your own risk. To the maximum extent permitted by law, the author shall not be liable for any direct, indirect, incidental, special or consequential damages arising from the use of, or inability to use, this application.
+
+**2. Content and player.** CDesk does not provide, host, index, search, recommend or distribute any audio or video content, nor any content source, and does not provide any subscription, paid, live or on-demand service. The media pages are merely entry points to a generic playback capability; all played content is imported solely by the user, who is solely responsible for verifying its lawful origin, copyright ownership and authorization to use. Users must ensure their conduct complies with applicable local laws and third-party terms of service.
+
+**3. Third-party names.** CDesk is not affiliated with, authorized by, or in partnership with any content platform, rights holder or device manufacturer. All trademarks and names belong to their respective owners.
+
+**4. Source and license.** Source is available in this repository under [CC BY-NC-ND 4.0](LICENSE); the APK is free of charge and contains no payment SDK.
