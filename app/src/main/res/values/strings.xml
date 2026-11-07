@@ -99,4 +99,6 @@
     <string name="shell_failed">加载失败</string>
     <string name="shell_play_failed">播放失败，换个源试试</string>
     <string name="music_none">未在播放</string>
+    <string name="wp_custom">自定义图片</string>
+    <string name="wp_custom_pick">选择图片</string>
 </resources>
