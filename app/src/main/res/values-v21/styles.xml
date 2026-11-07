@@ -3,7 +3,7 @@
     <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
         <item name="android:windowBackground">#0B1020</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:colorAccent">#38BDF8</item>
+        <item name="android:colorAccent">#4D6BFE</item>
         <item name="android:statusBarColor">#00000000</item>
         <item name="android:navigationBarColor">#00000000</item>
     </style>
