@@ -19,7 +19,6 @@ import android.widget.TextView;
 public class DonateActivity extends Activity {
 
     @Override
-    @Override
     protected void attachBaseContext(android.content.Context base) {
         super.attachBaseContext(LangManager.wrap(base));
     }
