@@ -2,7 +2,10 @@ package com.c.launcher;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -44,6 +47,23 @@ public class WallpaperSettingsActivity extends Activity {
         card(R.id.cardWpDay, WPManager.WP_DAY);
         card(R.id.cardWpSunset, WPManager.WP_SUNSET);
 
+        // 自定义图片：选系统相册里的照片；也支持局域网传入的图片
+        View customCard = findViewById(R.id.cardWpCustom);
+        if (customCard != null) {
+            customCard.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                    i.setType("image/*");
+                    try {
+                        startActivityForResult(Intent.createChooser(i, getString(R.string.wp_custom_pick)), 41);
+                    } catch (Exception e) {
+                        Toast.makeText(WallpaperSettingsActivity.this, R.string.shell_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
         // 使用须知 + 返回
         findViewById(R.id.btnDisclaimer).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
@@ -53,6 +73,41 @@ public class WallpaperSettingsActivity extends Activity {
         findViewById(R.id.btnWpBack).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 41 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            String path = copyToFiles(data.getData());
+            if (path != null) {
+                WPManager.setAuto(this, false);
+                WPManager.setCustomPath(this, path);
+                Toast.makeText(this, R.string.wallpaper, Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, R.string.shell_failed, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /** 把选中的图片复制到内部存储，避免重启后 URI 失效 */
+    private String copyToFiles(Uri uri) {
+        try {
+            java.io.InputStream in = getContentResolver().openInputStream(uri);
+            java.io.File dir = new java.io.File(getFilesDir(), "wallpaper");
+            if (!dir.exists()) dir.mkdirs();
+            java.io.File out = new java.io.File(dir, "custom.jpg");
+            java.io.FileOutputStream fos = new java.io.FileOutputStream(out);
+            byte[] buf = new byte[16384];
+            int n;
+            while ((n = in.read(buf)) > 0) fos.write(buf, 0, n);
+            fos.close();
+            in.close();
+            return out.getAbsolutePath();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private void card(int id, final int value) {
