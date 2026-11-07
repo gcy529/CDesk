@@ -1,13 +1,14 @@
 package com.c.launcher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/** 壁纸设置：选壁纸 + 日夜自动开关 + 公众号 + 重看须知 */
+/** 壁纸设置：缩略图卡片选壁纸 + 日夜自动开关 + 公众号 + 重看须知 */
 public class WallpaperSettingsActivity extends Activity {
 
     @Override
@@ -24,15 +25,11 @@ public class WallpaperSettingsActivity extends Activity {
         TextView title = (TextView) findViewById(R.id.tvWpTitle);
         title.setTextColor(p.isLight ? p.fg : p.accent);
 
-        bind(R.id.btnWpAuto, R.string.wp_auto);
-        bind(R.id.btnWpNone, R.string.wp_none);
-        bind(R.id.btnWpNight, R.string.wp_night);
-        bind(R.id.btnWpDay, R.string.wp_day);
-        bind(R.id.btnWpSunset, R.string.wp_sunset);
-        bind(R.id.btnDisclaimer, R.string.disclaimer_title);
-        bind(R.id.btnWpBack, R.string.transfer_back);
-
-        findViewById(R.id.btnWpAuto).setOnClickListener(new View.OnClickListener() {
+        // 自动日夜开关（文字按钮）
+        Button btnAuto = (Button) findViewById(R.id.btnWpAuto);
+        ThemeManager.styleButton(btnAuto, p);
+        btnAuto.setText(R.string.wp_auto);
+        btnAuto.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 boolean next = !WPManager.isAuto(WallpaperSettingsActivity.this);
                 WPManager.setAuto(WallpaperSettingsActivity.this, next);
@@ -40,11 +37,14 @@ public class WallpaperSettingsActivity extends Activity {
                         next ? R.string.wp_auto : R.string.wp_none, Toast.LENGTH_SHORT).show();
             }
         });
-        pick(R.id.btnWpNone, WPManager.WP_NONE);
-        pick(R.id.btnWpNight, WPManager.WP_NIGHT);
-        pick(R.id.btnWpDay, WPManager.WP_DAY);
-        pick(R.id.btnWpSunset, WPManager.WP_SUNSET);
 
+        // 缩略图卡片：点击选壁纸
+        card(R.id.cardWpNone, WPManager.WP_NONE);
+        card(R.id.cardWpNight, WPManager.WP_NIGHT);
+        card(R.id.cardWpDay, WPManager.WP_DAY);
+        card(R.id.cardWpSunset, WPManager.WP_SUNSET);
+
+        // 使用须知 + 返回
         findViewById(R.id.btnDisclaimer).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 startActivity(new Intent(WallpaperSettingsActivity.this, DisclaimerActivity.class));
@@ -55,15 +55,11 @@ public class WallpaperSettingsActivity extends Activity {
         });
     }
 
-    private void bind(int id, int textRes) {
-        Button b = (Button) findViewById(id);
-        ThemeManager.styleButton(b, ThemeManager.current(this));
-        b.setText(textRes);
-    }
-
-    private void pick(int id, final int value) {
-        findViewById(id).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
+    private void card(int id, final int value) {
+        View v = findViewById(id);
+        if (v == null) return;
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) {
                 WPManager.setAuto(WallpaperSettingsActivity.this, false);
                 WPManager.setWhich(WallpaperSettingsActivity.this, value);
                 Toast.makeText(WallpaperSettingsActivity.this, R.string.wallpaper, Toast.LENGTH_SHORT).show();
