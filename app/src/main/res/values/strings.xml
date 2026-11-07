@@ -110,4 +110,7 @@
     <string name="update_found">发现新版本 v%1$s，点此直接下载</string>
     <string name="update_go">更新</string>
     <string name="shell_reconnect">信号中断，正在重连…</string>
+    <string name="weather_manual">手动城市</string>
+    <string name="weather_hint_city">城市名（如：深圳）</string>
+    <string name="weather_auto">恢复自动</string>
 </resources>
