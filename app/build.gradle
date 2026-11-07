@@ -1,0 +1,50 @@
+// C桌面 应用模块
+// 关键取舍：
+//  - 不用 AndroidX / AppCompat，直接继承 android.app.Activity，APK 小、启动快
+//  - minSdk 16 覆盖 Android 4.1 的老车机与盒子（ExoPlayer 2.x 的地板）
+//  - 关闭依赖混淆压缩以外的花活，先保证能装能跑
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.c.launcher'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId project.hasProperty('appId') ? project.property('appId') : "com.c.launcher"
+        minSdk 16
+        targetSdk 34
+        versionCode 1
+        versionName "0.1.0-beta"
+        // 只要中文和英文，砍掉其它语言能省几百 KB
+        resConfigs "zh", "zh-rTW", "zh-rHK", "en"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // 预览版先用 debug 签名，方便直接装车机
+            signingConfig signingConfigs.debug
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    // 仅用于局域网传输二维码（QRCodeWriter），纯 Java 无 native；R8 裁剪后增量很小
+    implementation 'com.google.zxing:core:3.5.3'
+    // 刻意留空：不引入任何第三方库
+}

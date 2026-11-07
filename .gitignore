@@ -1,0 +1,25 @@
+# Gradle
+*.iml
+.gradle/
+build/
+local.properties
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 构建产物
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# 签名（绝对不要提交）
+*.jks
+*.keystore
+keystore.properties
+
+# 本地临时产物，不进仓库（shots/ 要保留，README 引用它）
+tmp/
+tmp-profile/
+node_modules/

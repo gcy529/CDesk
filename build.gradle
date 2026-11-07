@@ -1,0 +1,22 @@
+// C桌面 - 顶层构建脚本
+// 刻意不用 Kotlin DSL，保持旧版 Gradle / 旧 JDK 也能打开
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

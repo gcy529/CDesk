@@ -1,0 +1,54 @@
+name: Build APK
+
+# 没有本地 Android 环境也能出包：推到 GitHub 让云端编译
+# 也支持手动指定包名 —— 有些车机固件按包名做白名单，
+# 想换包名不用改代码，直接在这里填即可
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      appid:
+        description: 'applicationId（留空用默认 com.c.launcher）'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Resolve applicationId
+        id: appid
+        run: |
+          ID="${{ inputs.appid }}"
+          if [ -z "$ID" ]; then ID="com.c.launcher"; fi
+          echo "value=$ID" >> $GITHUB_OUTPUT
+          echo "building with applicationId = $ID"
+
+      - name: Build debug APK
+        run: |
+          chmod +x gradlew || true
+          gradle wrapper --gradle-version 7.5 || true
+          ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdesk-${{ steps.appid.outputs.value }}
+          path: app/build/outputs/apk/debug/*.apk
+
+      - name: Report size
+        run: ls -lh app/build/outputs/apk/debug/*.apk

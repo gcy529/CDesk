@@ -1,0 +1,61 @@
+package com.c.launcher;
+
+import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+/**
+ * 影音页的两个大卡片：影视 / 音乐。
+ * 这是内置壳（CPlay / C听）的入口，跟用户装了什么应用无关，
+ * 所以界面上永远只会出现这四个字，不存在第三方播放器名字被扫的风险。
+ */
+public class MediaAdapter extends BaseAdapter {
+
+    private static final String[] TYPES = new String[] { "video", "audio" };
+    private static final int[] COLORS = new int[] { 0xFFDC2626, 0xFF16A34A };
+    private static final int[] LABELS = new int[] { R.string.media_play, R.string.media_music };
+
+    private final Context ctx;
+
+    public MediaAdapter(Context c) { ctx = c; }
+
+    public String typeAt(int pos) { return TYPES[pos % TYPES.length]; }
+
+    @Override public int getCount() { return TYPES.length; }
+    @Override public Object getItem(int position) { return typeAt(position); }
+    @Override public long getItemId(int position) { return position; }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View v = convertView;
+        if (v == null) {
+            v = LayoutInflater.from(ctx).inflate(R.layout.item_media, parent, false);
+        }
+        v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override public void onFocusChange(View vv, boolean has) {
+                float s = has ? 1.05f : 1f;
+                vv.animate().scaleX(s).scaleY(s).setDuration(120).start();
+            }
+        });
+        ImageView iv = (ImageView) v.findViewById(R.id.ivMediaIcon);
+        TextView tv = (TextView) v.findViewById(R.id.tvMediaName);
+        GradientDrawable g = new GradientDrawable();
+        g.setCornerRadius(dp(26));
+        g.setColor(COLORS[position % COLORS.length]);
+        if (iv != null) iv.setImageDrawable(g);
+        if (tv != null) {
+            tv.setText(LABELS[position % LABELS.length]);
+            tv.setTextColor(ThemeManager.current(ctx).isLight ? 0xFF3C3836 : 0xFFE8E8EF);
+        }
+        return v;
+    }
+
+    private int dp(float v) {
+        return (int) (v * ctx.getResources().getDisplayMetrics().density + 0.5f);
+    }
+}

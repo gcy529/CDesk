@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CDesk Transfer</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:34px 24px;background:#0b1020;color:#eef2ff;
+       font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;text-align:center}
+  h1{font-size:22px;margin:0 0 6px}
+  p{color:#94a3b8;font-size:14px;margin:0}
+  .drop{margin-top:26px;border:2px dashed #2b3a5c;border-radius:20px;padding:34px 18px;
+        transition:border-color .2s,background .2s}
+  .drop.hot{border-color:#38bdf8;background:#0f1a30}
+  input[type=file]{color:#cbd5e1;font-size:14px;max-width:100%}
+  button{margin-top:24px;padding:15px 44px;border:0;border-radius:999px;
+         background:#38bdf8;color:#0b1020;font-weight:700;font-size:17px;cursor:pointer}
+  button:disabled{opacity:.5}
+  #bar{height:6px;border-radius:999px;background:#1e2a4a;margin-top:22px;overflow:hidden}
+  #fill{height:100%;width:0;background:linear-gradient(90deg,#38bdf8,#a855f7);transition:width .2s}
+  #msg{margin-top:14px;font-size:13px;color:#94a3b8;min-height:18px}
+</style>
+</head>
+<body>
+<h1>C桌面</h1>
+<p>选择文件发送到屏幕 / choose a file and send it</p>
+<div class="drop" id="drop">
+  <input type="file" id="fi">
+</div>
+<div id="bar"><div id="fill"></div></div>
+<button id="btn">发送 / Send</button>
+<div id="msg"></div>
+<script>
+var btn=document.getElementById('btn'),
+    fi=document.getElementById('fi'),
+    fill=document.getElementById('fill'),
+    msg=document.getElementById('msg'),
+    drop=document.getElementById('drop');
+
+['dragenter','dragover'].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add('hot');});
+});
+['dragleave','drop'].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('hot');});
+});
+drop.addEventListener('drop',function(ev){
+  if(ev.dataTransfer && ev.dataTransfer.files.length){fi.files=ev.dataTransfer.files;}
+});
+
+btn.onclick=function(){
+  if(!fi.files.length){msg.textContent='请选择文件 / no file selected';return;}
+  var f=fi.files[0];
+  btn.disabled=true;
+  msg.textContent='上传中 / uploading…';
+  var x=new XMLHttpRequest();
+  x.open('POST','/upload');
+  x.setRequestHeader('X-File-Name',encodeURIComponent(f.name));
+  x.upload.onprogress=function(e){
+    if(e.lengthComputable){
+      var p=Math.round(e.loaded/e.total*100);
+      fill.style.width=p+'%';
+      msg.textContent=p+'%  '+f.name;
+    }
+  };
+  x.onload=function(){
+    btn.disabled=false;
+    fill.style.width='100%';
+    msg.textContent='完成 / done  '+f.name;
+  };
+  x.onerror=function(){
+    btn.disabled=false;
+    msg.textContent='失败 / failed';
+  };
+  x.send(f);
+};
+</script>
+</body>
+</html>

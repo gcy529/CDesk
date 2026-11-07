@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- API 14 起可用的基础主题，不带 Material -->
+    <style name="AppTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">#0B1020</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- 壁纸选择卡片：桌面端缩略图 200x112，遥控器焦点白框 -->
+    <style name="WpCard">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/bg_focus</item>
+    </style>
+    <style name="WpThumb">
+        <item name="android:layout_width">170dp</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+    <style name="WpThumbSolid">
+        <item name="android:layout_width">170dp</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">#1E2430</item>
+    </style>
+    <style name="WpLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvWpTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wp_title"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button android:id="@+id/btnWpAuto"
+                android:layout_width="match_parent" android:layout_height="50dp"
+                android:text="@string/wp_auto" />
+
+            <TextView android:id="@+id/tvWpPick"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="18dp" android:text="@string/wp_pick" />
+
+            <!-- 三个候选：缩略图 + 名字，遥控器左右移动焦点选择 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <LinearLayout android:id="@+id/cardWpNone"
+                    style="@style/WpCard">
+                    <View android:id="@+id/thumbNone" style="@style/WpThumbSolid" />
+                    <TextView style="@style/WpLabel" android:text="@string/wp_none" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/cardWpSunset"
+                    style="@style/WpCard">
+                    <ImageView android:id="@+id/thumbSunset" style="@style/WpThumb"
+                        android:contentDescription="@string/wp_sunset"
+                        android:src="@drawable/wall_sunset" />
+                    <TextView style="@style/WpLabel" android:text="@string/wp_sunset" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/cardWpDay"
+                    style="@style/WpCard">
+                    <ImageView android:id="@+id/thumbDay" style="@style/WpThumb"
+                        android:contentDescription="@string/wp_day"
+                        android:src="@drawable/wall_day" />
+                    <TextView style="@style/WpLabel" android:text="@string/wp_day" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/cardWpNight"
+                    style="@style/WpCard">
+                    <ImageView android:id="@+id/thumbNight" style="@style/WpThumb"
+                        android:contentDescription="@string/wp_night"
+                        android:src="@drawable/wall_night" />
+                    <TextView style="@style/WpLabel" android:text="@string/wp_night" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView android:id="@+id/tvWechatTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="26dp" android:text="@string/wechat_title" android:textSize="18sp" android:textStyle="bold" />
+            <TextView android:id="@+id/tvWechatName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/wechat_name" android:textSize="15sp" />
+            <TextView android:id="@+id/tvWechatBody" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/wechat_body" android:textSize="13sp" />
+
+            <Button android:id="@+id/btnDisclaimer" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="24dp" android:text="@string/disclaimer_title" />
+            <Button android:id="@+id/btnWpBack" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="10dp" android:text="@string/transfer_back" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
