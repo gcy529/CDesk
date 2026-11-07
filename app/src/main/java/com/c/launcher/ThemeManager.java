@@ -21,6 +21,20 @@ import java.util.Calendar;
  */
 public class ThemeManager {
 
+    // ===== 深海与微光（Dark Glassmorphism）全局色彩 =====
+    /** 背景：极深蓝黑，不用纯黑 */
+    public static final int BG_DEEP   = 0xFF0B0F19;
+    /** 表面：毛玻璃面（70% 不透明），所有卡片/底板用 */
+    public static final int SURFACE   = 0xB3161C2C;
+    /** 主强调：科技蓝，仅用于焦点、开关、进度 */
+    public static final int PRIMARY   = 0xFF4D6BFE;
+    /** 副强调：珊瑚粉，仅用于赞赏、上传下载状态 */
+    public static final int ACCENT2   = 0xFFFF7E9D;
+    /** 主文字：珍珠白 */
+    public static final int TEXT_MAIN = 0xFFF8FAFC;
+    /** 副文字：海盐灰，日期/版本号等 */
+    public static final int TEXT_SUB  = 0xFF8E9BAE;
+
     public static final String PREFS = "cdesk_prefs";
     public static final String KEY_DAY = "palette_day";     // 白天选中的下标（浅色池内）
     public static final String KEY_NIGHT = "palette_night"; // 夜里选中的下标（深色池内）
@@ -70,7 +84,7 @@ public class ThemeManager {
      */
     public static final Palette[] PALETTES = new Palette[] {
         // 只保留一深一浅兜底：壁纸模式下不走这里，纯色（自定义）模式用夜间组，浅色组给"晨雾"类浅壁纸兜底
-        new Palette("深空", 0xFF0B1020, 0xFF1E2A4A, 0xFF38BDF8, 0xFFECEBF5, 0xFF8B93A8, false),
+        new Palette("深海", 0xFF0B0F19, 0xFF161C2C, 0xFF4D6BFE, 0xFFF8FAFC, 0xFF8E9BAE, false),
         new Palette("晨白", 0xFFF2F4F8, 0xFFE4E8EF, 0xFF2563EB, 0xFF232B3A, 0xFF5A6474, true),
     };
 
