@@ -18,11 +18,13 @@
 | 能力 | 说明 |
 |---|---|
 | 🖥 替换默认桌面 | 三页桌面（应用 / 最近 / 影音），遥控器方向键翻页 |
-| 🌙 内置 4K 壁纸 | 金色时刻 / 鲸夜 / 晨光，日夜自动切换（6:00–18:00 用白天壁纸） |
+| 🌙 壁纸 | 一个自定义色 + 两个日间壁纸 + 一个夜间壁纸，可开日夜自动（6:00–18:00 用日间） |
 | 📶 实时网速 | 左右下角悬浮显示，纯 `TrafficStats` 差值采样，零唤醒代价 |
 | 📁 局域网传文件 | 内置 HTTP 服务，手机扫码/输地址就能往车机传 APK |
 
-另有：应用内语言切换（简 / 繁 / EN，当前语言高亮显示）、IP 自动定位天气、打赏码、首次启动使用须知。
+另有：应用内语言切换（简 / 繁 / EN，当前语言高亮显示）、IP 自动定位天气、首次启动使用须知。
+
+> 壁纸与更新发布、bug 反馈、功能建议，请到公众号「**韭菜超先生**」——丢失了 APK 也从这里找回。
 
 ---
 
@@ -69,10 +71,9 @@ minSdk 16（Android 4.1）到 targetSdk 34（Android 14+），同一个 APK。�
 
 ## 界面
 
-12 组配色主题（极光 / 霓虹海 / 薄荷夜 / 樱粉夜 / 火山 / Volt / 纯黑 / 蓝调夜 + 4 组浅色），色值取自 Tailwind CSS v4 官方调色板。
-纯色模式（不带壁纸）下可在主题间循环；壁纸模式下文字按壁纸明暗自动反色。
+纯色模式下可在几组配色间循环；壁纸模式下文字按壁纸明暗自动反色。
+网速悬浮窗颜色同样按壁纸亮度自动黑/白。
 
-实时网速悬浮窗的颜色从壁纸采样计算：感知亮度 < 0.62 用白字，否则黑字，2 秒重采样一次。
 
 ---
 
@@ -104,7 +105,7 @@ app/src/main/
 │   ├── DisclaimerActivity.java       首次启动使用须知
 │   ├── LangManager.java              应用内简/繁/EN 切换
 │   ├── WeatherManager.java           IP 定位天气（ipwho.is + open-meteo）
-│   ├── ThemeManager.java             12 组配色 + 颜色动画
+│   ├── ThemeManager.java             配色兜底 + 文字/背景颜色动画
 │   ├── SpeedService.java             前台服务，每秒采样 TrafficStats
 │   ├── SpeedOverlay.java             左右下角网速悬浮胶囊（自动黑白）
 │   ├── AutoContrast.java             壁纸亮度采样 → 自动黑白
@@ -137,11 +138,7 @@ app/src/main/
 
 ![赞赏码](app/src/main/res/drawable-nodpi/qr_wechat.jpg)
 
-**技术上的取舍，有意为之：**
-
-- **不接任何支付 SDK** —— 个人开发者申请不到微信/支付宝的 App 支付权限，第三方聚合支付既踩合规灰线，又会往 APK 里塞好几 MB。APK 只放一张静态图片。
-- **不做「打赏解锁主题」** —— 技术上无法验证真伪；一旦带了对价，就从「赞赏」变成「经营行为」。
-- 换收款码只需要替换 `app/src/main/res/drawable-nodpi/qr_wechat.jpg`，不改一行代码。
+**打赏不解锁任何功能；打赏码就是一张静态图片，不接任何支付 SDK。**
 
 ---
 
@@ -183,6 +180,8 @@ from mainland China networks — from overseas it may not open at all. If you ar
 skip this part; it has no effect on using CDesk. The link is an explicit referral link: both sides
 get a small credit bonus and the author receives a small quota. It does not change what you pay.
 
+</details>
+
 ### 项目形象 / Mascot
 
 ![桌面布局](shots/UI_A_black_bold.png)
@@ -207,4 +206,4 @@ get a small credit bonus and the author receives a small quota. It does not chan
 
 ## License
 
-[MIT](LICENSE)
+[CC BY-NC-ND 4.0](LICENSE)
