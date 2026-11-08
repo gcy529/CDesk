@@ -43,6 +43,7 @@ public class SetupActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Screen.apply(this);
         setContentView(R.layout.activity_setup);
 
         tvState = (TextView) findViewById(R.id.tvState);
