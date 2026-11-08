@@ -28,6 +28,7 @@ public class DisclaimerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Screen.apply(this);
         setContentView(R.layout.activity_disclaimer);
 
         TextView body = (TextView) findViewById(R.id.tvDisclaimerBody);
