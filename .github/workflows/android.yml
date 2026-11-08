@@ -76,6 +76,21 @@ jobs:
           name: ${{ steps.appid.outputs.value }}
           path: app/build/outputs/apk/debug/*.apk
 
+      - name: Sync download links on site
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          sed -i -E "s#/releases/download/v[0-9]+\.[0-9]+\.[0-9]+/app-debug\.apk#/releases/download/${TAG}/app-debug.apk#g" index.html README.md
+          if git diff --quiet; then
+            echo "links already up to date"
+          else
+            git config user.name "github-actions"
+            git config user.email "actions@github.com"
+            git add index.html README.md
+            git commit -m "chore: 下载链接同步 ${TAG} [skip ci]"
+            git push
+          fi
+
       - name: Compute SHA-256
         if: startsWith(github.ref, 'refs/tags/v')
         id: sha
