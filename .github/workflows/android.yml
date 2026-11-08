@@ -142,6 +142,15 @@ jobs:
             echo '---'
             echo '[稳定版](https://github.com/gcy529/CDesk/releases/latest) · [官网](https://gcy5.cn.mt) · [全部更新日志](https://github.com/gcy529/CDesk/blob/main/CHANGELOG.md)'
           } > release_body_beta.md
+      - name: Clean previous beta asset
+        if: github.ref == 'refs/heads/beta'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view beta --json assets -q '.assets[].name' 2>/dev/null | while read -r n; do
+            gh release delete-asset beta "$n" -y || true
+          done
       - name: Release beta
         if: github.ref == 'refs/heads/beta'
         uses: softprops/action-gh-release@v2
