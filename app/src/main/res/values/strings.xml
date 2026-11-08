@@ -102,7 +102,7 @@
     <string name="wp_custom">自定义图片</string>
     <string name="wp_custom_pick">选择图片</string>
     <string name="wp_custom_hint">最多 3 张 · 点一下用这张 · 长按删除</string>
-    <string name="app_version">0.2.3</string>
+    <string name="app_version">0.2.4</string>
     <string name="update_found">发现新版本 v%1$s，点此直接下载</string>
     <string name="update_go">更新</string>
     <string name="shell_reconnect">信号中断，正在重连…</string>
