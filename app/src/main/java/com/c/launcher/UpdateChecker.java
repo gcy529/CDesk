@@ -29,8 +29,11 @@ public final class UpdateChecker {
 
     private static final String API = "https://api.github.com/repos/gcy529/CDesk/releases/latest";
     /** GHFast 的 latest 通配：新版本发布后自动指向新包 */
-    private static final String FAST_DL =
-            "https://ghfast.top/https://github.com/gcy529/CDesk/releases/latest/download/app-debug.apk";
+    /** 加速镜像不认 /download/latest/ 路径，必须用真实 tag；这里拼出来 */
+    private static String fastDl(String tag) {
+        return "https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/"
+                + tag + "/app-debug.apk";
+    }
     private static final String PREFS = "cdesk_update";
     private static final String KEY_LAST = "last_remind_day";
     private static final String KEY_SKIP = "skip_version";
@@ -73,7 +76,7 @@ public final class UpdateChecker {
                 p.edit().putString(KEY_LAST, today2).commit();
 
                 act.runOnUiThread(new Runnable() {
-                    @Override public void run() { cb.onUpdate(ver, FAST_DL); }
+                    @Override public void run() { cb.onUpdate(ver, fastDl(remote)); }
                 });
             }
         }).start();
