@@ -35,6 +35,8 @@ public abstract class BaseShellActivity extends Activity {
     protected EditText etSource;
     protected TextView tvStatus;
     protected ListView lvItems;
+    protected View boxEmpty;
+    protected Button btnPaste;
 
     protected final List<PlaylistParser.Item> items = new ArrayList<PlaylistParser.Item>();
     protected ShellAdapter adapter;
@@ -58,10 +60,13 @@ public abstract class BaseShellActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Screen.apply(this);
         setContentView(R.layout.activity_playlist);
 
         ThemeManager.Palette p = ThemeManager.current(this);
         findViewById(android.R.id.content).setBackgroundColor(p.bgTop);
+        View rootShell = findViewById(R.id.rootShell);
+        if (rootShell != null) rootShell.setBackgroundColor(p.bgTop);
 
         TextView title = (TextView) findViewById(R.id.tvShellTitle);
         title.setText(titleRes());
@@ -73,8 +78,11 @@ public abstract class BaseShellActivity extends Activity {
 
         Button btnLoad = (Button) findViewById(R.id.btnLoad);
         Button btnBack = (Button) findViewById(R.id.btnBack);
+        btnPaste = (Button) findViewById(R.id.btnPaste);
+        boxEmpty = findViewById(R.id.boxEmpty);
         ThemeManager.styleButton(btnLoad, p);
         ThemeManager.styleButton(btnBack, p);
+        if (btnPaste != null) ThemeManager.styleButton(btnPaste, p);
         etSource.setTextColor(p.fg);
 
         adapter = new ShellAdapter();
@@ -94,12 +102,44 @@ public abstract class BaseShellActivity extends Activity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }
         });
+        if (btnPaste != null) {
+            btnPaste.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    // 电视上打字太痛苦，优先用剪贴板
+                    String clip = readClipboard();
+                    if (clip == null || clip.length() == 0) {
+                        Toast.makeText(BaseShellActivity.this, R.string.shell_empty,
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    etSource.setText(clip);
+                    startLoad();
+                }
+            });
+        }
+
+        refreshEmpty();
 
         String saved = prefs().getString(prefKey(), "");
         if (saved != null && saved.length() > 0) {
             etSource.setText(saved);
             load(saved);
         }
+    }
+
+    private String readClipboard() {
+        try {
+            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (cm != null && cm.hasText()) return cm.getText().toString().trim();
+        } catch (Throwable ignored) { }
+        return null;
+    }
+
+    /** 有内容就藏起空状态，没内容就显示 */
+    private void refreshEmpty() {
+        if (boxEmpty == null) return;
+        boxEmpty.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
+        lvItems.setVisibility(items.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     protected SharedPreferences prefs() {
@@ -152,6 +192,9 @@ public abstract class BaseShellActivity extends Activity {
                         if (isFinishing()) return;
                         if (fText == null) {
                             tvStatus.setText(getString(R.string.shell_failed) + (fErr == null ? "" : " (" + fErr + ")"));
+                            items.clear();
+                            adapter.notifyDataSetChanged();
+                            refreshEmpty();
                             return;
                         }
                         List<PlaylistParser.Item> parsed = PlaylistParser.parse(fText);
@@ -161,6 +204,7 @@ public abstract class BaseShellActivity extends Activity {
                         tvStatus.setText(parsed.isEmpty()
                                 ? getString(R.string.shell_empty)
                                 : getString(R.string.shell_loaded) + " " + parsed.size());
+                        refreshEmpty();
                         if (!parsed.isEmpty()) lvItems.requestFocus();
                     }
                 });
@@ -199,17 +243,22 @@ public abstract class BaseShellActivity extends Activity {
             PlaylistParser.Item it = items.get(position);
             ThemeManager.Palette p = ThemeManager.current(BaseShellActivity.this);
             TextView tv = new TextView(BaseShellActivity.this);
-            tv.setTextSize(16f);
+            tv.setTextSize(17f);
             tv.setGravity(Gravity.CENTER_VERTICAL);
-            tv.setPadding(dp(18), dp(14), dp(18), dp(14));
+            tv.setPadding(dp(20), dp(16), dp(20), dp(16));
             if (it.url == null) {
-                // 分组头
-                tv.setText("— " + it.name + " —");
+                // 分组头：不可点，只作分隔
+                tv.setText(it.name);
                 tv.setTextColor(p.isLight ? 0xFF8A6A16 : p.accent);
                 tv.setTextSize(14f);
+                tv.setPadding(dp(20), dp(18), dp(20), dp(8));
+                tv.setBackgroundColor(0x00000000);
             } else {
                 tv.setText(it.name);
                 tv.setTextColor(p.fg);
+                tv.setBackgroundResource(R.drawable.bg_row);
+                tv.setFocusable(true);
+                tv.setClickable(true);
             }
             return tv;
         }
