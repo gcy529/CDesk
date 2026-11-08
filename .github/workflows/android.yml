@@ -5,7 +5,7 @@ name: Build APK
 # 想换包名不用改代码，直接在这里填即可
 on:
   push:
-    branches: [ main ]
+    branches: [ main, beta ]
     tags: [ 'v*' ]
   pull_request:
   workflow_dispatch:
@@ -110,6 +110,32 @@ jobs:
           body_path: release_body.md
           draft: false
           prerelease: false
+      - name: Write beta body
+        if: github.ref == 'refs/heads/beta'
+        run: |
+          VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo ?)
+          {
+            echo "## Beta 测试版"
+            echo ""
+            echo "开发分支自动构建，**可能不稳定**。功能验证通过后会合并进 main，成为正式版。"
+            echo ""
+            echo "- 版本：$VER"
+            echo "- 提交：${{ github.sha }}"
+            echo ""
+            echo "稳定版：https://github.com/gcy529/CDesk/releases/latest"
+            echo "官网：https://gcy5.cn.mt"
+          } > release_body_beta.md
+
+      - name: Release beta
+        if: github.ref == 'refs/heads/beta'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: beta
+          name: Beta 测试版（滚动更新）
+          body_path: release_body_beta.md
+          prerelease: true
+          make_latest: 'false'
+          files: app/build/outputs/apk/debug/*.apk
       - name: Report size
         run: ls -lh app/build/outputs/apk/debug/*.apk
 
