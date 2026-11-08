@@ -31,6 +31,7 @@ public class WallpaperSettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Screen.apply(this);
         setContentView(R.layout.activity_wallpaper);
 
         ThemeManager.Palette p = ThemeManager.current(this);
