@@ -78,6 +78,12 @@ jobs:
           name: ${{ steps.appid.outputs.value }}
           path: app/build/outputs/apk/debug/*.apk
 
+      - name: Copy versioned APK (tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          cp app/build/outputs/apk/debug/*.apk "app/build/outputs/apk/debug/CDesk-${TAG}.apk"
+
       - name: Compute SHA-256
         if: startsWith(github.ref, 'refs/tags/v')
         id: sha
@@ -91,8 +97,10 @@ jobs:
       - name: Write release body
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          cat > release_body.md <<'EOF'
-          ## 下载（三选一，速度不同）
+          VER="${GITHUB_REF_NAME#v}"
+          cat > release_body.md <<EOF
+          ## 下载（四选一，速度不同）
+          - 带版本号（推荐）：https://github.com/gcy529/CDesk/releases/download/${GITHUB_REF_NAME}/CDesk-${VER}.apk
           - 官网（国内直连）：https://gcy5.cn.mt
           - GitHub 直链（海外快）：见下方 Assets
           - GHFast 加速（国内推荐）：https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/TAGNAME/APKNAME
@@ -114,7 +122,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: app/build/outputs/apk/debug/*.apk
+          files: |
+            app/build/outputs/apk/debug/CDesk-*.apk
+            app/build/outputs/apk/debug/app-debug.apk
           body_path: release_body.md
           draft: false
           prerelease: false
