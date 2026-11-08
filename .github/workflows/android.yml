@@ -103,6 +103,12 @@ jobs:
           反馈/找回：公众号「韭菜超先生」 · QQ 群 970805386
           EOF
           sed -i "s/TAGNAME/${{ github.ref_name }}/g; s/APKNAME/${{ steps.sha.outputs.apk }}/g; s/SHASUM/${{ steps.sha.outputs.sum }}/g" release_body.md
+          if [ -f CHANGELOG.md ]; then
+            awk '/^## /{ if (++c==2) exit } c>=1' CHANGELOG.md > changelog_head.md
+            printf '\n\n---\n\n' >> changelog_head.md
+            cat release_body.md >> changelog_head.md
+            mv changelog_head.md release_body.md
+          fi
 
       - name: Release
         if: startsWith(github.ref, 'refs/tags/v')
