@@ -59,6 +59,7 @@ public class TransferActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Screen.apply(this);
         setContentView(R.layout.activity_transfer);
 
         tvStatus = (TextView) findViewById(R.id.tvStatus);
