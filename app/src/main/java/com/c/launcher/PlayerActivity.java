@@ -40,6 +40,7 @@ public class PlayerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Screen.apply(this);
         setContentView(R.layout.activity_player);
 
         vv = (VideoView) findViewById(R.id.vvPlayer);
