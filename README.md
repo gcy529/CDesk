@@ -139,6 +139,16 @@ app/src/main/
 
 ---
 
+
+## 分支与版本策略
+
+| 分支 | 用途 | 发布方式 | 下载 |
+| --- | --- | --- | --- |
+| `main` | 稳定版，官网默认下载 | 打 `v*` 标签 → 正式 Release | [最新正式版](https://github.com/gcy529/CDesk/releases/latest) |
+| `beta` | 迭代开发，新功能先在这里跑 | 推送即滚动发布 Pre-release | [Beta 测试版](https://github.com/gcy529/CDesk/releases/tag/beta) |
+
+Beta 用 GitHub 的 **Pre-release** 发布，`releases/latest` 不会把它算进去，
+所以正式版下载链接和 App 内更新提示都不会被测试版干扰。功能在 `beta` 上验证稳定后合并回 `main`，再打标签发正式版。
 ## 路线图
 
 - [x] 桌面骨架 + 三页 + 应用网格
