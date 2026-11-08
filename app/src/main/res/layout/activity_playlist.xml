@@ -1,67 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootShell"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="40dp">
 
-    <TextView
-        android:id="@+id/tvShellTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:text="@string/live_title" />
-
+    <!-- 顶栏 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/etSource"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:hint="@string/shell_src_hint"
-            android:inputType="textUri"
-            android:singleLine="true"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/btnLoad"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginLeft="8dp"
-            android:minWidth="96dp"
-            android:text="@string/shell_load"
-            android:textSize="14sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <Button
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginLeft="8dp"
-            android:minWidth="72dp"
+            android:layout_height="52dp"
+            android:minWidth="104dp"
             android:text="@string/transfer_back"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvShellTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#F8FAFC"
+            android:text="@string/live_title" />
+    </LinearLayout>
+
+    <!-- 说明卡 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_card"
+        android:padding="18dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shell_hint_title"
+            android:textColor="#FF7E9D"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/shell_hint_body"
+            android:textColor="#8E9BAE"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <!-- 地址输入 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/etSource"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:hint="@string/shell_src_hint"
+            android:textColorHint="#5A6478"
+            android:textColor="#F8FAFC"
+            android:inputType="textUri"
+            android:singleLine="true"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnLoad"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginLeft="12dp"
+            android:minWidth="118dp"
+            android:text="@string/shell_load"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnPaste"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginLeft="12dp"
+            android:minWidth="150dp"
+            android:text="@string/shell_import_clip"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="13sp"
+        android:layout_marginTop="12dp"
+        android:textColor="#8E9BAE"
+        android:textSize="14sp"
         android:text="@string/shell_empty" />
 
-    <ListView
-        android:id="@+id/lvItems"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp"
-        android:divider="#22FFFFFF"
-        android:dividerHeight="1dp" />
+        android:layout_marginTop="10dp">
+
+        <ListView
+            android:id="@+id/lvItems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#14FFFFFF"
+            android:dividerHeight="1dp"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none" />
+
+        <!-- 空状态：没有内容时把「能做什么」说清楚，而不是留一个空白页 -->
+        <LinearLayout
+            android:id="@+id/boxEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shell_empty_title"
+                android:textColor="#F8FAFC"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/shell_empty_body"
+                android:textColor="#8E9BAE"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>
