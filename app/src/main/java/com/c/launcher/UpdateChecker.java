@@ -67,7 +67,8 @@ public final class UpdateChecker {
                     
                 } catch (Throwable ignored) { }
                 if (remote == null) return;
-                final String ver = remote.startsWith("v") ? remote.substring(1) : remote;
+                final String tag = remote;
+                final String ver = tag.startsWith("v") ? tag.substring(1) : tag;
                 final String cur = act.getString(R.string.app_version);
                 if (!isNewer(ver, cur)) return;
 
@@ -76,7 +77,7 @@ public final class UpdateChecker {
                 p.edit().putString(KEY_LAST, today2).commit();
 
                 act.runOnUiThread(new Runnable() {
-                    @Override public void run() { cb.onUpdate(ver, fastDl(remote)); }
+                    @Override public void run() { cb.onUpdate(ver, fastDl(tag)); }
                 });
             }
         }).start();
