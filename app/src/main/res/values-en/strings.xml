@@ -109,4 +109,9 @@
     <string name="weather_manual">Manual city</string>
     <string name="weather_hint_city">City name (e.g. Shenzhen)</string>
     <string name="weather_auto">Back to auto</string>
+    <string name="shell_hint_title">How it works</string>
+    <string name="shell_hint_body">Paste a playlist address below and tap Import. A URL or a local file both work.</string>
+    <string name="shell_empty_title">Nothing yet</string>
+    <string name="shell_empty_body">M3U, TXT and JSON playlists are supported. Your channels will show up here after import.</string>
+    <string name="shell_import_clip">Import from clipboard</string>
 </resources>
