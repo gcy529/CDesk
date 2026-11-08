@@ -115,29 +115,18 @@ jobs:
       - name: Write beta body
         if: github.ref == 'refs/heads/beta'
         run: |
-          VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo ?)
-          LAST=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+          VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo '?')
           {
             echo '## 尝鲜版 Beta'
             echo ''
             echo '开发分支自动构建，**可能不稳定**。功能在 beta 上验证通过后，才合并进 main 成为正式版。'
             echo ''
-            echo '| 项目 | 值 |'
+            echo '| 版本 | 提交 |'
             echo '| --- | --- |'
-            echo "| 版本 | $VER |"
-            echo "| 提交 | ${GITHUB_SHA:0:7} |"
+            echo "| $VER | ${GITHUB_SHA:0:7} |"
             echo ''
-            echo '### 本次改动'
-            echo ''
-            if [ -n "$LAST" ]; then
-              git log "$LAST..HEAD" --pretty=format:'%s' \
-                | sed 's/ — .*//' \
-                | grep -vE '^(release:|chore:|ci:|docs:|Merge)' \
-                | awk '!seen[$0]++' \
-                | sed 's/^/- /'
-              echo ''
-            else
-              echo '- 首次构建'
+            if [ -f CHANGELOG.md ]; then
+              awk '/^## /{ if (++c==2) exit } c>=1' CHANGELOG.md
             fi
             echo ''
             echo '### 安装说明'
@@ -145,7 +134,7 @@ jobs:
             echo '与正式版同一签名，可直接覆盖安装；想回正式版就下 Releases 里的最新正式版。'
             echo ''
             echo '---'
-            echo '[稳定版](https://github.com/gcy529/CDesk/releases/latest) · [官网](https://gcy5.cn.mt)'
+            echo '[稳定版](https://github.com/gcy529/CDesk/releases/latest) · [官网](https://gcy5.cn.mt) · [全部更新日志](https://github.com/gcy529/CDesk/blob/main/CHANGELOG.md)'
           } > release_body_beta.md
       - name: Release beta
         if: github.ref == 'refs/heads/beta'
