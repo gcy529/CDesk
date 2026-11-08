@@ -26,6 +26,7 @@ public class DonateActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Screen.apply(this);
         setContentView(R.layout.activity_donate);
 
         findViewById(R.id.btnBack).setOnClickListener(new View.OnClickListener() {
