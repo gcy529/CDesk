@@ -47,9 +47,10 @@ public class SettingsActivity extends Activity {
         Button btnUpdate = (Button) findViewById(R.id.btnSetUpdate);
         Button btnDisclaimer = (Button) findViewById(R.id.btnSetDisclaimer);
         Button btnCore = (Button) findViewById(R.id.btnSetCore);
+        final Button btnLog = (Button) findViewById(R.id.btnSetLog);
         Button btnBack = (Button) findViewById(R.id.btnSetBack);
 
-        Button[] all = new Button[] { btnFilter, btnCore, btnWall, btnLang, btnPlayer, btnUpdate, btnDisclaimer, btnBack };
+        Button[] all = new Button[] { btnFilter, btnCore, btnWall, btnLang, btnPlayer, btnUpdate, btnDisclaimer, btnLog, btnBack };
         for (int i = 0; i < all.length; i++) {
             if (all[i] != null) ThemeManager.styleButton(all[i], p);
         }
@@ -108,6 +109,20 @@ public class SettingsActivity extends Activity {
                 startActivity(new Intent(SettingsActivity.this, DisclaimerActivity.class));
             }
         });
+
+        if (btnLog != null) {
+            btnLog.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    try {
+                        android.content.ClipboardManager cm = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                        cm.setText(CLog.report());
+                        Toast.makeText(SettingsActivity.this, "诊断报告已复制，粘贴发给支持即可", Toast.LENGTH_LONG).show();
+                    } catch (Throwable t) {
+                        Toast.makeText(SettingsActivity.this, "复制失败: " + t, Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }

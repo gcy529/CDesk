@@ -57,6 +57,10 @@
             android:layout_width="match_parent" android:layout_height="52dp"
             android:layout_marginTop="10dp" android:text="@string/disclaimer_title" />
 
+        <Button android:id="@+id/btnSetLog"
+            android:layout_width="match_parent" android:layout_height="52dp"
+            android:layout_marginTop="10dp" android:text="@string/settings_log" />
+
         <Button android:id="@+id/btnSetBack"
             android:layout_width="match_parent" android:layout_height="52dp"
             android:layout_marginTop="20dp" android:text="@string/transfer_back" />
