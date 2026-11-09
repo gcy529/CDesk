@@ -63,11 +63,51 @@ public class MediaAdapter extends BaseAdapter {
         });
         ImageView iv = (ImageView) v.findViewById(R.id.ivMediaIcon);
         TextView tv = (TextView) v.findViewById(R.id.tvMediaName);
-        GradientDrawable g = new GradientDrawable();
-        g.setCornerRadius(dp(24));
-        g.setColor(FILL);
-        g.setStroke(dp(2), STROKES[position % STROKES.length]);
-        if (iv != null) iv.setImageDrawable(g);
+        // 画真正的图标：圆角色块 + 白色图形（播放/音符/胶片/书本）
+        int[] colors = STROKES;
+        int ci = position % colors.length;
+        android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(dp(96), dp(96), android.graphics.Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas cv = new android.graphics.Canvas(bmp);
+        android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        // 底色圆角块
+        paint.setColor(0xF2161C2C);
+        android.graphics.RectF rf = new android.graphics.RectF(0, 0, dp(96), dp(96));
+        cv.drawRoundRect(rf, dp(24), dp(24), paint);
+        // 描边
+        paint.setStyle(android.graphics.Paint.Style.STROKE);
+        paint.setStrokeWidth(dp(2));
+        paint.setColor(colors[ci]);
+        cv.drawRoundRect(rf, dp(24), dp(24), paint);
+        // 白色图形
+        paint.setStyle(android.graphics.Paint.Style.FILL);
+        paint.setColor(0xFFFFFFFF);
+        int type = position % TYPES.length;
+        float cx = dp(48), cy = dp(48), r = dp(18);
+        if (type == 0) {
+            // 直播：播放三角
+            android.graphics.Path tri = new android.graphics.Path();
+            tri.moveTo(cx - r * 0.5f, cy - r * 0.8f);
+            tri.lineTo(cx - r * 0.5f, cy + r * 0.8f);
+            tri.lineTo(cx + r * 0.9f, cy);
+            tri.close();
+            cv.drawPath(tri, paint);
+        } else if (type == 1) {
+            // 影视：胶片（两个方块+中间竖线）
+            cv.drawRect(cx - r, cy - r * 0.7f, cx - r * 0.2f, cy + r * 0.7f, paint);
+            cv.drawRect(cx + r * 0.2f, cy - r * 0.7f, cx + r, cy + r * 0.7f, paint);
+        } else if (type == 2) {
+            // 音乐：音符（圆+竖线）
+            cv.drawCircle(cx - r * 0.4f, cy + r * 0.5f, r * 0.45f, paint);
+            paint.setStrokeWidth(dp(4));
+            paint.setStrokeCap(android.graphics.Paint.Cap.ROUND);
+            cv.drawLine(cx - r * 0.4f, cy + r * 0.5f, cx - r * 0.4f, cy - r * 0.8f, paint);
+            cv.drawLine(cx - r * 0.4f, cy - r * 0.8f, cx + r * 0.6f, cy - r * 0.5f, paint);
+        } else {
+            // 书库：书本（两个竖矩形）
+            cv.drawRect(cx - r * 0.9f, cy - r * 0.6f, cx - r * 0.1f, cy + r * 0.6f, paint);
+            cv.drawRect(cx + r * 0.1f, cy - r * 0.6f, cx + r * 0.9f, cy + r * 0.6f, paint);
+        }
+        if (iv != null) iv.setImageBitmap(bmp);
         if (tv != null) {
             tv.setText(LABELS[position % LABELS.length]);
             tv.setTextColor(ThemeManager.TEXT_MAIN);
