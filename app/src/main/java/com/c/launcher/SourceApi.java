@@ -1,5 +1,7 @@
 package com.c.launcher;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -119,18 +121,18 @@ public final class SourceApi {
     }
 
     /** 详情：返回可播放的剧集 / 线路 */
-    public static List<Ep> episodes(String base, String vodId) throws Exception {
+    public static List<Ep> episodes(String base, String vodId, Context c) throws Exception {
         String txt = get(join(base, "ac=detail&ids=" + vodId));
         JSONArray arr = root(txt).optJSONArray("list");
         if (arr == null || arr.length() == 0) return new ArrayList<Ep>();
         JSONObject o = arr.optJSONObject(0);
         if (o == null) return new ArrayList<Ep>();
         String play = str(o, new String[] { "vod_play_url", "play_url", "url" });
-        return parsePlayUrl(play);
+        return parsePlayUrl(play, c);
     }
 
     /** 解析 `第1集$http://a#第2集$http://b`，也支持 $$$ 分隔的多条线路（取第一条线路） */
-    static List<Ep> parsePlayUrl(String s) {
+    static List<Ep> parsePlayUrl(String s, Context c) {
         List<Ep> out = new ArrayList<Ep>();
         if (s == null || s.length() == 0) return out;
         String line = s;
@@ -141,7 +143,7 @@ public final class SourceApi {
             String p = parts[i].trim();
             if (p.length() == 0) continue;
             int d = p.indexOf('$');
-            String name = d > 0 ? p.substring(0, d).trim() : ("第 " + (i + 1) + " 集");
+            String name = d > 0 ? p.substring(0, d).trim() : c.getString(R.string.ep_fallback, i + 1);
             String url = d > 0 ? p.substring(d + 1).trim() : p;
             if (url.length() > 4 && (url.contains("://"))) out.add(new Ep(name, url));
         }

@@ -92,17 +92,16 @@ public final class PlaylistParser {
             if (line.length() == 0) continue;
             if (line.startsWith("#EXTINF")) {
                 pendingGroup = attr(line, "group-title");
-                int comma = line.lastIndexOf(',');
+                int comma = titleComma(line);
                 pendingName = comma >= 0 && comma + 1 < line.length()
                         ? line.substring(comma + 1).trim() : attr(line, "tvg-name");
-                if (pendingName == null || pendingName.length() == 0) pendingName = "频道 " + (out.size() + 1);
             } else if (!line.startsWith("#")) {
-                if (pendingName != null) {
-                    out.add(new Item(pendingName, pendingGroup, line));
-                    pendingName = null;
-                } else {
-                    out.add(new Item(guessName(line), pendingGroup, line));
-                }
+                // EXTINF 没写名字就拿地址尾巴当名字：这里不能硬编码中文兜底名，
+                // 否则英文界面会冒出「频道 1」
+                String name = pendingName == null || pendingName.length() == 0
+                        ? guessName(line) : pendingName;
+                out.add(new Item(name, pendingGroup, line));
+                pendingName = null;
             }
         }
     }
@@ -174,6 +173,21 @@ public final class PlaylistParser {
                 out.add(new Item(guessName(line), "", line));
             }
         }
+    }
+
+    /**
+     * 标题分隔逗号 = 引号外的第一个逗号。
+     * group-title="央视,卫视" 里的逗号属于属性值，不能当分隔符；
+     * 而台名自身的逗号（"新闻,高清"）在分隔符之后，要整段保留。
+     */
+    private static int titleComma(String line) {
+        boolean quoted = false;
+        for (int i = 0; i < line.length(); i++) {
+            char ch = line.charAt(i);
+            if (ch == '"') quoted = !quoted;
+            else if (ch == ',' && !quoted) return i;
+        }
+        return -1;
     }
 
     private static String attr(String line, String key) {

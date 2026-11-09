@@ -71,13 +71,16 @@ public class MainActivity extends Activity {
     private TextView tvPageHint;
 
     private static final int PAGE_COUNT = 3;
-    private static final int PAGE_APPS = 0;
-    private static final int PAGE_RECENT = 1;
+    // 页序与首页重设计 v2 对齐：最近 / 应用 / 影音，默认落在「最近」
+    private static final int PAGE_RECENT = 0;
+    private static final int PAGE_APPS = 1;
     private static final int PAGE_MEDIA = 2;
     private static final String PREFS_RECENT = "cdesk_recent";
     private static final String KEY_RECENT = "pkg_list";
     private static final int RECENT_MAX = 12;
-    private int page = PAGE_APPS;
+    /** 应用网格列数：DPAD 边界判断和 setNumColumns 必须用同一个值，否则右键翻页位置会错 */
+    private static final int APP_COLS = 6;
+    private int page = PAGE_RECENT;
     private int lastLang = -99;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -250,7 +253,7 @@ public class MainActivity extends Activity {
             @Override public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 boolean media = page == PAGE_MEDIA;
-                int cols = media ? 3 : 6;
+                int cols = media ? mediaAdapter.columns() : APP_COLS;
                 int count = media ? mediaAdapter.getCount() : adapter.getCount();
                 int pos = gridApps.getSelectedItemPosition();
                 if (pos < 0) pos = 0;
@@ -371,7 +374,7 @@ public class MainActivity extends Activity {
         page = ((p % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT;
         boolean media = page == PAGE_MEDIA;
         gridApps.setAdapter(media ? mediaAdapter : adapter);
-        gridApps.setNumColumns(media ? 3 : 6);
+        gridApps.setNumColumns(media ? mediaAdapter.columns() : APP_COLS);
         gridApps.setSelection(0);
 
         List<AppAdapter.AppItem> all = adapter.allItems();
@@ -389,7 +392,7 @@ public class MainActivity extends Activity {
             tvPageHint.setVisibility(View.VISIBLE);
             tvPageHint.setText(page == PAGE_RECENT
                     ? R.string.page_recent_empty
-                    : R.string.page_media_empty);
+                    : R.string.page_apps_empty);
         } else {
             tvPageHint.setVisibility(View.GONE);
         }

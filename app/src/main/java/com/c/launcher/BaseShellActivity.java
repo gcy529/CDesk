@@ -104,17 +104,7 @@ public abstract class BaseShellActivity extends Activity {
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override public boolean onItemLongClick(AdapterView<?> a, View v, int pos, long id) {
                 if (pos < 0 || pos >= items.size()) return false;
-                PlaylistParser.Item it = items.get(pos);
-                if (it.url == null) return false;   // 分组头不收藏
-                if (Favorites.has(BaseShellActivity.this, it.url)) {
-                    Favorites.remove(BaseShellActivity.this, it.url);
-                    Toast.makeText(BaseShellActivity.this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
-                } else {
-                    String kind = "live_src".equals(prefKey()) ? "live" : "music";
-                    Favorites.add(BaseShellActivity.this, it.name, it.url, kind);
-                    Toast.makeText(BaseShellActivity.this, R.string.fav_added, Toast.LENGTH_SHORT).show();
-                }
-                return true;
+                return toggleFavorite(items.get(pos));
             }
         });
 
@@ -155,6 +145,23 @@ public abstract class BaseShellActivity extends Activity {
             if (cm != null && cm.hasText()) return cm.getText().toString().trim();
         } catch (Throwable ignored) { }
         return null;
+    }
+
+    /**
+     * 长按收藏 / 取消收藏。
+     * 行自己接住点击之后，ListView 的长按回调不再触发，所以两处共用这份逻辑。
+     */
+    private boolean toggleFavorite(PlaylistParser.Item it) {
+        if (it == null || it.url == null) return false;   // 分组头不收藏
+        if (Favorites.has(this, it.url)) {
+            Favorites.remove(this, it.url);
+            Toast.makeText(this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
+        } else {
+            String kind = "live_src".equals(prefKey()) ? "live" : "music";
+            Favorites.add(this, it.name, it.url, kind);
+            Toast.makeText(this, R.string.fav_added, Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 
     /** 有内容就藏起空状态，没内容就显示（文案按壳区分：直播/音乐共用通用导入说明） */
@@ -241,7 +248,7 @@ public abstract class BaseShellActivity extends Activity {
                 List<PlaylistParser.Item> expanded = null;
                 if (text != null && TvBoxConfig.looks(text)) {
                     expanded = new ArrayList<PlaylistParser.Item>();
-                    List<TvBoxConfig.Live> lives = TvBoxConfig.lives(text);
+                    List<TvBoxConfig.Live> lives = TvBoxConfig.lives(text, BaseShellActivity.this);
                     for (int i = 0; i < lives.size(); i++) {
                         TvBoxConfig.Live lv = lives.get(i);
                         try {
@@ -318,25 +325,38 @@ public abstract class BaseShellActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            PlaylistParser.Item it = items.get(position);
+            final PlaylistParser.Item it = items.get(position);
             ThemeManager.Palette p = ThemeManager.current(BaseShellActivity.this);
-            TextView tv = new TextView(BaseShellActivity.this);
-            tv.setTextSize(17f);
+            TextView tv = convertView instanceof TextView
+                    ? (TextView) convertView : new TextView(BaseShellActivity.this);
             tv.setGravity(Gravity.CENTER_VERTICAL);
-            tv.setPadding(dp(20), dp(16), dp(20), dp(16));
             if (it.url == null) {
-                // 分组头：不可点，只作分隔
+                // 分组头：不可点、不可聚焦，只作分隔
                 tv.setText(it.name);
                 tv.setTextColor(p.isLight ? 0xFF8A6A16 : p.accent);
                 tv.setTextSize(14f);
                 tv.setPadding(dp(20), dp(18), dp(20), dp(8));
                 tv.setBackgroundColor(0x00000000);
+                tv.setOnClickListener(null);
+                tv.setOnLongClickListener(null);
+                tv.setClickable(false);
+                tv.setFocusable(false);
             } else {
                 tv.setText(it.name);
                 tv.setTextColor(p.fg);
+                tv.setTextSize(17f);
+                tv.setPadding(dp(20), dp(16), dp(20), dp(16));
                 tv.setBackgroundResource(R.drawable.bg_row);
                 tv.setFocusable(true);
-                tv.setClickable(true);
+                // setItemsCanFocus(true) 时触摸和 DPAD_CENTER 都落在行自己身上，
+                // ListView 的 OnItemClickListener 不会再触发。bg_row 早就画好了
+                // state_focused 焦点框，缺的就是这一下点击接线。
+                tv.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick(View v) { onItemSelected(it); }
+                });
+                tv.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override public boolean onLongClick(View v) { return toggleFavorite(it); }
+                });
             }
             return tv;
         }

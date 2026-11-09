@@ -11,9 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * 影音页的两个大卡片：影视 / 音乐。
- * 这是内置壳（CPlay / C听）的入口，跟用户装了什么应用无关，
- * 所以界面上永远只会出现这四个字，不存在第三方播放器名字被扫的风险。
+ * 影音页入口卡片：直播 / 点播 / 音乐 / 书库。
+ * 这是内置壳的入口，跟用户装了什么应用无关，卡片数量固定，
+ * 不存在第三方播放器名字被扫进来的风险。
  */
 public class MediaAdapter extends BaseAdapter {
 
@@ -28,6 +28,9 @@ public class MediaAdapter extends BaseAdapter {
     public MediaAdapter(Context c) { ctx = c; }
 
     public String typeAt(int pos) { return TYPES[pos % TYPES.length]; }
+
+    /** 网格列数：MainActivity 的 DPAD 边界判断和 setNumColumns 都读这里，不许两处各写一个字面量 */
+    public int columns() { return 3; }
 
     @Override public int getCount() { return TYPES.length; }
     @Override public Object getItem(int position) { return typeAt(position); }

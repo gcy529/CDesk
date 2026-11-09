@@ -96,6 +96,13 @@ public class LibraryActivity extends Activity {
         refresh();
     }
 
+    /** 标签跟着语言走：[影视]/[直播]/[音乐] → [VOD]/[Live]/[Music] */
+    private String kindTag(String kind) {
+        int res = "vod".equals(kind) ? R.string.kind_vod
+                : "live".equals(kind) ? R.string.kind_live : R.string.kind_music;
+        return "[" + getString(res) + "] ";
+    }
+
     private void refresh() {
         rows.clear();
         data.clear();
@@ -103,7 +110,7 @@ public class LibraryActivity extends Activity {
             tvTabFav.setTextColor(0xFF4D6BFE);
             tvTabHis.setTextColor(0xFF8E9BAE);
             for (Favorites.Item it : Favorites.all(this)) {
-                String tag = "vod".equals(it.kind) ? "[影视] " : "live".equals(it.kind) ? "[直播] " : "[音乐] ";
+                String tag = kindTag(it.kind);
                 rows.add(tag + it.name);
                 data.add(it);
             }
@@ -113,7 +120,7 @@ public class LibraryActivity extends Activity {
             List<History.Entry> hs = History.all(this);
             SimpleDateFormat f = new SimpleDateFormat("MM-dd HH:mm", Locale.US);
             for (History.Entry e : hs) {
-                String tag = "vod".equals(e.kind) ? "[影视] " : "live".equals(e.kind) ? "[直播] " : "[音乐] ";
+                String tag = kindTag(e.kind);
                 String prog = e.pos > 0 ? "  ·  " + fmtShort(e.pos) : "";
                 rows.add(tag + e.name + prog + "  ·  " + f.format(new Date(e.at)));
                 data.add(e);

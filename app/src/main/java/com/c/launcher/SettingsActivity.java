@@ -117,9 +117,9 @@ public class SettingsActivity extends Activity {
                     try {
                         android.content.ClipboardManager cm = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                         cm.setText(CLog.report());
-                        Toast.makeText(SettingsActivity.this, "诊断报告已复制，粘贴发给支持即可", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SettingsActivity.this, R.string.settings_log_copied, Toast.LENGTH_LONG).show();
                     } catch (Throwable t) {
-                        Toast.makeText(SettingsActivity.this, "复制失败: " + t, Toast.LENGTH_LONG).show();
+                        Toast.makeText(SettingsActivity.this, getString(R.string.settings_log_failed, t), Toast.LENGTH_LONG).show();
                     }
                 }
             });

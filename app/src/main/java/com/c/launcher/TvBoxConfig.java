@@ -1,5 +1,7 @@
 package com.c.launcher;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -71,7 +73,7 @@ public final class TvBoxConfig {
     }
 
     /** 直播源列表（url 通常本身是一个 m3u / txt 播放列表） */
-    public static List<Live> lives(String json) {
+    public static List<Live> lives(String json, Context c) {
         List<Live> out = new ArrayList<Live>();
         try {
             JSONArray a = new JSONObject(json).optJSONArray("lives");
@@ -82,7 +84,7 @@ public final class TvBoxConfig {
                 String url = o.optString("url", "");
                 String name = o.optString("name", "");
                 if (url.length() < 5) continue;
-                if (name.length() == 0) name = "源 " + (i + 1);
+                if (name.length() == 0) name = c.getString(R.string.source_fallback, i + 1);
                 out.add(new Live(name, url));
             }
         } catch (Throwable ignored) { }

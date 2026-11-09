@@ -49,7 +49,8 @@ public class PlayerActivity extends Activity {
 
     private static final String[] SPEEDS = new String[] { "0.5x", "1.0x", "1.25x", "1.5x", "2.0x", "2.5x", "3.0x" };
     private static final float[] SPEEDV = new float[] { 0.5f, 1.0f, 1.25f, 1.5f, 2.0f, 2.5f, 3.0f };
-    private static final String[] KERNELS = new String[] { "系统", "ijk", "exo" };
+    /** 显示名要跟语言走，在 onCreate 里取资源；ijk / exo 只是给流换 UA 的两个档位 */
+    private String[] KERNELS;
 
     private VideoView vv;
     private View ctrlBar;
@@ -150,6 +151,7 @@ public class PlayerActivity extends Activity {
         tvDur = (TextView) findViewById(R.id.tvDur);
         tvSpeed = (TextView) findViewById(R.id.btnSpeed);
         tvKernel = (TextView) findViewById(R.id.btnKernel);
+        KERNELS = new String[] { getString(R.string.kernel_system), "ijk", "exo" };
         tvClockP = (TextView) findViewById(R.id.tvClockP);
         btnSkipHead = (TextView) findViewById(R.id.btnSkipHead);
         btnSkipTail = (TextView) findViewById(R.id.btnSkipTail);
@@ -324,8 +326,16 @@ public class PlayerActivity extends Activity {
             HashMap<String, String> h = new HashMap<String, String>();
             h.put("User-Agent", altKernel ? "Lavf/58.29.100" : "CDesk/1.0");
             vv.stopPlayback();
-            vv.setVideoURI(android.net.Uri.parse(u), h);
+            android.net.Uri uri = android.net.Uri.parse(u);
+            if (Build.VERSION.SDK_INT >= 21) {
+                vv.setVideoURI(uri, h);
+            } else {
+                // API 21 之前没有带 header 的重载；宁可丢掉 UA 也要能播，
+                // 否则项目宣称支持的 Android 4.1–4.4 一个源都放不出来
+                vv.setVideoURI(uri);
+            }
         } catch (Throwable t) {
+            bar.setVisibility(View.GONE);
             tvTitle.setText(getString(R.string.shell_play_failed));
         }
     }

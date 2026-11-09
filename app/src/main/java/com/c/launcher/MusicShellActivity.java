@@ -34,13 +34,12 @@ public class MusicShellActivity extends BaseShellActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CLog.i("MusicShellActivity onCreate");
-        Screen.apply(this);
         buildControls();
     }
 
     /** 底部控制条：上一首 / 播放暂停 / 下一首 */
     private void buildControls() {
-        LinearLayout root = (LinearLayout) findViewById(R.id.lvItems).getParent();
+        LinearLayout root = (LinearLayout) findViewById(R.id.rootShell);
         ThemeManager.Palette p = ThemeManager.current(this);
 
         controlBar = new LinearLayout(this);
@@ -71,13 +70,17 @@ public class MusicShellActivity extends BaseShellActivity {
         pp.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if (mp == null) { step(1); return; }
-                if (mp.isPlaying()) mp.pause(); else mp.start();
+                try {
+                    if (mp.isPlaying()) mp.pause(); else mp.start();
+                } catch (IllegalStateException e) {
+                    // 播放器已进错误态，丢掉它；再按一次会重新起播
+                    stopPlayer();
+                }
             }
         });
 
         // 插到列表下面
-        LinearLayout parent = (LinearLayout) root;
-        parent.addView(controlBar);
+        root.addView(controlBar);
     }
 
     private Button mkButton(String text) {

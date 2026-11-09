@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:tools="http://schemas.android.com/tools">
+    <!-- androidx.test:monitor 的 minSdk 是 19，本项目 minSdk 16；仅测试变体放宽，不影响 APK -->
+    <uses-sdk tools:overrideLibrary="androidx.test.monitor,androidx.test.espresso.idling.resource" />
+</manifest>

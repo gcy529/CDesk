@@ -73,8 +73,10 @@ public final class LangManager {
         else return base;
 
         if (Build.VERSION.SDK_INT >= 17) {
-            Configuration cfg = new Configuration();
-            cfg.locale = loc;
+            // 必须拷贝原配置：空 Configuration 会把 fontScale 等已设字段一起覆盖掉，
+            // 切一次语言就抹掉用户的大字体设置。下面的 API 16 分支本来就是拷贝的。
+            Configuration cfg = new Configuration(base.getResources().getConfiguration());
+            cfg.setLocale(loc);
             return base.createConfigurationContext(cfg);
         }
         Configuration cfg16 = new Configuration(base.getResources().getConfiguration());

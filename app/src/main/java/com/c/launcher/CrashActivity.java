@@ -19,7 +19,7 @@ public class CrashActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         final String msg = getIntent() == null ? "" : getIntent().getStringExtra(EXTRA_MSG);
-        final String show = msg == null ? "(无信息)" : msg;
+        final String show = msg == null || msg.length() == 0 ? getString(R.string.crash_no_msg) : msg;
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -27,13 +27,13 @@ public class CrashActivity extends Activity {
         root.setPadding(40, 40, 40, 40);
 
         TextView title = new TextView(this);
-        title.setText("C桌面 出了点问题");
+        title.setText(R.string.crash_title);
         title.setTextSize(24);
         title.setTextColor(0xFFF8FAFC);
         root.addView(title);
 
         TextView hint = new TextView(this);
-        hint.setText("点下面按钮复制，发给我即可定位");
+        hint.setText(R.string.crash_hint);
         hint.setTextSize(14);
         hint.setTextColor(0xFF8E9BAE);
         hint.setPadding(0, 12, 0, 12);
@@ -52,7 +52,7 @@ public class CrashActivity extends Activity {
         root.addView(sv, lp);
 
         TextView copy = new TextView(this);
-        copy.setText("复制错误信息");
+        copy.setText(R.string.crash_copy);
         copy.setTextSize(18);
         copy.setGravity(Gravity.CENTER);
         copy.setPadding(20, 20, 20, 20);
@@ -70,7 +70,7 @@ public class CrashActivity extends Activity {
                 try {
                     ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                     cm.setText(show);
-                    Toast.makeText(CrashActivity.this, "已复制", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CrashActivity.this, R.string.crash_copied, Toast.LENGTH_SHORT).show();
                 } catch (Throwable t) { }
             }
         });

@@ -28,6 +28,10 @@ android {
         targetSdk 34
         versionCode 8
         versionName "0.5.1"
+        // 版本号只写这一处：桌面角标、设置页、更新检查的「当前版本」全读它。
+        // 手抄进 strings.xml 会漂——四语曾一起停在 0.4.1，导致更新检查
+        // 提示用户升级到已经装着的版本。
+        resValue "string", "app_version", versionName
         // 只要中文和英文，砍掉其它语言能省几百 KB
         resConfigs "zh", "zh-rTW", "zh-rHK", "en"
     }
@@ -54,13 +58,28 @@ android {
     }
 
     lintOptions {
+        // 首轮只枚举 NewApi，读完整报告修完后再把 abortOnError 打开做门禁
         abortOnError false
         checkReleaseBuilds false
+        checkOnly 'NewApi', 'UnspecifiedImmutableFlag'
+    }
+
+    testOptions {
+        unitTests {
+            // Robolectric 需要 inflate 真实布局、访问 R，才能抓到 ClassCastException 这类崩溃
+            includeAndroidResources = true
+            all {
+                maxHeapSize '2g'
+            }
+        }
     }
 }
 
 dependencies {
     // 仅用于局域网传输二维码（QRCodeWriter），纯 Java 无 native；R8 裁剪后增量很小
     implementation 'com.google.zxing:core:3.5.3'
-    // 刻意留空：不引入任何第三方库
+
+    // 仅测试期依赖，不进 APK；运行时仍保持零第三方库
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.11.1'
 }

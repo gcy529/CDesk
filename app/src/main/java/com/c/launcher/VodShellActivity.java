@@ -351,7 +351,7 @@ public class VodShellActivity extends Activity {
             @Override public void run() {
                 List<SourceApi.Ep> got = null;
                 String err = null;
-                try { got = SourceApi.episodes(apiBase, vodId); }
+                try { got = SourceApi.episodes(apiBase, vodId, VodShellActivity.this); }
                 catch (Throwable t) { err = t.getClass().getSimpleName(); }
                 final List<SourceApi.Ep> f = got;
                 final String fe = err;

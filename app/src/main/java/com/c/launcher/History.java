@@ -59,12 +59,12 @@ public final class History {
             o.put("at", System.currentTimeMillis());
             o.put("pos", pos);
             b.put(o);
-            for (int i = 0; i < a.length(); i++) {
+            // 边拷边限长：JSONArray.remove(int) 是 API 19，minSdk 16 上会 NoSuchMethodError
+            for (int i = 0; i < a.length() && b.length() < MAX; i++) {
                 JSONObject e = a.optJSONObject(i);
                 if (e == null) continue;
                 if (!url.equals(e.optString("url"))) b.put(e);
             }
-            while (b.length() > MAX) b.remove(b.length() - 1);
             p(c).edit().putString("items", b.toString()).commit();
         } catch (Throwable ignored) { }
     }

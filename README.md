@@ -21,12 +21,12 @@
 
 | 能力 | 说明 |
 |---|---|
-| 🖥 替换默认桌面 | 三页桌面（应用 / 最近 / 影音），遥控器方向键翻页 |
-| 🌙 壁纸 | 一个自定义色 + 两个日间壁纸 + 一个夜间壁纸 + 最多 3 张自定义照片，可开日夜自动（6:00–18:00 用日间）
+| 🖥 替换默认桌面 | 三页桌面（最近 / 应用 / 影音），默认落在「最近」，遥控器方向键翻页 |
+| 🌙 壁纸 | 内置 4 张（日光少女 / 鲸夜 / 晨光 / 金色时刻）+ 纯色 + 最多 3 张自定义照片，可开日夜自动（6:00–18:00 用晨光，其余用金色时刻） |
 | 📶 实时网速 | 左右下角悬浮显示，纯 `TrafficStats` 差值采样，零唤醒代价 |
 | 📁 局域网传文件 | 内置 HTTP 服务，手机扫码/输地址就能往车机传 APK |
 
-另有：应用内语言切换（简 / 繁 / EN，当前语言高亮显示）、IP 自动定位天气、首次启动使用须知。
+另有：应用内语言切换（简 / 繁 / EN，当前语言高亮显示）、IP 自动定位天气。首次启动零打断——使用须知和设默认桌面引导都收在「设置」里，桌面页不弹窗。
 
 > 壁纸与更新发布、bug 反馈、功能建议，请到公众号「**韭菜超先生**」——丢失了 APK 也从这里找回。
 
@@ -80,9 +80,14 @@ minSdk 16（Android 4.1）到 targetSdk 34（Android 14+），同一个 APK。�
 | 悬浮窗类型 | `SDK >= 26 ? TYPE_APPLICATION_OVERLAY : TYPE_PHONE` |
 | 前台服务 | `SDK >= 26 ? startForegroundService : startService` |
 | 通知渠道 | `SDK >= 26` 才创建 `NotificationChannel` |
+| `PendingIntent` 可变性 | `SDK >= 23` 加 `FLAG_IMMUTABLE`（Android 12 强制） |
+| 播放器带请求头 | `SDK >= 21` 用 `setVideoURI(uri, headers)`，更低版本退回无头重载 |
+| `JSONArray.remove` | 不用它，改为边拷贝边限长（`remove(int)` 是 API 19） |
 | 主题 | `values/` 用 `Theme.NoTitleBar.Fullscreen`，`values-v21/` 才用 Material |
 | 应用可见性 | manifest 声明 `<queries>`，Android 11+ 也能列出应用 |
 | 无触摸屏 | `<uses-feature touchscreen required="false">`，车机/TV 才装得上 |
+
+以上每一条都有对应测试守着：`.github/workflows/test.yml` 里 Robolectric 全组件启动冒烟 + lint `NewApi` / `UnspecifiedImmutableFlag` 两个检查。
 
 4K 壁纸解码带 `inSampleSize` 安全阀：4K 电视吃全图，1080p 老屏自动降采样，防 OOM。
 
@@ -119,35 +124,63 @@ app/src/main/
 ├── java/com/c/launcher/
 │   ├── MainActivity.java             桌面主界面：时钟 / 三页 / 壁纸 / Dock
 │   ├── AppAdapter.java               已安装应用列表（D-pad 可导航）
+│   ├── MediaAdapter.java             影音页入口卡片（直播 / 点播 / 音乐 / 书库）
+│   ├── BaseShellActivity.java        三个壳的公共链路：导入 → 解析 → 列表 → 点击
+│   ├── LiveShellActivity.java        直播壳（M3U / TXT#genre# / JSON）
+│   ├── VodShellActivity.java         点播壳（苹果CMS 采集接口）
+│   ├── MusicShellActivity.java       音乐壳（M3U / TXT / JSON 歌单）
+│   ├── PlayerActivity.java           播放器：倍速 / 进度 / 换 UA / 断流重连
+│   ├── LibraryActivity.java          收藏 + 最近播放
+│   ├── PlaylistParser.java           播放列表解析（不依赖第三方库）
+│   ├── SourceApi.java                苹果CMS 接口客户端
+│   ├── TvBoxConfig.java              TVBox 配置解析（只认结构，不含源）
+│   ├── History.java / Favorites.java 最近播放与收藏（JSON 持久化）
+│   ├── ContentFilter.java            标题关键词过滤（设置里可关）
 │   ├── WPManager.java                内置壁纸 + 日夜自动 + 按屏解码
+│   ├── CustomWallpapers.java         自定义图片壁纸（最多 3 张，私有目录）
 │   ├── WallpaperSettingsActivity.java 壁纸选择（缩略图卡片）
-│   ├── DisclaimerActivity.java       首次启动使用须知
+│   ├── ThemeManager.java             配色兜底 + 文字/背景颜色动画
+│   ├── AutoContrast.java             壁纸亮度采样 → 自动黑白
 │   ├── LangManager.java              应用内简/繁/EN 切换
 │   ├── WeatherManager.java           IP 定位天气（ipwho.is + open-meteo）
-│   ├── ThemeManager.java             配色兜底 + 文字/背景颜色动画
 │   ├── SpeedService.java             前台服务，每秒采样 TrafficStats
 │   ├── SpeedOverlay.java             左右下角网速悬浮胶囊（自动黑白）
-│   ├── AutoContrast.java             壁纸亮度采样 → 自动黑白
 │   ├── TransferActivity.java         局域网 HTTP 文件接收 + 二维码
-│   ├── SetupActivity.java            首次引导（设默认桌面 / 悬浮窗权限）
-│   ├── DonateActivity.java           打赏码
-│   ├── MediaAdapter.java             影音页入口卡片
-│   └── ShellPlaceholderActivity.java 影视壳/音乐壳占位
+│   ├── SetupActivity.java            设默认桌面引导（设置页入口）
+│   ├── GuardianActivity.java         状态体检页（桌面/权限/网络是否就位）
+│   ├── SettingsActivity.java         设置：更新 / 诊断 / 过滤开关 / 使用须知
+│   ├── DisclaimerActivity.java       使用须知（设置页入口，首启不弹）
+│   ├── UpdateChecker.java            GitHub Releases 更新检查
+│   ├── CrashActivity.java            崩溃兜底页（复制日志发给作者）
+│   ├── CLog.java                     环形日志 + 诊断报告
+│   └── Screen.java                   全屏 + 刘海规避 + 系统栏隐藏
 ├── assets/transfer.html              手机端上传页面
 └── res/                              四语文案（简/繁台/繁港/EN）+ 布局
 ```
 
 ---
 
+## 测试
+
+`.github/workflows/test.yml`：PR 与 beta 推送自动跑两件事——
+
+- **Robolectric 全组件冒烟**：从 manifest 读出所有 Activity 逐个真启动，新增页面自动纳入覆盖；另有列表行点击、影音页四张卡路由、页序、四语文案齐全度、英文界面无残留中文等 40+ 用例
+- **lint `NewApi` + `UnspecifiedImmutableFlag`**：把 minSdk 16 之下的 API 误用挡在合并前
+
+---
+
 ## 路线图
 
-- [x] 桌面骨架 + 三页 + 应用网格
+- [x] 桌面骨架 + 三页（最近 / 应用 / 影音）+ 应用网格
 - [x] 网速悬浮窗 + 自动黑白
 - [x] 内置 4K 壁纸 + 日夜自动
 - [x] 局域网传输 + 二维码
-- [x] 简繁英切换 + 使用须知
-- [x] 影视壳 / 直播壳 / 音乐壳 —— 仅播放器能力，内容自行导入、自行负责
+- [x] 简繁英切换（应用内，跟随系统为默认）
+- [x] 直播壳 / 点播壳 / 音乐壳 —— 仅播放器能力，内容自行导入、自行负责
 - [x] 自定义图片壁纸（最多 3 张，存于应用私有目录）
+- [x] 收藏 + 最近播放 + 标题过滤
+- [x] 更新检查（GitHub Releases）+ 崩溃兜底页
+- [ ] 影音页入口与首页重设计 v2 对齐（隔壁负责视觉，代码侧已按 3 列收口）
 
 ---
 

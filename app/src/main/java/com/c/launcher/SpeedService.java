@@ -123,7 +123,9 @@ public class SpeedService extends Service {
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pi;
         if (Build.VERSION.SDK_INT >= 23) {
-            pi = PendingIntent.getActivity(this, 0, open, PendingIntent.FLAG_UPDATE_CURRENT);
+            // targetSdk>=31 时 Android 12 强制要求显式声明可变性，缺了直接抛 IllegalArgumentException
+            pi = PendingIntent.getActivity(this, 0, open,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         } else {
             pi = PendingIntent.getActivity(this, 0, open, 0);
         }

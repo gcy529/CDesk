@@ -325,7 +325,8 @@ public class TransferActivity extends Activity {
                     .putLong("pending_at", System.currentTimeMillis())
                     .putString("pending_target", target == null ? "" : target)
                     .commit();
-            appendLog("地址已接收  " + (text.length() > 42 ? text.substring(0, 42) + "…" : text));
+            appendLog(getString(R.string.transfer_addr_received,
+                    text.length() > 42 ? text.substring(0, 42) + "…" : text));
         }
         String json = text.length() > 0 ? "{\"ok\":true}" : "{\"ok\":false}";
         byte[] body = json.getBytes("UTF-8");
@@ -337,7 +338,7 @@ public class TransferActivity extends Activity {
     private void sendLandingPage(OutputStream out) throws IOException {
         byte[] body = readAsset("transfer.html");
         if (body == null) {
-            body = "<h1>C桌面</h1>".getBytes("UTF-8");
+            body = ("<h1>" + getString(R.string.app_name) + "</h1>").getBytes("UTF-8");
         }
         writeHeaders(out, 200, "OK", "text/html; charset=utf-8", body.length);
         out.write(body);

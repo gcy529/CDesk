@@ -14,13 +14,13 @@ launchers are slow, ugly, and full of ads. **CDesk does four things:**
 
 | Feature | Notes |
 |---|---|
-| 🖥 Home replacement | Three pages (Apps / Recent / Media), D-pad navigation |
-| 🌙 Built-in 4K wallpapers | Golden Hour / Whale Night / Morning Light, auto day-night switch (light wallpaper 6:00–18:00) |
+| 🖥 Home replacement | Three pages (Recent / Apps / Media), Recent first, D-pad navigation |
+| 🌙 Built-in 4K wallpapers | Daylight Girl / Whale Night / Morning Light / Golden Hour + solid color + up to 3 custom photos, auto day-night switch (Morning Light 6:00–18:00) |
 | 📶 Live network speed | Floating badges in both bottom corners, pure `TrafficStats` sampling |
 | 📁 LAN file transfer | Built-in HTTP server — scan a QR code from your phone and send APKs to the unit |
 
-Also: in-app language switch (Simplified / Traditional / English), IP-based weather, first-launch
-terms of use.
+Also: in-app language switch (Simplified / Traditional / English), IP-based weather. No first-run
+pop-ups — the terms of use and the default-launcher guide live in Settings.
 
 > Wallpapers, updates, bug reports and suggestions: WeChat official account **韭菜超先生 (JiuCai Chao)** —
 > if you lost your APK, you can get it back there too.
@@ -37,9 +37,20 @@ Local build: `./gradlew assembleDebug` (JDK 17 + Android SDK).
 ## Why it runs on old devices
 
 One APK from **minSdk 16 (Android 4.1)** to **targetSdk 34**. Every API gap is branch-handled:
-overlay window types, foreground service start, notification channels, Material theme on v21+,
-`<queries>` for Android 11 package visibility, and `touchscreen required=false` so TV boxes can
-install it. 4K wallpapers decode with an `inSampleSize` guard against OOM on 1080p panels.
+overlay window types, foreground service start, notification channels, `PendingIntent`
+`FLAG_IMMUTABLE` on 23+, headered `setVideoURI` on 21+, `JSONArray.remove` avoided (API 19),
+Material theme on v21+, `<queries>` for Android 11 package visibility, and
+`touchscreen required=false` so TV boxes can install it. 4K wallpapers decode with an
+`inSampleSize` guard against OOM on 1080p panels.
+
+## Tests
+
+`.github/workflows/test.yml` runs on every PR and beta push:
+
+- **Robolectric all-component smoke** — every Activity declared in the manifest is launched for
+  real; new screens are covered automatically, plus row-click, media-card routing, page order,
+  four-locale string parity, and no hardcoded Chinese on the English UI (40+ cases)
+- **lint `NewApi` + `UnspecifiedImmutableFlag`** — blocks minSdk-16 API misuse before merge
 
 ## Theming
 
