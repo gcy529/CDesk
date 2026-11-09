@@ -22,12 +22,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # setup-android@v3 会装已下架的 tools 包（Failed to find package 'tools'），
-      # runner 自带 sdkmanager，直接用 —— 与 android.yml 跑绿的做法一致
-      - name: Set up Android SDK
+      # runner 预装 SDK 且许可已接受，AGP 会自动补缺失组件
+      # （android.yml 同款路径跑绿；setup-android@v3 与裸 sdkmanager 都不可用）
+      - name: Check preinstalled SDK
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" > /dev/null
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" 2>/dev/null || true
+          ls "$ANDROID_HOME/licenses" 2>/dev/null || true
 
       - name: Cache Gradle and Robolectric
         uses: actions/cache@v4
@@ -64,12 +65,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # setup-android@v3 会装已下架的 tools 包（Failed to find package 'tools'），
-      # runner 自带 sdkmanager，直接用 —— 与 android.yml 跑绿的做法一致
-      - name: Set up Android SDK
+      # runner 预装 SDK 且许可已接受，AGP 会自动补缺失组件
+      # （android.yml 同款路径跑绿；setup-android@v3 与裸 sdkmanager 都不可用）
+      - name: Check preinstalled SDK
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" > /dev/null
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" 2>/dev/null || true
+          ls "$ANDROID_HOME/licenses" 2>/dev/null || true
 
       - name: Cache Gradle
         uses: actions/cache@v4
