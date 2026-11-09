@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C桌面 CDesk — 老车机、电视盒子的干净桌面</title>
+<meta name="description" content="C桌面（CDesk）是给老车机、电视盒子、Android TV 用的一块干净桌面：无广告、无推荐流、内置 4K 壁纸、网速悬浮窗、局域网传文件。">
+<meta property="og:title" content="C桌面 CDesk — 老车机、电视盒子的干净桌面">
+<meta property="og:description" content="无广告、无推荐流。三页桌面 + 4K 壁纸 + 网速悬浮窗 + 局域网传文件。">
+<meta property="og:image" content="assets/icon-512.png">
+<link rel="icon" href="assets/icon-512.png">
+<style>
+  :root{
+    --bg:#0f0d0a; --card:#1a1610; --line:#332a1c;
+    --gold:#f6c15a; --gold-dim:#c9982f; --red:#c8102e; --red-lt:#e63946;
+    --fg:#f3ede1; --dim:#a89c86;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+       line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--gold);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px}
+
+  /* hero */
+  .hero{position:relative;overflow:hidden;padding:64px 0 56px;text-align:center;
+        background:radial-gradient(900px 380px at 50% -40%, #7a0d1e 0%, #2a1010 45%, #0f0d0a 100%)}
+  .hero img.logo{width:96px;height:96px;border-radius:24px;box-shadow:0 12px 40px rgba(246,193,90,.28)}
+  .hero h1{margin:20px 0 8px;font-size:38px;letter-spacing:1px;
+           background:linear-gradient(100deg,#fff3cf,var(--gold) 45%,#e8a33c);
+           -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .tag{color:#e9d9b6;font-size:17px;margin:0 0 6px}
+  .hero .sub{color:var(--dim);font-size:14px;margin:0 0 26px}
+  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:12px;
+       font-weight:700;font-size:15px;transition:transform .12s ease, box-shadow .12s ease}
+  .btn:hover{transform:translateY(-2px);text-decoration:none}
+  .btn.gold{background:linear-gradient(135deg,#ffd985,var(--gold));color:#3a2708;
+            box-shadow:0 8px 24px rgba(246,193,90,.25)}
+  .btn.red{background:linear-gradient(135deg,var(--red-lt),var(--red));color:#fff;
+           box-shadow:0 8px 24px rgba(200,16,46,.3)}
+  .btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  .meta{color:#8a7f6a;font-size:12.5px;margin-top:18px}
+
+  /* sections */
+  section{padding:52px 0}
+  h2{font-size:24px;margin:0 0 6px;color:var(--gold)}
+  .lead{color:var(--dim);margin:0 0 26px;font-size:14.5px}
+  .shot{width:100%;border-radius:16px;border:1px solid var(--line);display:block}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px}
+  .card h3{margin:0 0 8px;font-size:16px;color:var(--gold)}
+  .card p{margin:0;font-size:14px;color:var(--dim)}
+  .card .ico{font-size:20px;margin-bottom:8px;display:block}
+
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+  ol.steps li{counter-increment:s;position:relative;padding:14px 0 14px 52px;
+              border-bottom:1px solid var(--line);font-size:15px}
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:12px;width:32px;height:32px;
+     border-radius:10px;background:rgba(246,193,90,.14);color:var(--gold);
+     display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;
+          padding:14px 18px;margin-bottom:10px}
+  details summary{cursor:pointer;font-weight:600;font-size:15px;color:var(--fg);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--gold)}
+  details[open] summary::before{content:"▾ "}
+  details p{margin:10px 0 0;color:var(--dim);font-size:14px}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.two{grid-template-columns:1fr}}
+  .qr{text-align:center}
+  .qr img{width:170px;height:170px;border-radius:12px;background:#fff;padding:8px;display:block;margin:0 auto 10px}
+  .qr span{font-size:13px;color:var(--dim)}
+
+  .note{background:rgba(200,16,46,.08);border:1px solid rgba(200,16,46,.35);
+        border-radius:12px;padding:16px 18px;font-size:13.5px;color:#e3c9c9}
+
+  footer{border-top:1px solid var(--line);padding:28px 0 44px;text-align:center;
+         color:#7d7362;font-size:13px}
+  footer a{color:#a89c86}
+</style>
+</head>
+<body>
+
+<div style="background:#3b2a14;border-bottom:1px solid #6b5324;padding:12px 20px;text-align:center;font-size:14.5px;line-height:1.6">
+  <strong style="color:#f6c15a">经典版官网</strong>
+  <span style="color:#c9b58a">　仅为 DeepSeek V4.1-1017 存档的怀旧页；2026 年最初的那版首页，内容已停更。</span>
+  <a href="../" style="color:#f6c15a;border-bottom:1px solid #c9982f;margin-left:10px">→ 回到新版首页</a>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="logo" src="assets/icon-512.png" alt="C桌面 图标">
+    <h1>C桌面 · CDesk</h1>
+    <p class="tag">老车机、电视盒子的一块干净桌面</p>
+    <p class="sub">没有广告 · 没有推荐流 · 不偷跑流量 · 装完就能用</p>
+  </div>
+</header>
+
+<section class="wrap">
+  <h2>看一眼</h2>
+  <p class="lead">首页 · 金色时刻壁纸 · 图标为设备内应用的真实图标</p>
+  <img class="shot" src="shots/FINAL_desk_mockup.png" alt="C桌面 界面">
+</section>
+
+<section class="wrap">
+  <h2>它做什么</h2>
+  <p class="lead">只做车机和电视盒子上真正用得上的事</p>
+  <div class="grid">
+    <div class="card"><span class="ico">🖥</span><h3>三页桌面</h3><p>应用 / 最近 / 影音，左右滑动切换，遥控器方向键也能走。</p></div>
+    <div class="card"><span class="ico">🌅</span><h3>内置 4K 壁纸</h3><p>一个自定义纯色 + 两个日间 + 一个夜间，可开日夜自动（6:00–18:00 用日间）。</p></div>
+    <div class="card"><span class="ico">📶</span><h3>网速悬浮窗</h3><p>左右下角显示实时上传/下载速度，颜色随壁纸明暗自动切换，不挡视野。</p></div>
+    <div class="card"><span class="ico">📤</span><h3>局域网传文件</h3><p>手机扫码直接把 APK、图片、音乐传到车机上，不用 U 盘来回插。</p></div>
+    <div class="card"><span class="ico">🌤</span><h3>IP 定位天气</h3><p>不申请定位权限，按 IP 判断城市，显示当前天气与温度。</p></div>
+    <div class="card"><span class="ico">🌐</span><h3>简 · 繁 · EN</h3><p>三套语言随时切换，界面文字全部跟随。</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>怎么装</h2>
+  <p class="lead">三步，不用 root，不用电脑</p>
+  <ol class="steps">
+    <li>上面三个按钮任选一个下载 APK（国内优先用 GHFast）。</li>
+    <li>把 APK 拷到 U 盘插车机，或用「局域网传文件」从手机传过去。</li>
+    <li>安装后按 Home 键，系统会问用哪个桌面 —— 选「C桌面」，勾「始终」。想换回来在系统设置里改默认桌面。</li>
+  </ol>
+</section>
+
+<section class="wrap">
+  <h2>常见问题</h2>
+  <details><summary>装完打开是黑屏 / 闪退？</summary><p>多数是老系统缺资源。请确认 Android 版本 ≥ 4.1（API 16）；仍不行到公众号反馈，说明车型和系统版本。</p></details>
+  <details><summary>为什么图标不是我想要的样子？</summary><p>桌面上的图标全部读取设备内应用的真实图标，本应用不替换任何第三方图标。只有 C桌面 自己的图标是内置的。</p></details>
+  <details><summary>壁纸能换成自己的照片吗？</summary><p>可以。在「壁纸设置」里选自定义图片，从相册挑一张就行；也可以用「局域网传文件」把电脑/手机里的图传过来直接设成壁纸。</p></details>
+  <details><summary>影音页里的直播 / 点播 / 音乐是干嘛的？</summary><p>只是播放器入口，内容自行导入、自行负责。</p></details>
+  <details><summary>会收集我的数据吗？</summary><p>不会。除了天气需要按 IP 判断城市外，应用不向任何服务器上传数据；局域网传文件也只在你自己的网络内进行。</p></details>
+</section>
+
+<section class="wrap">
+  <h2>下载</h2>
+  <p class="lead">两个通道：求稳用正式版，想抢先看新功能用尝鲜版。</p>
+
+  <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:8px">
+
+    <!-- 正式版 -->
+    <div style="flex:1 1 340px;min-width:300px;padding:24px;border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03)">
+      <p style="margin:0 0 6px;font-size:12px;letter-spacing:.16em;color:#22C55E;font-weight:700">STABLE</p>
+      <p style="margin:0 0 10px;font-size:21px;font-weight:700">正式版 <span style="font-size:13px;font-weight:400;color:var(--dim)">v0.2.5</span></p>
+      <p style="margin:0 0 18px;font-size:14px;line-height:1.75;color:var(--dim)">验证过的版本。官网默认下载它，App 内的更新提示也只认这个通道。</p>
+      <div class="btns" style="justify-content:flex-start">
+        <a class="btn gold" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk">⚡ GHFast 加速</a>
+        <a class="btn red" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk">GH-Proxy</a>
+        <a class="btn ghost" href="https://github.com/gcy529/CDesk/releases/latest">GitHub 直链</a>
+      </div>
+    </div>
+
+    <!-- 尝鲜版 -->
+    <div style="flex:1 1 340px;min-width:300px;padding:24px;border-radius:16px;border:1px solid rgba(77,107,254,.32);background:rgba(77,107,254,.07)">
+      <p style="margin:0 0 6px;font-size:12px;letter-spacing:.16em;color:#4D6BFE;font-weight:700">BETA</p>
+      <p style="margin:0 0 10px;font-size:21px;font-weight:700">尝鲜版</p>
+      <p style="margin:0 0 18px;font-size:14px;line-height:1.75;color:var(--dim)">新功能先在这里跑，可能带 bug。愿意帮忙试错、想早点用上新东西就用它。</p>
+      <div class="btns" style="justify-content:flex-start">
+        <a class="btn" style="background:#4D6BFE;color:#fff;border-color:#4D6BFE" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/app-debug.apk">🧪 GHFast 加速</a>
+        <a class="btn ghost" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/app-debug.apk">GH-Proxy</a>
+        <a class="btn ghost" href="https://github.com/gcy529/CDesk/releases/tag/beta">更新记录</a>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="meta" style="margin-top:18px">完整版本列表见 <a href="https://github.com/gcy529/CDesk/releases">Releases</a>，每个正式版附 SHA-256 校验值 · 最低支持 Android 4.1</p>
+</section>
+
+<section class="wrap">
+  <h2>免责声明</h2>
+  <p class="lead">为免歧义，以下条款以正式措辞表述。</p>
+  <div class="note" style="text-align:left">
+    <p><b>一、作品性质</b>　C桌面 系个人开发者独立完成的免费工具，按「现状」提供，不作任何明示或默示的担保，包括但不限于适销性、特定用途适用性及不侵权之担保。使用本应用的风险由使用者自行承担；在法律允许的最大范围内，作者不对因使用或无法使用本应用而产生的任何直接、间接、附带、特殊或后果性损失承担责任。</p>
+    <p><b>二、内容与播放器</b>　本应用不内置、不分发任何内容；影音页仅为播放器入口，所播内容由使用者自行导入并自行负责。</p>
+    <p><b>三、第三方名称</b>　本应用与任何内容平台、版权方、设备厂商均无隶属、授权或合作关系；所涉商标、名称归其各自权利人所有。</p>
+    <p style="margin-bottom:0"><b>四、源码与许可</b>　源码公开于 <a href="https://github.com/gcy529/CDesk">GitHub</a>，以 CC BY-NC-ND 4.0 授权；APK 不收费、不接入任何支付 SDK。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    C = Car · Clean · Cheap &nbsp;·&nbsp;
+    <a href="https://github.com/gcy529/CDesk">GitHub 仓库</a> &nbsp;·&nbsp;
+    <a href="https://github.com/gcy529/CDesk/releases">版本记录</a> &nbsp;·&nbsp;
+    <a href="https://github.com/gcy529/CDesk/blob/main/LICENSE">CC BY-NC-ND 4.0</a>
+    <div style="margin-top:10px">© 2026 C桌面 · 用 DeepSeek Harness 构建 · DeepSeek V4.1-1017</div>
+  </div>
+</footer>
+
+</body>
+</html>

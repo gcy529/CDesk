@@ -95,6 +95,26 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CLog.init(this);
+        CLog.i("onCreate start, sdk=" + android.os.Build.VERSION.SDK_INT);
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override public void uncaughtException(Thread t, Throwable e) {
+                CLog.e("CRASH " + t.getName(), e);
+                try {
+                    android.content.Intent i = new android.content.Intent(MainActivity.this, CrashActivity.class);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("CRASH ").append(t.getName()).append("\n");
+                    java.io.StringWriter sw = new java.io.StringWriter();
+                    e.printStackTrace(new java.io.PrintWriter(sw));
+                    sb.append(sw.toString());
+                    sb.append("\n--- CLog ---\n").append(CLog.read());
+                    i.putExtra(CrashActivity.EXTRA_MSG, sb.toString());
+                    i.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                } catch (Throwable ignored) { }
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
         Screen.apply(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);

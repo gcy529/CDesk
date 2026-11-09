@@ -73,6 +73,12 @@
         <activity
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
             android:screenOrientation="landscape"
+            android:name=".CrashActivity"
+            android:exported="false" />
+
+        <activity
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
             android:name=".SetupActivity"
             android:exported="false"
             android:label="@string/setup_title" />

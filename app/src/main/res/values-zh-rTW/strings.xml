@@ -113,4 +113,9 @@
     <string name="shell_empty_title">還沒有內容</string>
     <string name="shell_empty_body">支援 M3U / TXT / JSON 播放清單，匯入後這裡會列出頻道同節目。</string>
     <string name="shell_import_clip">從剪貼簿匯入</string>
+    <string name="crash_title">C桌面 出了點問題</string>
+    <string name="crash_hint">點下面按鈕複製，發給我就可定位</string>
+    <string name="crash_no_msg">(無訊息)</string>
+    <string name="crash_copy">複製錯誤訊息</string>
+    <string name="crash_copied">已複製</string>
 </resources>

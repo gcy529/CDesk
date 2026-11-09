@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   build:
@@ -51,13 +52,17 @@ jobs:
         env:
           KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
         run: |
-          if [ -z "$KEYSTORE_B64" ]; then
-            echo "::warning::DEBUG_KEYSTORE_B64 未配置，回退随机调试签名（升级需卸载重装）"
-            exit 0
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > $HOME/.cdesk-debug.keystore
+            echo "KS=$HOME/.cdesk-debug.keystore" >> $GITHUB_ENV
+            echo "fixed keystore restored from secret"
+          elif [ -f debug.keystore ]; then
+            cp debug.keystore $HOME/.cdesk-debug.keystore
+            echo "KS=$HOME/.cdesk-debug.keystore" >> $GITHUB_ENV
+            echo "fixed keystore restored from repo file"
+          else
+            echo "::warning::no secret and no repo keystore, fallback to random debug signing"
           fi
-          echo "$KEYSTORE_B64" | base64 -d > $HOME/.cdesk-debug.keystore
-          echo "KS=$HOME/.cdesk-debug.keystore" >> $GITHUB_ENV
-          echo "fixed keystore restored"
 
       - name: Build debug APK
         env:
@@ -177,12 +182,32 @@ jobs:
       - name: Sync download links on site
         if: startsWith(github.ref, 'refs/tags/v')
         continue-on-error: true
+        env:
+          SHASUM: ${{ steps.sha.outputs.sum }}
         run: |
           TAG="${GITHUB_REF_NAME}"
-          sed -i -E "s#/releases/download/v[0-9]+\.[0-9]+\.[0-9]+/app-debug\.apk#/releases/download/${TAG}/app-debug.apk#g" index.html README.md
+          SIZE=$(awk -v b="$(stat -c%s app/build/outputs/apk/debug/app-debug.apk)" 'BEGIN{printf "%.2f MB", b/1048576}')
+          sed -i -E "s#/releases/download/v[0-9]+\.[0-9]+\.[0-9]+/app-debug\.apk#/releases/download/${TAG}/app-debug.apk#g" index.html classic/index.html README.md
+          sed -i -E "s#(<span class=\"version\">)v[0-9]+\.[0-9]+\.[0-9]+#\1${TAG}#" index.html
+          sed -i -E "s#>v[0-9]+\.[0-9]+\.[0-9]+<#>${TAG}<#" classic/index.html
+          sed -i -E "s/__SIZE__/${SIZE}/g; s/__SHA256__/${SHASUM}/g" index.html
           if git diff --quiet; then echo "links already up to date"; exit 0; fi
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add index.html README.md
+          git add index.html classic/index.html README.md
           git commit -m "chore: 下载链接同步 ${TAG} [skip ci]"
           git push origin HEAD:refs/heads/main || true
+
+      - name: Prune old workflow runs
+        if: always() && github.event_name != 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/${{ github.repository }}/actions/workflows/android.yml/runs?per_page=100" > runs.json
+          jq -r --arg cur "$GITHUB_RUN_ID" '[.workflow_runs[] | select(.status == "completed" and (.id | tostring) != $cur)][2:] | .[].id' runs.json \
+            | while read -r id; do
+                if [ -n "$id" ]; then
+                  gh api -X DELETE "repos/${{ github.repository }}/actions/runs/$id" > /dev/null && echo "deleted run $id" || true
+                fi
+              done

@@ -114,4 +114,9 @@
     <string name="shell_empty_title">Nothing yet</string>
     <string name="shell_empty_body">M3U, TXT and JSON playlists are supported. Your channels will show up here after import.</string>
     <string name="shell_import_clip">Import from clipboard</string>
+    <string name="crash_title">CDesk ran into a problem</string>
+    <string name="crash_hint">Tap the button below to copy it, then send it to me</string>
+    <string name="crash_no_msg">(no details)</string>
+    <string name="crash_copy">Copy error details</string>
+    <string name="crash_copied">Copied</string>
 </resources>
