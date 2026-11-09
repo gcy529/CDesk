@@ -98,6 +98,15 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CLog.init(this);
+        CLog.i("onCreate start, sdk=" + android.os.Build.VERSION.SDK_INT);
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            private Thread.UncaughtExceptionHandler def = Thread.getDefaultUncaughtExceptionHandler();
+            @Override public void uncaughtException(Thread t, Throwable e) {
+                CLog.e("CRASH " + t.getName(), e);
+                if (def != null) def.uncaughtException(t, e);
+            }
+        });
         Screen.apply(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
