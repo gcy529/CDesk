@@ -18,8 +18,8 @@ public class CrashActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        String msg = getIntent() == null ? "" : getIntent().getStringExtra(EXTRA_MSG);
-        if (msg == null) msg = "(无信息)";
+        final String msg = getIntent() == null ? "" : getIntent().getStringExtra(EXTRA_MSG);
+        final String show = msg == null ? "(无信息)" : msg;
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -41,7 +41,7 @@ public class CrashActivity extends Activity {
 
         ScrollView sv = new ScrollView(this);
         TextView body = new TextView(this);
-        body.setText(msg);
+        body.setText(show);
         body.setTextSize(13);
         body.setTextColor(0xFFCBD5E1);
         body.setPadding(16, 16, 16, 16);
@@ -69,7 +69,7 @@ public class CrashActivity extends Activity {
             @Override public void onClick(View v) {
                 try {
                     ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    cm.setText(msg);
+                    cm.setText(show);
                     Toast.makeText(CrashActivity.this, "已复制", Toast.LENGTH_SHORT).show();
                 } catch (Throwable t) { }
             }
