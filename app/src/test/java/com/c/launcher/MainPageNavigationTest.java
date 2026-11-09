@@ -92,6 +92,10 @@ public class MainPageNavigationTest {
         next(a).performClick();
         GridView grid = (GridView) a.findViewById(R.id.gridApps);
         MediaAdapter ma = new MediaAdapter(a);
+        // API 31 起 setNumColumns 只写"请求列数"，getNumColumns 返回布局后的生效值；
+        // Robolectric 不跑自动布局，手动 layout 一次让 onMeasure 同步两值。
+        int w = a.getResources().getDisplayMetrics().widthPixels;
+        grid.layout(0, 0, w, 600);
         assertEquals("列数必须与适配器同源，否则 DPAD 边界判断和实际布局会错位",
                 ma.columns(), grid.getNumColumns());
         assertEquals(ma.getCount(), grid.getAdapter().getCount());

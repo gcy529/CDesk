@@ -101,7 +101,7 @@
                     android:id="@+id/tvBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="深海 · 微光"
+                    android:text="@string/theme_dark"
                     android:textSize="13sp"
                     android:textColor="#4D6BFE" />
 
@@ -191,7 +191,6 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginTop="12dp"
-            android:numColumns="6"
             android:horizontalSpacing="10dp"
             android:verticalSpacing="10dp"
             android:stretchMode="columnWidth"

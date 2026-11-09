@@ -91,6 +91,8 @@
     <string name="wp_sunset">Golden Hour</string>
     <string name="wp_none">Solid color (follow theme)</string>
     <string name="wp_auto">Auto day/night</string>
+    <string name="theme_dark">Deep Sea Glow</string>
+    <string name="theme_light">Dawn White Glow</string>
     <string name="settings_log">Copy diagnostic log</string>
     <string name="disclaimer_title">Terms of Use</string>
     <string name="disclaimer_body">This application ships no content of any kind. The media pages are player entry points only. All content is imported and used at your own responsibility, in compliance with local law.</string>

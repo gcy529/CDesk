@@ -92,6 +92,8 @@
     <string name="wp_sunset">金色时刻</string>
     <string name="wp_none">纯色（跟随主题）</string>
     <string name="wp_auto">日夜自动切换</string>
+    <string name="theme_dark">深海 · 微光</string>
+    <string name="theme_light">晨白 · 微光</string>
     <string name="settings_log">复制诊断日志</string>
     <string name="disclaimer_title">使用须知</string>
     <string name="disclaimer_body">本应用不内置、不分发任何内容。影音页仅为播放器入口，所播内容由使用者自行导入并自行负责，请遵守所在地法律法规。</string>

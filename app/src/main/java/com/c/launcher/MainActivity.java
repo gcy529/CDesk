@@ -543,7 +543,7 @@ public class MainActivity extends Activity {
                 @Override public void onClick(View v) { showWeatherCityDialog(); }
             });
         }
-        tvBadge.setText(p.name);
+        tvBadge.setText(p.isLight ? R.string.theme_light : R.string.theme_dark);
         tvBadge.setTextColor(p.accent);
         int[] ids = new int[] { R.id.btnPalette, R.id.btnLang, R.id.btnDonate, R.id.btnTransfer };
         for (int id : ids) {
