@@ -33,6 +33,7 @@ public class MusicShellActivity extends BaseShellActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CLog.i("MusicShellActivity onCreate");
         Screen.apply(this);
         buildControls();
     }

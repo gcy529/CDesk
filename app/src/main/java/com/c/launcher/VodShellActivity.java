@@ -72,6 +72,7 @@ public class VodShellActivity extends Activity {
     @Override
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
+        CLog.i("VodShellActivity onCreate");
         Screen.apply(this);
         setContentView(R.layout.activity_playlist);
 

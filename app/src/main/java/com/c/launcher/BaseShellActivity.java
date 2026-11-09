@@ -64,6 +64,7 @@ public abstract class BaseShellActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CLog.i("BaseShellActivity onCreate");
         Screen.apply(this);
         setContentView(R.layout.activity_playlist);
 
