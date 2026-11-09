@@ -220,6 +220,7 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (page == PAGE_MEDIA) {
                     String type = mediaAdapter.typeAt(position);
+                    CLog.i("media click type=" + type + " pos=" + position);
                     Class<?> target = "live".equals(type) ? LiveShellActivity.class
                             : "audio".equals(type) ? MusicShellActivity.class
                             : "library".equals(type) ? LibraryActivity.class
