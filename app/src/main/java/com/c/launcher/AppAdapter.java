@@ -6,9 +6,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +44,8 @@ public class AppAdapter extends BaseAdapter {
     private final Context ctx;
     private final List<AppItem> items = new ArrayList<AppItem>();
     private final List<AppItem> all = new ArrayList<AppItem>();
+    /** 浅色壁纸（日光少女/晨光）下图标名换深灰，海盐灰在奶油底上看不清 */
+    private volatile boolean lightBg = false;
 
     public AppAdapter(Context context) {
         this.ctx = context;
@@ -85,6 +87,16 @@ public class AppAdapter extends BaseAdapter {
         return new ArrayList<AppItem>(all);
     }
 
+    /** 壁纸明暗切换时由 MainActivity 调用：浅底 = 图标名用深灰 */
+    public void setLightBg(boolean light) {
+        if (this.lightBg == light) return;
+        this.lightBg = light;
+        notifyDataSetChanged();
+    }
+
+    /** 当前底色是否偏浅（决定图标名颜色） */
+    public boolean isLightBg() { return lightBg; }
+
     /** 切页：换掉当前展示的数据 */
     public void setItems(List<AppItem> list) {
         items.clear();
@@ -108,20 +120,38 @@ public class AppAdapter extends BaseAdapter {
         if (iv != null) iv.setImageDrawable(it.icon);
         if (tv != null) {
             tv.setText(it.label);
-            tv.setTextColor(ThemeManager.TEXT_SUB);
+            tv.setTextColor(lightBg ? 0xFF5A6474 : ThemeManager.TEXT_SUB);
         }
+        // 文字色交给 FocusAnimator 统一管：把 tv 挂到 tag 上
+        v.setTag(R.id.tagAppName, tv);
         v.setScaleX(1f);
         v.setScaleY(1f);
+        // 双模统一入口：焦点变化 → setFocusState；触摸按下/抬起 → 同一个方法
         v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override public void onFocusChange(View vv, boolean has) {
-                float s = has ? 1.1f : 1f;
-                vv.animate().scaleX(s).scaleY(s)
-                        .setDuration(150)
-                        .setInterpolator(new OvershootInterpolator(has ? 1.2f : 0.6f))
-                        .start();
-                if (tv != null) {
-                    tv.setTextColor(has ? ThemeManager.PRIMARY : ThemeManager.TEXT_SUB);
+                FocusAnimator.setFocusState(vv, has);
+            }
+        });
+        v.setOnTouchListener(new View.OnTouchListener() {
+            @Override public boolean onTouch(View vv, MotionEvent ev) {
+                switch (ev.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        // 手指按下：立即放大+描边（视觉与遥控器焦点一致）
+                        FocusAnimator.setFocusState(vv, true);
+                        return false;   // 返回 false = 不吞事件，点击继续走 onItemClick
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        // 抬起后保持选中态一瞬再回落（GridView 的 itemClick 紧跟着触发，
+                        // 界面马上要跳页了，这里不复位也不影响观感；真正复位发生在
+                        // 下一次焦点变化或页切换时）
+                        vv.postDelayed(new Runnable() {
+                            @Override public void run() {
+                                FocusAnimator.setFocusState(vv, vv.isFocused());
+                            }
+                        }, 180);
+                        return false;
                 }
+                return false;
             }
         });
         return v;

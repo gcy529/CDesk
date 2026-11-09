@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 双模卡片：遥控器走焦点(state_focused)，手指走按下(state_pressed)+选中(state_selected)。
+     focusableInTouchMode=true 让手指点一下也能点亮描边（触摸模式下的视觉反馈）；
+     触摸模式下焦点由 MainActivity.dispatchTouchEvent 收口，item 根布局保持默认焦点行为。 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

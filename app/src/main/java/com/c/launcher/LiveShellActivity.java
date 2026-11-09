@@ -13,6 +13,9 @@ public class LiveShellActivity extends BaseShellActivity {
 
     @Override protected String prefKey() { return "live_src"; }
 
+    @Override
+    protected String targetKind() { return "live"; }
+
     @Override protected int titleRes() { return R.string.live_title; }
 
     @Override

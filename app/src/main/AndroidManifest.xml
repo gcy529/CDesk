@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <!-- 局域网传输需要读 Wi-Fi IP -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- 车机 / TV / 盒子没有触摸屏，必须声明为非必需，否则装不上 -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -70,6 +69,27 @@
             android:screenOrientation="landscape"
             android:name=".WallpaperSettingsActivity"
             android:exported="false" />
+
+        <activity
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/settings_title" />
+
+        <activity
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
+            android:name=".LibraryActivity"
+            android:exported="false"
+            android:label="@string/library_title" />
+
+        <activity
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
+            android:name=".GuardianActivity"
+            android:exported="false"
+            android:label="@string/guardian_title" />
 
         <activity
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"

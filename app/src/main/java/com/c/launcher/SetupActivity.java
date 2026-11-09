@@ -75,6 +75,13 @@ public class SetupActivity extends Activity {
     }
 
     @Override
+    public void onBackPressed() {
+        // 返回键也算"知道了"，别每次开机都轰炸
+        ThemeManager.markSetupDone(SetupActivity.this);
+        finish();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         refresh();

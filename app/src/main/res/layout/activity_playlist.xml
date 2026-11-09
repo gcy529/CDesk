@@ -135,6 +135,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:tag="emptyTitle"
                 android:text="@string/shell_empty_title"
                 android:textColor="#F8FAFC"
                 android:textSize="24sp"
@@ -144,6 +145,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:tag="emptyBody"
                 android:text="@string/shell_empty_body"
                 android:textColor="#8E9BAE"
                 android:textSize="16sp" />

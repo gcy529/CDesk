@@ -1,5 +1,6 @@
 package com.c.launcher;
 
+import android.content.Context;
 import android.app.Activity;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -61,6 +62,9 @@ public class TransferActivity extends Activity {
         super.onCreate(savedInstanceState);
         Screen.apply(this);
         setContentView(R.layout.activity_transfer);
+
+        View rootBg = findViewById(R.id.rootTransfer);
+        WPManager.applyToRoot(this, rootBg);
 
         tvStatus = (TextView) findViewById(R.id.tvStatus);
         tvAddr = (TextView) findViewById(R.id.tvAddr);
@@ -243,19 +247,26 @@ public class TransferActivity extends Activity {
             String path = parts[1];
 
             long contentLength = -1L;
+            String target = "";
             String line;
             while ((line = readLine(in)) != null) {
                 if (line.length() == 0) break;
-                if (line.toLowerCase().startsWith("content-length:")) {
+                String low = line.toLowerCase();
+                if (low.startsWith("content-length:")) {
                     try {
                         contentLength = Long.parseLong(line.substring(15).trim());
                     } catch (Throwable ignored) {
                         contentLength = -1L;
                     }
+                } else if (low.startsWith("x-cdesk-target:")) {
+                    String tg = line.substring(15).trim().toLowerCase();
+                    if ("vod".equals(tg) || "live".equals(tg) || "music".equals(tg)) target = tg;
                 }
             }
 
-            if ("POST".equals(method) && path.startsWith("/upload")) {
+            if ("POST".equals(method) && path.startsWith("/text")) {
+                receiveText(in, out, contentLength, target);
+            } else if ("POST".equals(method) && path.startsWith("/upload")) {
                 receiveFile(in, out, contentLength);
             } else {
                 sendLandingPage(out);
@@ -288,6 +299,35 @@ public class TransferActivity extends Activity {
         }
         appendLog(human(got) + "  ->  " + name);
         String json = "{\"ok\":true,\"bytes\":" + got + "}";
+        byte[] body = json.getBytes("UTF-8");
+        writeHeaders(out, 200, "OK", "application/json", body.length);
+        out.write(body);
+        out.flush();
+    }
+
+    /** 手机端发来的影音地址：存起来，回到影音页自动填入并加载 */
+    private void receiveText(InputStream in, OutputStream out, long len, String target) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        if (len > 0) {
+            byte[] buf = new byte[(int) Math.min(len, 65536)];
+            int got = 0;
+            while (got < buf.length) {
+                int n = in.read(buf, got, buf.length - got);
+                if (n <= 0) break;
+                got += n;
+            }
+            sb.append(new String(buf, 0, got, "UTF-8"));
+        }
+        String text = sb.toString().trim();
+        if (text.length() > 0) {
+            getSharedPreferences("cdesk_shell", Context.MODE_PRIVATE).edit()
+                    .putString("pending_src", text)
+                    .putLong("pending_at", System.currentTimeMillis())
+                    .putString("pending_target", target == null ? "" : target)
+                    .commit();
+            appendLog("地址已接收  " + (text.length() > 42 ? text.substring(0, 42) + "…" : text));
+        }
+        String json = text.length() > 0 ? "{\"ok\":true}" : "{\"ok\":false}";
         byte[] body = json.getBytes("UTF-8");
         writeHeaders(out, 200, "OK", "application/json", body.length);
         out.write(body);

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_base">
+
+    <LinearLayout
+        android:id="@+id/rootGuardian"
+        style="@style/TVCardStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="26dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvGuardTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/guardian_title"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            android:textColor="@color/accent" />
+
+        <TextView
+            android:id="@+id/tvGuardVer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
+
+        <!-- 体检说明 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:lineSpacingExtra="4dp"
+            android:text="@string/guardian_body"
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
+
+        <!-- 项目 1：默认桌面 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvGuardDefault"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/text_card_title"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnFixDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:minWidth="120dp"
+                android:textSize="@dimen/text_body"
+                android:text="@string/guardian_fix" />
+        </LinearLayout>
+
+        <!-- 项目 2：悬浮窗 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvGuardOverlay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/text_card_title"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnFixOverlay"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:minWidth="120dp"
+                android:textSize="@dimen/text_body"
+                android:text="@string/guardian_fix" />
+        </LinearLayout>
+
+        <!-- 项目 3：电池优化 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvGuardBattery"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/text_card_title"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnFixBattery"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:minWidth="120dp"
+                android:textSize="@dimen/text_body"
+                android:text="@string/guardian_fix" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnGuardBack"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/transfer_back" />
+    </LinearLayout>
+</ScrollView>

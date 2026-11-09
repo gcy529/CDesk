@@ -22,10 +22,116 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
-        android:layout_margin="18dp"
+        android:layout_margin="@dimen/page_pad"
         android:padding="8dp"
-        android:background="#66000000"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:background="@color/bg_scrim"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_card_title"
         android:text="" />
+
+    <TextView
+        android:id="@+id/tvClockP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="@dimen/page_pad"
+        android:padding="8dp"
+        android:background="@color/bg_scrim"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_body"
+        android:text="00:00" />
+
+    <LinearLayout
+        android:id="@+id/playerCtrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="@color/bg_scrim"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="14dp"
+        android:visibility="gone">
+
+        <SeekBar
+            android:id="@+id/sbProgress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvPos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_caption" />
+
+            <TextView
+                android:id="@+id/btnSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="8dp"
+                android:background="@color/bg_card"
+                android:text="1.0x"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_body"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/btnSkipHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:padding="8dp"
+                android:background="@color/bg_card"
+                android:text="@string/player_skip_head"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_body"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/btnSkipTail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:padding="8dp"
+                android:background="@color/bg_card"
+                android:text="@string/player_skip_tail"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_body"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/btnKernel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:padding="8dp"
+                android:background="@color/bg_card"
+                android:text="@string/player_kernel_sys"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_body"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/tvDur"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="00:00"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_caption" />
+        </LinearLayout>
+    </LinearLayout>
 </FrameLayout>

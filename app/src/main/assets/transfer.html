@@ -20,6 +20,17 @@
   #bar{height:6px;border-radius:999px;background:#1e2a4a;margin-top:22px;overflow:hidden}
   #fill{height:100%;width:0;background:linear-gradient(90deg,#38bdf8,#a855f7);transition:width .2s}
   #msg{margin-top:14px;font-size:13px;color:#94a3b8;min-height:18px}
+  .card{margin-top:30px;padding:20px 18px;border:1px solid #22304f;border-radius:18px;background:#0f1729;text-align:left}
+  .card h2{font-size:16px;margin:0 0 4px;color:#eef2ff}
+  .card .hint{font-size:13px;color:#7c8aa5;margin:0 0 12px}
+  .card input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid #22304f;
+              background:#0b1020;color:#eef2ff;font-size:15px;outline:none}
+  .card select{width:100%;padding:12px 15px;border-radius:12px;border:1px solid #22304f;
+              background:#0b1020;color:#eef2ff;font-size:15px;outline:none;margin-bottom:10px}
+  .card input:focus{border-color:#38bdf8}
+  .card button{margin-top:12px;width:100%;padding:14px;border-radius:12px;
+               background:#4d6bfe;color:#fff;font-size:16px}
+  #smsg{margin-top:10px;font-size:13px;color:#94a3b8;min-height:18px}
 </style>
 </head>
 <body>
@@ -31,6 +42,20 @@
 <div id="bar"><div id="fill"></div></div>
 <button id="btn">发送 / Send</button>
 <div id="msg"></div>
+
+<div class="card">
+  <h2>把影音地址发到屏幕</h2>
+  <p class="hint">选好类型再发送：影视 / 直播 / 音乐各自记忆自己的地址，互不干扰。</p>
+  <select id="tgt">
+    <option value="">自动（下一个打开的影音页接收）/ auto</option>
+    <option value="vod">影视 / VOD</option>
+    <option value="live">直播 / Live</option>
+    <option value="music">音乐 / Music</option>
+  </select>
+  <input id="src" type="url" placeholder="https://… 播放列表地址" autocomplete="off">
+  <button id="sbtn">发送到屏幕 / Send</button>
+  <div id="smsg"></div>
+</div>
 <script>
 var btn=document.getElementById('btn'),
     fi=document.getElementById('fi'),
@@ -73,6 +98,30 @@ btn.onclick=function(){
     msg.textContent='失败 / failed';
   };
   x.send(f);
+};
+
+var sbtn=document.getElementById('sbtn'),
+    src=document.getElementById('src'),
+    tgt=document.getElementById('tgt'),
+    smsg=document.getElementById('smsg');
+
+sbtn.onclick=function(){
+  var v=(src.value||'').trim();
+  if(!v){smsg.textContent='先填地址 / address required';return;}
+  sbtn.disabled=true;
+  smsg.textContent='发送中 / sending…';
+  var x=new XMLHttpRequest();
+  x.open('POST','/text');
+  x.setRequestHeader('X-CDesk-Target', tgt.value || '');
+  x.onload=function(){
+    sbtn.disabled=false;
+    try{
+      var r=JSON.parse(x.responseText);
+      smsg.textContent = r.ok ? '已发送，回电视上打开对应的影音页即可' : '失败 / failed';
+    }catch(e){ smsg.textContent='已发送'; }
+  };
+  x.onerror=function(){ sbtn.disabled=false; smsg.textContent='失败 / failed'; };
+  x.send(v);
 };
 </script>
 </body>

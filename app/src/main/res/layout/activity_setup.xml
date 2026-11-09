@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0B1020"
+    android:background="@color/bg_base"
     android:fillViewport="true">
 
     <LinearLayout
@@ -16,9 +16,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/setup_title"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_title"
             android:textStyle="bold"
-            android:textColor="#4D6BFE" />
+            android:textColor="@color/accent" />
 
         <!-- Beta 警告 -->
         <LinearLayout
@@ -33,9 +33,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/setup_beta_title"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_body"
                 android:textStyle="bold"
-                android:textColor="#FBBF24" />
+                android:textColor="@color/warn" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -43,8 +43,8 @@
                 android:layout_marginTop="6dp"
                 android:lineSpacingExtra="5dp"
                 android:text="@string/setup_beta_body"
-                android:textSize="12.5sp"
-                android:textColor="#D6BF8A" />
+                android:textSize="@dimen/text_caption"
+                android:textColor="@color/warn" />
         </LinearLayout>
 
         <!-- 第一步 -->
@@ -53,9 +53,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/setup_step1"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_card_title"
             android:textStyle="bold"
-            android:textColor="#F8FAFC" />
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:id="@+id/tvState"
@@ -63,8 +63,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/setup_state_unknown"
-            android:textSize="15sp"
-            android:textColor="#8E9BAE" />
+            android:textSize="@dimen/text_card_title"
+            android:textColor="@color/text_secondary" />
 
         <TextView
             android:id="@+id/tvHint"
@@ -73,8 +73,8 @@
             android:layout_marginTop="8dp"
             android:lineSpacingExtra="6dp"
             android:text="@string/setup_hint_press_home"
-            android:textSize="13sp"
-            android:textColor="#64748B" />
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_muted" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,8 +90,8 @@
                 android:layout_marginRight="10dp"
                 android:background="@drawable/bg_pill"
                 android:text="@string/setup_open_settings"
-                android:textSize="14sp"
-                android:textColor="#4D6BFE" />
+                android:textSize="@dimen/text_body"
+                android:textColor="@color/accent" />
 
             <Button
                 android:id="@+id/btnRecheck"
@@ -100,8 +100,8 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_pill"
                 android:text="@string/setup_recheck"
-                android:textSize="14sp"
-                android:textColor="#4D6BFE" />
+                android:textSize="@dimen/text_body"
+                android:textColor="@color/accent" />
         </LinearLayout>
 
         <!-- 第二步 -->
@@ -110,9 +110,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"
             android:text="@string/setup_step2"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_card_title"
             android:textStyle="bold"
-            android:textColor="#F8FAFC" />
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:id="@+id/tvOverlayState"
@@ -121,8 +121,8 @@
             android:layout_marginTop="10dp"
             android:lineSpacingExtra="6dp"
             android:text="@string/setup_state_unknown"
-            android:textSize="13sp"
-            android:textColor="#8E9BAE" />
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
 
         <Button
             android:id="@+id/btnOverlay"
@@ -133,8 +133,8 @@
             android:paddingLeft="26dp"
             android:paddingRight="26dp"
             android:text="@string/setup_grant_overlay"
-            android:textSize="14sp"
-            android:textColor="#4D6BFE" />
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/accent" />
 
         <!-- 底部 -->
         <Button
@@ -144,8 +144,8 @@
             android:layout_marginTop="34dp"
             android:background="@drawable/bg_pill"
             android:text="@string/setup_enter"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_card_title"
             android:textStyle="bold"
-            android:textColor="#4D6BFE" />
+            android:textColor="@color/accent" />
     </LinearLayout>
 </ScrollView>

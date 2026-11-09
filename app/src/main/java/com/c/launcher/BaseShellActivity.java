@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,9 @@ public abstract class BaseShellActivity extends Activity {
 
     /** 点击某一条 */
     protected abstract void onItemSelected(PlaylistParser.Item it);
+
+    /** 手机推送的目标类别：live / music（影视壳自己处理，是 vod） */
+    protected abstract String targetKind();
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -96,6 +100,23 @@ public abstract class BaseShellActivity extends Activity {
             }
         });
 
+        lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override public boolean onItemLongClick(AdapterView<?> a, View v, int pos, long id) {
+                if (pos < 0 || pos >= items.size()) return false;
+                PlaylistParser.Item it = items.get(pos);
+                if (it.url == null) return false;   // 分组头不收藏
+                if (Favorites.has(BaseShellActivity.this, it.url)) {
+                    Favorites.remove(BaseShellActivity.this, it.url);
+                    Toast.makeText(BaseShellActivity.this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
+                } else {
+                    String kind = "live_src".equals(prefKey()) ? "live" : "music";
+                    Favorites.add(BaseShellActivity.this, it.name, it.url, kind);
+                    Toast.makeText(BaseShellActivity.this, R.string.fav_added, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
+
         btnLoad.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { startLoad(); }
         });
@@ -135,11 +156,42 @@ public abstract class BaseShellActivity extends Activity {
         return null;
     }
 
-    /** 有内容就藏起空状态，没内容就显示 */
+    /** 有内容就藏起空状态，没内容就显示（文案按壳区分：直播/音乐共用通用导入说明） */
     private void refreshEmpty() {
         if (boxEmpty == null) return;
-        boxEmpty.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
-        lvItems.setVisibility(items.isEmpty() ? View.GONE : View.VISIBLE);
+        boolean empty = items.isEmpty();
+        boxEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
+        lvItems.setVisibility(empty ? View.GONE : View.VISIBLE);
+        if (empty) {
+            TextView et = (TextView) boxEmpty.findViewWithTag("emptyTitle");
+            if (et != null) et.setText("live_src".equals(prefKey())
+                    ? R.string.live_empty_title : R.string.music_empty_title);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        consumePendingSource();
+    }
+
+    /** 手机在传输页粘的地址：回到本页自动填入并加载，省得用遥控器打字 */
+    private void consumePendingSource() {
+        try {
+            SharedPreferences sp = prefs();
+            String pending = sp.getString("pending_src", null);
+            if (pending == null || pending.length() == 0) return;
+            String want = sp.getString("pending_target", "");
+            if (want.length() > 0 && !want.equals(targetKind())) return;
+            long at = sp.getLong("pending_at", 0L);
+            sp.edit().remove("pending_src").remove("pending_at").commit();
+            if (System.currentTimeMillis() - at > 10L * 60L * 1000L) return;
+
+            etSource.setText(pending);
+            prefs().edit().putString(prefKey(), pending).commit();
+            load(pending);
+            Toast.makeText(this, R.string.shell_recv_from_phone, Toast.LENGTH_SHORT).show();
+        } catch (Throwable ignored) { }
     }
 
     protected SharedPreferences prefs() {
@@ -185,8 +237,24 @@ public abstract class BaseShellActivity extends Activity {
                 } catch (Exception e) {
                     err = e.getClass().getSimpleName();
                 }
+                List<PlaylistParser.Item> expanded = null;
+                if (text != null && TvBoxConfig.looks(text)) {
+                    expanded = new ArrayList<PlaylistParser.Item>();
+                    List<TvBoxConfig.Live> lives = TvBoxConfig.lives(text);
+                    for (int i = 0; i < lives.size(); i++) {
+                        TvBoxConfig.Live lv = lives.get(i);
+                        try {
+                            List<PlaylistParser.Item> one = PlaylistParser.parse(fetch(lv.url));
+                            for (int j = 0; j < one.size(); j++) {
+                                PlaylistParser.Item it = one.get(j);
+                                expanded.add(new PlaylistParser.Item(it.name, lv.name, it.url));
+                            }
+                        } catch (Throwable ignored) { }
+                    }
+                }
                 final String fText = text;
                 final String fErr = err;
+                final List<PlaylistParser.Item> fExpanded = expanded;
                 ui.post(new Runnable() {
                     @Override public void run() {
                         if (isFinishing()) return;
@@ -197,7 +265,16 @@ public abstract class BaseShellActivity extends Activity {
                             refreshEmpty();
                             return;
                         }
-                        List<PlaylistParser.Item> parsed = PlaylistParser.parse(fText);
+                        List<PlaylistParser.Item> raw = fExpanded;
+                        if (raw == null) {
+                            raw = PlaylistParser.parseMusicJson(fText);
+                            if (raw.isEmpty()) raw = PlaylistParser.parse(fText);
+                        }
+                        List<PlaylistParser.Item> parsed = new ArrayList<PlaylistParser.Item>();
+                        for (int i = 0; i < raw.size(); i++) {
+                            if (ContentFilter.blocked(BaseShellActivity.this, raw.get(i).name)) continue;
+                            parsed.add(raw.get(i));
+                        }
                         items.clear();
                         withGroups(parsed, items);
                         adapter.notifyDataSetChanged();

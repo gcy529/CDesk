@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item type="id" name="tagAppName" />
     <string name="app_name">C桌面</string>
     <string name="desk_hint">按方向键选择应用，按 H 换肤</string>
     <string name="palette">换肤</string>
@@ -76,7 +77,17 @@
     <!-- 壁纸 / 免责 / 公众号 -->
     <string name="wallpaper">壁纸</string>
     <string name="wp_title">壁纸</string>
-    <string name="wp_night">鲸夜（默认）</string>
+    <string name="status_downloading">下载中</string>
+    <string name="vod_empty_title">影视源待接入</string>
+    <string name="vod_empty_body">影视/直播/音乐的内容都由你自己导入：把你的 TVBox 订阅、苹果CMS 接口或 M3U 地址粘到上方输入框，点「导入」。应用不内置任何源。</string>
+    <string name="settings_core_title">C桌面</string>
+    <string name="setup_done">完成</string>
+    <string name="settings_core">C桌面（默认桌面 / 权限）</string>
+    <string name="live_empty_title">直播源待接入</string>
+    <string name="music_empty_title">歌单待导入</string>
+    <string name="status_uploading">上传中</string>
+    <string name="wp_girl">日光少女（默认）</string>
+    <string name="wp_night">鲸夜</string>
     <string name="wp_day">晨光</string>
     <string name="wp_sunset">金色时刻</string>
     <string name="wp_none">纯色（跟随主题）</string>
@@ -102,7 +113,7 @@
     <string name="wp_custom">自定义图片</string>
     <string name="wp_custom_pick">选择图片</string>
     <string name="wp_custom_hint">最多 3 张 · 点一下用这张 · 长按删除</string>
-    <string name="app_version">0.2.4</string>
+    <string name="app_version">0.4.1</string>
     <string name="update_found">发现新版本 v%1$s，点此直接下载</string>
     <string name="update_go">更新</string>
     <string name="shell_reconnect">信号中断，正在重连…</string>
@@ -114,4 +125,52 @@
     <string name="shell_empty_title">还没有内容</string>
     <string name="shell_empty_body">支持 M3U / TXT / JSON 播放列表，导入后这里会列出频道和节目。</string>
     <string name="shell_import_clip">从剪贴板导入</string>
+    <string name="shell_back_up">返回上级</string>
+    <string name="shell_recv_from_phone">已收到手机发来的地址</string>
+    <string name="vod_api_title">影视源接口</string>
+    <string name="vod_api_hint">接口地址或播放列表，形如 http://…?ac=list</string>
+    <string name="settings_filter_on">隐藏成人内容：已开启（点击关闭）</string>
+    <string name="settings_filter_off">隐藏成人内容：已关闭（点击开启）</string>
+    <string name="settings_title">设置</string>
+    <string name="settings_check_update">检查更新</string>
+    <string name="ticker_text">本应用仅为播放壳，不提供、不存储、不分发任何内容。内容源均由使用者自行配置，相关责任由使用者自负。　官网：gcy5.cn.mt　公众号：韭菜超先生</string>
+    <string name="update_latest">已是最新版本</string>
+    <string name="update_checking">正在检查更新…</string>
+    <string name="player_skip_head">跳过片头</string>
+    <string name="player_kernel_sys">内核：系统</string>
+    <string name="player_kernel_alt">内核：兼容</string>
+    <string name="player_speed_boost">倍速中 3x</string>
+    <string name="player_switch_line">已切换线路</string>
+    <string name="player_skip_tail">跳过片尾</string>
+    <string name="player_buffering">缓冲中…</string>
+    <string name="settings_player_title">播放器设置</string>
+    <string name="player_bar_on">进度条：开</string>
+    <string name="player_bar_off">进度条：关</string>
+    <string name="player_head_on">跳片头按钮：开</string>
+    <string name="player_head_off">跳片头按钮：关</string>
+    <string name="player_tail_on">跳片尾按钮：开</string>
+    <string name="player_tail_off">跳片尾按钮：关</string>
+    <string name="player_step_30">快进快退步长：30 秒</string>
+    <string name="player_step_60">快进快退步长：60 秒</string>
+    <string name="player_step_10">快进快退步长：10 秒</string>
+    <string name="player_por_on">竖屏模式（短剧）：开</string>
+    <string name="player_por_off">竖屏模式（短剧）：关</string>
+    <string name="fav_added">已收藏</string>
+    <string name="fav_removed">已取消收藏</string>
+    <string name="library_title">影音书架</string>
+    <string name="library_fav">收藏</string>
+    <string name="library_history">最近播放</string>
+    <string name="library_empty">这里还空着。列表里长按就能收藏。</string>
+    <string name="guardian_title">守护 C桌面</string>
+    <string name="guardian_body">每次开机自检一遍：三项全绿就是最佳状态。哪项红了点「去处理」，跳到系统里一键搞定。</string>
+    <string name="guardian_fix">去处理</string>
+    <string name="guardian_default_ok">✓ 默认桌面：已就位</string>
+    <string name="guardian_default_bad">✗ 默认桌面：还没就位（开机不会自动进 C桌面）</string>
+    <string name="guardian_overlay_ok">✓ 悬浮窗权限：已授权（网速角标可用）</string>
+    <string name="guardian_overlay_bad">✗ 悬浮窗权限：未授权（网速角标显示不了）</string>
+    <string name="guardian_overlay_na">— 悬浮窗权限：本系统不需要</string>
+    <string name="guardian_battery_ok">✓ 电池优化：已豁免（后台不易被杀）</string>
+    <string name="guardian_battery_bad">✗ 电池优化：未豁免（后台可能被系统杀）</string>
+    <string name="guardian_battery_na">— 电池优化：本系统无此机制</string>
+    <string name="guardian_version">当前版本 %1$s</string>
 </resources>

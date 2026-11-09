@@ -21,8 +21,12 @@ public class MusicShellActivity extends BaseShellActivity {
     private LinearLayout controlBar;
     private TextView tvNow;
     private int current = -1;
+    private int errStreak = 0;
 
     @Override protected String prefKey() { return "music_src"; }
+
+    @Override
+    protected String targetKind() { return "music"; }
 
     @Override protected int titleRes() { return R.string.music_title; }
 
@@ -100,10 +104,13 @@ public class MusicShellActivity extends BaseShellActivity {
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setDataSource(it.url);
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override public void onPrepared(MediaPlayer player) { player.start(); }
+                @Override public void onPrepared(MediaPlayer player) { errStreak = 0; player.start(); }
             });
             mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override public boolean onError(MediaPlayer player, int what, int extra) {
+                    // 失败自动跳下一首，连挂 3 首才停下提示
+                    errStreak++;
+                    if (errStreak < 3) { step(1); return true; }
                     Toast.makeText(MusicShellActivity.this, R.string.shell_play_failed, Toast.LENGTH_SHORT).show();
                     return true;
                 }
@@ -113,6 +120,7 @@ public class MusicShellActivity extends BaseShellActivity {
             });
             mp.prepareAsync();
             if (tvNow != null) tvNow.setText(it.name);
+            History.push(this, it.name, it.url, "music", 0);
         } catch (Exception e) {
             Toast.makeText(this, R.string.shell_play_failed, Toast.LENGTH_SHORT).show();
         }

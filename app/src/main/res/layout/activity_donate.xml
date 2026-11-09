@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootDonate"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:background="#0B1020"
+    android:background="@color/bg_base"
     android:padding="26dp"
     android:gravity="center_vertical">
 
-    <!-- 左：文案 -->
+    <!-- 左：文案（TV 玻璃卡片） -->
     <LinearLayout
+        style="@style/TVCardStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -20,9 +22,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/donate_title"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_title"
             android:textStyle="bold"
-            android:textColor="#4D6BFE" />
+            android:textColor="@color/accent" />
 
         <TextView
             android:layout_width="match_parent"
@@ -30,8 +32,8 @@
             android:layout_marginTop="16dp"
             android:lineSpacingExtra="6dp"
             android:text="@string/donate_body"
-            android:textSize="15sp"
-            android:textColor="#8E9BAE" />
+            android:textSize="@dimen/text_card_title"
+            android:textColor="@color/text_secondary" />
 
         <TextView
             android:layout_width="match_parent"
@@ -39,8 +41,8 @@
             android:layout_marginTop="18dp"
             android:lineSpacingExtra="5dp"
             android:text="@string/donate_note"
-            android:textSize="13sp"
-            android:textColor="#64748B" />
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_muted" />
 
         <TextView
             android:id="@+id/tvScanHint"
@@ -48,8 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
             android:text="@string/donate_scan_hint"
-            android:textSize="13sp"
-            android:textColor="#475569" />
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
 
         <Button
             android:id="@+id/btnBack"
@@ -60,12 +62,13 @@
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
             android:text="@string/donate_back"
-            android:textSize="14sp"
-            android:textColor="#4D6BFE" />
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/accent" />
     </LinearLayout>
 
     <!-- 右：二维码白卡（以后加支付宝就再复制一个同样的 FrameLayout） -->
     <FrameLayout
+        style="@style/TVCardStyle"
         android:layout_width="380dp"
         android:layout_height="380dp"
         android:background="@drawable/bg_qr_card"

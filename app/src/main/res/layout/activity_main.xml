@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:visibility="gone"
         android:contentDescription="@string/wallpaper" />
 
     <View
@@ -26,9 +25,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="48dp"
-        android:paddingRight="48dp"
+        android:paddingRight="300dp"
         android:paddingTop="28dp"
         android:paddingBottom="24dp">
+
+        <!-- 顶部滚动条：免责 + 官网 + 公众号，循环滚动 -->
+        <TextView
+            android:id="@+id/tvTicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
+            android:background="@drawable/bg_dock"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textSize="13sp"
+            android:textColor="#8E9BAE"
+            android:text="@string/ticker_text" />
 
         <!-- 顶栏 -->
         <LinearLayout
@@ -177,6 +196,7 @@
             android:verticalSpacing="10dp"
             android:stretchMode="columnWidth"
             android:clipToPadding="false"
+            android:nextFocusDown="@+id/btnPalette"
             android:listSelector="@android:color/transparent" />
 
         <!-- 底部按钮：玻璃 Dock（半透明圆角，深浅主题运行时染色） -->
@@ -199,6 +219,7 @@
                 android:background="@drawable/bg_dock_item"
                 android:text="@string/wallpaper"
                 android:textSize="14sp"
+                android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
 
             <Button
@@ -210,6 +231,7 @@
                 android:background="@drawable/bg_dock_item"
                 android:text="@string/lang_auto"
                 android:textSize="13sp"
+                android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
 
             <Button
@@ -221,6 +243,19 @@
                 android:background="@drawable/bg_dock_item"
                 android:text="@string/donate"
                 android:textSize="14sp"
+                android:nextFocusUp="@+id/gridApps"
+                android:focusable="true" />
+
+            <Button
+                android:id="@+id/btnSettings"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/bg_dock_item"
+                android:text="@string/settings_title"
+                android:textSize="14sp"
+                android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
 
             <Button
@@ -231,7 +266,46 @@
                 android:background="@drawable/bg_dock_item"
                 android:text="@string/transfer"
                 android:textSize="14sp"
+                android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
         </LinearLayout>
     </LinearLayout>
+
+    <!-- 左下：版本号 + 下载角标；右下：上传角标（传输进行时显示，低调半透明） -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginLeft="48dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="@string/app_version"
+            android:textSize="11sp"
+            android:textColor="#668E9BAE" />
+
+        <ImageView
+            android:id="@+id/ivStatusDown"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/stat_sys_download"
+            android:alpha="0.6"
+            android:contentDescription="@string/status_downloading" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivStatusUp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="48dp"
+        android:layout_marginBottom="24dp"
+        android:src="@android:drawable/stat_sys_upload"
+        android:alpha="0.6"
+        android:contentDescription="@string/status_uploading" />
 </FrameLayout>

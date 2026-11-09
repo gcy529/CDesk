@@ -29,6 +29,40 @@ public final class PlaylistParser {
 
     private PlaylistParser() { }
 
+    /** 音乐 json 歌单：{"name":..,"list":[{name,artist,url}]}，也接受裸数组 */
+    public static List<Item> parseMusicJson(String raw) {
+        List<Item> out = new ArrayList<Item>();
+        if (raw == null) return out;
+        String text = raw.replace("\uFEFF", "").trim();
+        if (text.length() == 0) return out;
+        try {
+            org.json.JSONArray arr;
+            if (text.startsWith("[")) {
+                arr = new org.json.JSONArray(text);
+            } else {
+                org.json.JSONObject obj = new org.json.JSONObject(text);
+                arr = obj.optJSONArray("list");
+                if (arr == null) arr = obj.optJSONArray("songs");
+                if (arr == null) arr = obj.optJSONArray("music");
+                if (arr == null) arr = obj.optJSONArray("data");
+                if (arr == null) return out;
+            }
+            for (int i = 0; i < arr.length(); i++) {
+                org.json.JSONObject o = arr.optJSONObject(i);
+                if (o == null) continue;
+                String url = first(o, new String[] { "url", "src", "link", "address", "uri" });
+                if (url == null || url.length() < 5) continue;
+                String name = first(o, new String[] { "name", "title", "song" });
+                String artist = first(o, new String[] { "artist", "singer", "author" });
+                String album = first(o, new String[] { "album", "group" });
+                String label = (name == null ? guessName(url) : name)
+                        + (artist != null && artist.length() > 0 ? " - " + artist : "");
+                out.add(new Item(label, album == null ? "" : album, url));
+            }
+        } catch (Throwable ignored) { }
+        return out;
+    }
+
     public static List<Item> parse(String raw) {
         List<Item> out = new ArrayList<Item>();
         if (raw == null) return out;

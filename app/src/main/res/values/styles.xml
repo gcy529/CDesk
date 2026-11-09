@@ -39,4 +39,10 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <!-- TV 子页面卡片：玻璃面板 + 16dp 圆角，打赏 / 传输 / 设置外壳通用 -->
+    <style name="TVCardStyle">
+        <item name="android:background">@drawable/bg_tile</item>
+        <item name="android:padding">20dp</item>
+    </style>
+
 </resources>

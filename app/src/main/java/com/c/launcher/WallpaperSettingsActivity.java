@@ -51,11 +51,26 @@ public class WallpaperSettingsActivity extends Activity {
             }
         });
 
-        // 缩略图卡片：点击选壁纸
+        // 缩略图卡片：点击选壁纸（日光少女第一张 = 默认）
+        card(R.id.cardWpGirl, WPManager.WP_GIRL);
         card(R.id.cardWpNone, WPManager.WP_NONE);
         card(R.id.cardWpNight, WPManager.WP_NIGHT);
         card(R.id.cardWpDay, WPManager.WP_DAY);
         card(R.id.cardWpSunset, WPManager.WP_SUNSET);
+
+        // 4K 原图绝不能直接当缩略图（OOM）——inSampleSize 降采样后小图设置
+        ImageView girlThumb = (ImageView) findViewById(R.id.thumbGirl);
+        if (girlThumb != null) {
+            try {
+                BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeResource(getResources(), R.drawable.final_wallpaper_4k, o);
+                BitmapFactory.Options o2 = new BitmapFactory.Options();
+                o2.inSampleSize = 24;   // 3845x2157 -> 约160x90，正好缩略图大小
+                girlThumb.setImageBitmap(BitmapFactory.decodeResource(
+                        getResources(), R.drawable.final_wallpaper_4k, o2));
+            } catch (Throwable ignored) { }
+        }
 
         // 自定义图片：选系统相册里的照片；也支持局域网传入的图片
         View customCard = findViewById(R.id.cardWpCustom);

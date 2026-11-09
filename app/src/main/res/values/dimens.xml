@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 设计令牌：字号与间距。全站只留这几档。 -->
+<resources>
+    <dimen name="text_title">26sp</dimen>
+    <dimen name="text_card_title">16sp</dimen>
+    <dimen name="text_body">14sp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+    <dimen name="page_pad">28dp</dimen>
+    <dimen name="card_pad">20dp</dimen>
+    <dimen name="card_radius">16dp</dimen>
+    <dimen name="btn_height">52dp</dimen>
+</resources>

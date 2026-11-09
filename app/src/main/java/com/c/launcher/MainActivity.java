@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -47,6 +48,8 @@ public class MainActivity extends Activity {
     private static final int REQ_OVERLAY = 2001;
 
     private ImageView ivWallpaper;
+    private ImageView ivStatusDown;
+    private ImageView ivStatusUp;
     private View bgTop;
     private View bgBottom;
     private View dock;
@@ -101,6 +104,17 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         ivWallpaper = (ImageView) findViewById(R.id.ivWallpaper);
+        ivStatusDown = (ImageView) findViewById(R.id.ivStatusDown);
+        ivStatusUp = (ImageView) findViewById(R.id.ivStatusUp);
+        if (ivStatusDown != null) ivStatusDown.setVisibility(View.GONE);
+        if (ivStatusUp != null) ivStatusUp.setVisibility(View.GONE);
+        TextView tvVersion = (TextView) findViewById(R.id.tvVersion);
+        if (tvVersion != null) {
+            try {
+                tvVersion.setText("v" + getPackageManager()
+                        .getPackageInfo(getPackageName(), 0).versionName);
+            } catch (Exception ignored) { }
+        }
         bgTop = findViewById(R.id.bgTop);
         bgBottom = findViewById(R.id.bgBottom);
         dock = findViewById(R.id.dock);
@@ -108,6 +122,12 @@ public class MainActivity extends Activity {
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvWeather = (TextView) findViewById(R.id.tvWeather);
         tvBadge = (TextView) findViewById(R.id.tvBadge);
+        TextView tvTicker = (TextView) findViewById(R.id.tvTicker);
+        if (tvTicker != null) {
+            tvTicker.setSelected(true);   // 跑马灯必须 selected 才动
+            tvTicker.setFocusable(false);
+            tvTicker.setFocusableInTouchMode(false);
+        }
         btnPalette = (Button) findViewById(R.id.btnPalette);
         btnLang = (Button) findViewById(R.id.btnLang);
         btnTransfer = (Button) findViewById(R.id.btnTransfer);
@@ -116,6 +136,7 @@ public class MainActivity extends Activity {
         
         // 更新提醒：每天最多查一次，静默失败
         UpdateChecker.checkIfNeeded(this, new UpdateChecker.Callback() {
+            @Override public void onLatest() { }
             @Override public void onUpdate(String ver, String url) {
                 if (tvBadge != null) {
                     tvBadge.setText(getString(R.string.update_found, ver));
@@ -158,11 +179,14 @@ public class MainActivity extends Activity {
         btnLang.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { LangManager.cycle(MainActivity.this); }
         });
-        tvBadge.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SetupActivity.class));
-            }
-        });
+        Button btnSettings = (Button) findViewById(R.id.btnSettings);
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                }
+            });
+        }
         btnTransfer.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { openTransfer(); }
         });
@@ -178,6 +202,7 @@ public class MainActivity extends Activity {
                     String type = mediaAdapter.typeAt(position);
                     Class<?> target = "live".equals(type) ? LiveShellActivity.class
                             : "audio".equals(type) ? MusicShellActivity.class
+                            : "library".equals(type) ? LibraryActivity.class
                             : VodShellActivity.class;
                     startActivity(new Intent(MainActivity.this, target));
                 } else {
@@ -199,47 +224,37 @@ public class MainActivity extends Activity {
             }
         });
 
-        // 遥控器 / 方向盘：在网格边缘按左右键翻页
+        // 遥控器 / 方向盘：在网格边缘按左右键翻页，↓ 到底进 Dock，↑ 在 Dock 回网格
         gridApps.setOnKeyListener(new View.OnKeyListener() {
             @Override public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-                if (page == PAGE_MEDIA) {
-                    int pos = gridApps.getSelectedItemPosition();
-                    if (pos < 0) pos = 0;
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && (pos % 2) == 0) { switchPage(page - 1); return true; }
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && (pos % 2) == 1) { switchPage(page + 1); return true; }
-                    return false;
+                boolean media = page == PAGE_MEDIA;
+                int cols = media ? 3 : 6;
+                int count = media ? mediaAdapter.getCount() : adapter.getCount();
+                int pos = gridApps.getSelectedItemPosition();
+                if (pos < 0) pos = 0;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && (count == 0 || (pos % cols) == 0)) { switchPage(page - 1); return true; }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && (count == 0 || (pos % cols) == cols - 1 || pos == count - 1)) { switchPage(page + 1); return true; }
+                // 网格按 ↓：已在最后一行（或空页）→ 焦点交给 Dock 第一个按钮
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    int rows = (count + cols - 1) / cols;
+                    int curRow = count == 0 ? -1 : pos / cols;
+                    if (count == 0 || curRow >= rows - 1) {
+                        Button first = (Button) findViewById(R.id.btnPalette);
+                        if (first != null) { first.requestFocus(); return true; }
+                    }
                 }
-                int count = adapter.getCount();
-                int pos2 = gridApps.getSelectedItemPosition();
-                if (pos2 < 0) pos2 = 0;
-                if (count == 0) {
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) { switchPage(page - 1); return true; }
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) { switchPage(page + 1); return true; }
-                    return false;
-                }
-                boolean firstCol = (pos2 % 6) == 0;
-                boolean lastCol = (pos2 % 6) == 5 || pos2 == count - 1;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && firstCol) { switchPage(page - 1); return true; }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && lastCol) { switchPage(page + 1); return true; }
                 return false;
             }
         });
 
         ui.post(clockTick);
 
-        // 首次启动先弹使用须知（只一次），再进引导页
-        if (!DisclaimerActivity.agreed(this)) {
-            startActivity(new Intent(this, DisclaimerActivity.class));
+        // 首启零打断：引导/须知全删（入口在设置页），悬浮窗权限只在第一次问一次
+        if (!getSharedPreferences("cdesk_core", MODE_PRIVATE).getBoolean("overlay_asked", false)) {
+            getSharedPreferences("cdesk_core", MODE_PRIVATE).edit().putBoolean("overlay_asked", true).commit();
+            ensureOverlayPermission();
         }
-
-        // 首次启动先进引导页：普通应用无法用代码把自己设成默认桌面，
-        // 只能把操作步骤讲清楚，所以这一步不能省。
-        if (!ThemeManager.isSetupDone(this)) {
-            startActivity(new Intent(this, SetupActivity.class));
-        }
-
-        ensureOverlayPermission();
     }
 
     @Override
@@ -257,6 +272,10 @@ public class MainActivity extends Activity {
             }
         });
         startSpeedService();
+        // 角标状态恢复：任何页面写过的状态在这里落回桌面
+        android.content.SharedPreferences sp = getSharedPreferences("cdesk_status", 0);
+        if (ivStatusDown != null) ivStatusDown.setVisibility(sp.getInt("down", 0) == 1 ? View.VISIBLE : View.GONE);
+        if (ivStatusUp != null) ivStatusUp.setVisibility(sp.getInt("up", 0) == 1 ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -265,11 +284,50 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    /**
+     * 触摸/遥控双模的收口：
+     * 手指抬起来之后，Android 会进入"触摸模式"，此时 GridView 上的焦点被系统清空，
+     * 遥控器下一方向盘键可能落到任意控件。这里在每次触摸结束后把焦点拉回主网格，
+     * 保证"摸完一下，遥控器马上就能接着用"。
+     * 兼容性：dispatchTouchEvent 是 Activity API 1+ 方法 ✓
+     */
+    /** 左下角下载角标：true=显示（下载进行中）。静态方法，任何页面都能开关桌面角标 */
+    public static void showDownloadBadge(android.content.Context c, boolean on) {
+        android.content.SharedPreferences p = c.getSharedPreferences("cdesk_status", 0);
+        p.edit().putInt("down", on ? 1 : 0).commit();
+    }
+
+    /** 右下角上传角标：true=显示（上传进行中） */
+    public static void showUploadBadge(android.content.Context c, boolean on) {
+        android.content.SharedPreferences p = c.getSharedPreferences("cdesk_status", 0);
+        p.edit().putInt("up", on ? 1 : 0).commit();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        boolean handled = super.dispatchTouchEvent(ev);
+        if (ev.getActionMasked() == MotionEvent.ACTION_UP
+                || ev.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+            // 只在主桌面（非弹窗/子页）时收焦点；网格已在焦中则不动
+            if (gridApps != null && page == PAGE_APPS && !gridApps.hasFocus()) {
+                gridApps.post(new Runnable() {
+                    @Override public void run() {
+                        if (gridApps != null && !gridApps.hasFocus()) {
+                            gridApps.setSelection(gridApps.getSelectedItemPosition() < 0 ? 0 : gridApps.getSelectedItemPosition());
+                            gridApps.requestFocus();
+                        }
+                    }
+                });
+            }
+        }
+        return handled;
+    }
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_H) {
             WPManager.setAuto(this, false);
-            WPManager.setWhich(this, (WPManager.which(this) + 1) % 4);
+            WPManager.setWhich(this, (WPManager.which(this) + 1) % 6);
             applyPalette(ThemeManager.current(this), false);
             return true;
         }
@@ -370,15 +428,18 @@ public class MainActivity extends Activity {
         tvDate.setText(new SimpleDateFormat("yyyy-MM-dd  EEEE", Locale.getDefault()).format(now));
     }
 
-    /** 点换肤键：循环 纯色 -> 鲸夜 -> 晨光 -> 金色时刻 -> 纯色。手动选定后关闭日夜自动 */
+    /** 点换肤键：循环 日光少女 -> 纯色 -> 鲸夜 -> 晨光 -> 金色时刻 -> 自定义 -> 日光少女。手动选定后关闭日夜自动 */
     private void cycleWallpaper() {
-        int next = (WPManager.which(this) + 1) % 4;
+        int next = (WPManager.which(this) + 1) % 6;
+        if (next == WPManager.WP_CUSTOM && WPManager.customPath(this).length() == 0) next = WPManager.WP_GIRL;
         WPManager.setAuto(this, false);
         WPManager.setWhich(this, next);
         applyPalette(ThemeManager.current(this), false);
-        int nameRes = next == WPManager.WP_NIGHT ? R.string.wp_night
+        int nameRes = next == WPManager.WP_GIRL ? R.string.wp_girl
+                : next == WPManager.WP_NIGHT ? R.string.wp_night
                 : next == WPManager.WP_DAY ? R.string.wp_day
-                : next == WPManager.WP_SUNSET ? R.string.wp_sunset : R.string.wp_none;
+                : next == WPManager.WP_SUNSET ? R.string.wp_sunset
+                : next == WPManager.WP_CUSTOM ? R.string.wp_custom : R.string.wp_none;
         Toast.makeText(this, nameRes, Toast.LENGTH_SHORT).show();
     }
 
@@ -391,6 +452,8 @@ public class MainActivity extends Activity {
             // 有壁纸：文字按壁纸明暗反色，跳过主题渐变动画
             int wp = WPManager.effective(this);
             boolean dark = WPManager.isDarkWallpaper(wp);
+            // 图标名颜色跟随壁纸明暗（海盐灰在奶油底上看不清）
+            adapter.setLightBg(!dark);
             int big = dark ? 0xFFF2F3F8 : 0xFF232B3A;
             int dim = dark ? 0xFFB9BECB : 0xFF5A6474;
             tvClock.setTextColor(big);

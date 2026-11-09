@@ -3,9 +3,9 @@ package com.c.launcher;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,11 +17,11 @@ import android.widget.TextView;
  */
 public class MediaAdapter extends BaseAdapter {
 
-    private static final String[] TYPES = new String[] { "live", "video", "audio" };
+    private static final String[] TYPES = new String[] { "live", "video", "audio", "library" };
     /** 卡片：深色玻璃实底 + 彩色描边。之前用 20% 透明色块，在壁纸上几乎隐形（真 bug） */
     private static final int FILL = 0xF2161C2C;
-    private static final int[] STROKES = new int[] { 0xFFFF7E9D, 0xFF4D6BFE, 0xFF2DD4BF };
-    private static final int[] LABELS = new int[] { R.string.live_title, R.string.vod_title, R.string.music_title };
+    private static final int[] STROKES = new int[] { 0xFFFF7E9D, 0xFF4D6BFE, 0xFF2DD4BF, 0xFFF59E0B };
+    private static final int[] LABELS = new int[] { R.string.live_title, R.string.vod_title, R.string.music_title, R.string.library_title };
 
     private final Context ctx;
 
@@ -43,11 +43,22 @@ public class MediaAdapter extends BaseAdapter {
         v.setScaleY(1f);
         v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override public void onFocusChange(View vv, boolean has) {
-                float s = has ? 1.1f : 1f;
-                vv.animate().scaleX(s).scaleY(s)
-                        .setDuration(150)
-                        .setInterpolator(new OvershootInterpolator(has ? 1.2f : 0.6f))
-                        .start();
+                FocusAnimator.setFocusState(vv, has);
+            }
+        });
+        v.setOnTouchListener(new View.OnTouchListener() {
+            @Override public boolean onTouch(View vv, MotionEvent ev) {
+                if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    FocusAnimator.setFocusState(vv, true);
+                } else if (ev.getActionMasked() == MotionEvent.ACTION_UP
+                        || ev.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                    vv.postDelayed(new Runnable() {
+                        @Override public void run() {
+                            FocusAnimator.setFocusState(vv, vv.isFocused());
+                        }
+                    }, 180);
+                }
+                return false;
             }
         });
         ImageView iv = (ImageView) v.findViewById(R.id.ivMediaIcon);
@@ -60,6 +71,7 @@ public class MediaAdapter extends BaseAdapter {
         if (tv != null) {
             tv.setText(LABELS[position % LABELS.length]);
             tv.setTextColor(ThemeManager.TEXT_MAIN);
+            v.setTag(R.id.tagAppName, tv);
         }
         return v;
     }
