@@ -249,10 +249,14 @@ public abstract class BaseShellActivity extends Activity {
                 if (text != null && TvBoxConfig.looks(text)) {
                     expanded = new ArrayList<PlaylistParser.Item>();
                     List<TvBoxConfig.Live> lives = TvBoxConfig.lives(text, BaseShellActivity.this);
+                    // 一份订阅里常挂十几个直播列表，里面还有纯 IPv6、根本连不通的；
+                    // 一条条串行拉会让人对着"加载中"等好几分钟，这里给整体 25 秒预算，超了就带着已有结果先显示。
+                    long deadline = System.currentTimeMillis() + 25000L;
                     for (int i = 0; i < lives.size(); i++) {
+                        if (System.currentTimeMillis() > deadline) { break; }
                         TvBoxConfig.Live lv = lives.get(i);
                         try {
-                            List<PlaylistParser.Item> one = PlaylistParser.parse(fetch(lv.url));
+                            List<PlaylistParser.Item> one = PlaylistParser.parse(fetchQuick(lv.url, 6000));
                             for (int j = 0; j < one.size(); j++) {
                                 PlaylistParser.Item it = one.get(j);
                                 expanded.add(new PlaylistParser.Item(it.name, lv.name, it.url));
@@ -295,6 +299,22 @@ public abstract class BaseShellActivity extends Activity {
                 });
             }
         }).start();
+    }
+
+    /** 拉订阅里那些直播列表用的快通道：连不通就赶紧跳过，不要拖住整页 */
+    private String fetchQuick(String url, int connMs) throws Exception {
+        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+        c.setConnectTimeout(connMs);
+        c.setReadTimeout(connMs + 4000);
+        c.setRequestProperty("User-Agent", "CDesk/1.0");
+        InputStream in = c.getInputStream();
+        BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) sb.append(line).append('\n');
+        r.close();
+        c.disconnect();
+        return sb.toString();
     }
 
     private String fetch(String url) throws Exception {
