@@ -74,6 +74,9 @@ public class MusicHomeActivity extends Activity {
             }
         });
 
+        wireRadio(R.id.btnRadioCn, true);
+        wireRadio(R.id.btnRadioIntl, false);
+
         String api0 = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_API, "");
         if (api0 != null && api0.trim().length() > 0) { loadRemote(api0.trim()); }
         else { scanLocal(); }
@@ -228,5 +231,76 @@ public class MusicHomeActivity extends Activity {
             else { r.setVisibility(View.VISIBLE); r.setText(a); }
             return v;
         }
+    }
+
+    /** 内置公开电台：Radio Browser（公共接口，不用 key） */
+    private void wireRadio(int id, final boolean cn) {
+        android.widget.Button b = (android.widget.Button) findViewById(id);
+        if (b == null) { return; }
+        try { ThemeManager.styleButton(b, ThemeManager.current(this)); } catch (Throwable ignored) { }
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { loadRadio(cn); }
+        });
+    }
+
+    /**
+     * 国内台按国家码 CN 取，国际台取全球点播最多的。
+     * 接口挂掉就换镜像，全挂再报错——不能让车机上一片空白。
+     */
+    private void loadRadio(final boolean cn) {
+        tvState.setVisibility(View.VISIBLE);
+        tvState.setText(R.string.vodpg_loading);
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final List<String> n = new ArrayList<String>();
+                final List<String> u = new ArrayList<String>();
+                final List<String> s = new ArrayList<String>();
+                String err = null;
+                String query = cn
+                        ? "/json/stations/search?countrycode=CN&limit=200&hidebroken=true&order=clickcount&reverse=true"
+                        : "/json/stations/search?limit=200&hidebroken=true&order=clickcount&reverse=true";
+                String[] hosts = new String[] {
+                        "https://de1.api.radio-browser.info",
+                        "https://de2.api.radio-browser.info",
+                        "https://at1.api.radio-browser.info",
+                        "https://nl1.api.radio-browser.info"
+                };
+                for (int i = 0; i < hosts.length; i++) {
+                    try {
+                        String json = fetch(hosts[i] + query);
+                        org.json.JSONArray arr = new org.json.JSONArray(json);
+                        for (int k = 0; k < arr.length(); k++) {
+                            org.json.JSONObject o = arr.getJSONObject(k);
+                            String url = o.optString("url_resolved", "");
+                            if (url.length() == 0) { url = o.optString("url", ""); }
+                            String name = o.optString("name", "").trim();
+                            if (url.length() == 0 || name.length() == 0) { continue; }
+                            String country = o.optString("country", "");
+                            String bitrate = o.optString("bitrate", "");
+                            String sub = country;
+                            if (bitrate.length() > 0 && !"0".equals(bitrate)) { sub = country + " · " + bitrate + "kbps"; }
+                            n.add(name);
+                            u.add(url);
+                            s.add(sub);
+                        }
+                        if (n.size() > 0) { err = null; break; }
+                    } catch (Throwable t) {
+                        err = String.valueOf(t);
+                    }
+                }
+                final String e = err;
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        reset();
+                        titles.addAll(n);
+                        urls.addAll(u);
+                        subs.addAll(s);
+                        CLog.i("music: radio cn=" + cn + " got=" + n.size() + (e == null ? "" : (" err=" + e)));
+                        afterLoad();
+                        if (e != null && n.isEmpty()) { tvState.setText(R.string.vodpg_failed); }
+                    }
+                });
+            }
+        }).start();
     }
 }

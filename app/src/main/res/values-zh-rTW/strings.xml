@@ -218,4 +218,6 @@
     <string name="musicpg_api_msg">填播放清單地址（m3u/m3u8，或「名字,地址」的 txt）。TVBox 那種 .js 源這裡用不了</string>
     <string name="musicpg_api_hint">http://.../list.m3u</string>
     <string name="musicpg_local">本機音樂</string>
+    <string name="musicpg_radio_cn">國內電台</string>
+    <string name="musicpg_radio_intl">國際電台</string>
 </resources>

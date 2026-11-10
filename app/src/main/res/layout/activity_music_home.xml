@@ -28,6 +28,20 @@
             android:text="@string/entry_api" />
 
         <Button
+            android:id="@+id/btnRadioCn"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginLeft="12dp"
+            android:text="@string/musicpg_radio_cn" />
+
+        <Button
+            android:id="@+id/btnRadioIntl"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginLeft="12dp"
+            android:text="@string/musicpg_radio_intl" />
+
+        <Button
             android:id="@+id/btnMusicLocal"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
