@@ -54,7 +54,26 @@ public class LiveHomeActivity extends Activity {
         tvState.setText(R.string.vodpg_loading);
         VodAsync.go(this, new VodAsync.Job<List<LiveApi.Group>>() {
             @Override public List<LiveApi.Group> run() throws Exception {
-                return LiveApi.parse(LiveApi.fetch(url));
+                // 一个框里可以填多个源地址（换行或 | 分隔），全部抓下来合并
+                String[] srcs = url.split("[\\r\\n|]+");
+                List<LiveApi.Group> merged = new ArrayList<LiveApi.Group>();
+                String lastErr = null;
+                int ok = 0;
+                for (int i = 0; i < srcs.length; i++) {
+                    String s = srcs[i].trim();
+                    if (s.length() == 0) { continue; }
+                    try {
+                        List<LiveApi.Group> g = LiveApi.parse(LiveApi.fetch(s));
+                        for (int j = 0; j < g.size(); j++) { merged.add(g.get(j)); }
+                        ok++;
+                    } catch (Throwable t) {
+                        lastErr = t.getClass().getSimpleName() + ": " + t.getMessage();
+                        CLog.e("live: source " + i + " failed " + lastErr);
+                    }
+                }
+                if (ok == 0 && lastErr != null) { throw new Exception(lastErr); }
+                CLog.i("live: sources ok=" + ok + "/" + srcs.length);
+                return merged;
             }
         }, new VodAsync.Done<List<LiveApi.Group>>() {
             @Override public void ok(List<LiveApi.Group> v) {

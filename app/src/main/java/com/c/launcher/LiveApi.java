@@ -99,6 +99,24 @@ public final class LiveApi {
         }
     }
 
+    /**
+     * 同名频道在别的分组里的地址。
+     * 聚合源里同一个台常有好几条线路，主线路挂了要能自动换下一条。
+     */
+    public static String[] urlsFor(String name, String exclude) {
+        List<String> out = new ArrayList<String>();
+        for (int i = 0; i < CACHE.size(); i++) {
+            List<Channel> cs = CACHE.get(i).channels;
+            for (int j = 0; j < cs.size(); j++) {
+                Channel c = cs.get(j);
+                if (!name.equals(c.name)) { continue; }
+                if (exclude != null && exclude.equals(c.url)) { continue; }
+                if (!out.contains(c.url)) { out.add(c.url); }
+            }
+        }
+        return out.toArray(new String[0]);
+    }
+
     private static Group find(List<Group> list, String name) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).name.equals(name)) { return list.get(i); }

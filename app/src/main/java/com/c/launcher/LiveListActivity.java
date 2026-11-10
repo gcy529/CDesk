@@ -12,9 +12,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-/** 直播第二层：频道列表，点了直接播 */
+/**
+ * 直播第二层：频道列表。
+ *
+ * 聚合源里同一个台会出现好几次（不同线路/不同源），这里同名只显示一行，
+ * 其余地址作为备用线一起交给播放器 —— 主线路断了它会自己换下一条，不用手点。
+ */
 public class LiveListActivity extends Activity {
 
     public static final String EXTRA_INDEX = "index";
@@ -33,7 +40,12 @@ public class LiveListActivity extends Activity {
         TextView tvState = (TextView) findViewById(R.id.tvVodState);
         ListView list = (ListView) findViewById(R.id.lvVideos);
         if (idx >= 0 && idx < LiveApi.CACHE.size()) {
-            channels.addAll(LiveApi.CACHE.get(idx).channels);
+            Set<String> seen = new HashSet<String>();
+            List<LiveApi.Channel> all = LiveApi.CACHE.get(idx).channels;
+            for (int i = 0; i < all.size(); i++) {
+                LiveApi.Channel c = all.get(i);
+                if (seen.add(c.name)) { channels.add(c); }
+            }
         }
         if (channels.isEmpty()) {
             tvState.setVisibility(View.VISIBLE);
@@ -43,11 +55,14 @@ public class LiveListActivity extends Activity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override public void onItemClick(AdapterView<?> p, View v, int pos, long id) {
                 LiveApi.Channel c = channels.get(pos);
+                String[] alts = LiveApi.urlsFor(c.name, c.url);
                 Intent i = new Intent(LiveListActivity.this, PlayerActivity.class);
                 i.putExtra(PlayerActivity.EXTRA_URL, c.url);
                 i.putExtra(PlayerActivity.EXTRA_NAME, c.name);
+                i.putExtra(PlayerActivity.EXTRA_LIVE, true);
+                if (alts.length > 0) { i.putExtra(PlayerActivity.EXTRA_ALT, alts); }
                 startActivity(i);
-                CLog.i("live: play " + c.name);
+                CLog.i("live: play " + c.name + " alts=" + alts.length);
             }
         });
     }
