@@ -211,4 +211,13 @@
     <string name="vodpg_api_title">影视接口地址</string>
     <string name="vodpg_api_msg">填采集接口地址（苹果CMS 那种），本应用不内置任何源</string>
     <string name="vodpg_api_hint">http://你的接口/api.php/provide/vod/</string>
+    <string name="entry_api">接口</string>
+    <string name="livepg_api_title">直播源地址</string>
+    <string name="livepg_api_msg">一行一个源，支持 m3u 或「央视,#genre#」那种 txt。本应用不内置任何源</string>
+    <string name="livepg_api_hint">http://...
+可多行</string>
+    <string name="musicpg_api_title">音乐接口地址</string>
+    <string name="musicpg_api_msg">填播放列表地址（m3u/m3u8，或「名字,地址」的 txt）。TVBox 那种 .js 源这里用不了</string>
+    <string name="musicpg_api_hint">http://.../list.m3u</string>
+    <string name="musicpg_local">本机音乐</string>
 </resources>
