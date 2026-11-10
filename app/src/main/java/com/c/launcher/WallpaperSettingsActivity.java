@@ -81,11 +81,6 @@ public class WallpaperSettingsActivity extends Activity {
         }
 
         // 使用须知 + 返回
-        findViewById(R.id.btnDisclaimer).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                startActivity(new Intent(WallpaperSettingsActivity.this, DisclaimerActivity.class));
-            }
-        });
         findViewById(R.id.btnWpBack).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }
         });

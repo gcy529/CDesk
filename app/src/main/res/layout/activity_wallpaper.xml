@@ -88,8 +88,6 @@
             <TextView android:id="@+id/tvWechatTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="26dp" android:text="@string/wechat_title" android:textSize="18sp" android:textStyle="bold" />
             <TextView android:id="@+id/tvWechatName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/wechat_name" android:textSize="15sp" />
             <TextView android:id="@+id/tvWechatBody" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/wechat_body" android:textSize="13sp" />
-
-            <Button android:id="@+id/btnDisclaimer" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="24dp" android:text="@string/disclaimer_title" />
             <Button android:id="@+id/btnWpBack" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="10dp" android:text="@string/transfer_back" />
         </LinearLayout>
     </ScrollView>

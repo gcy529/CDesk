@@ -28,6 +28,7 @@
     </queries>
 
     <application
+        android:name=".App"
         android:resizeableActivity="true"
         android:label="@string/app_name"
         android:usesCleartextTraffic="true"
@@ -75,6 +76,7 @@
             android:screenOrientation="landscape"
             android:name=".CrashActivity"
             android:exported="false" />
+        <activity android:name=".LogViewActivity" />
 
         <activity
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"

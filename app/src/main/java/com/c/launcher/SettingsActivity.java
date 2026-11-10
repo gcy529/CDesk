@@ -112,15 +112,11 @@ public class SettingsActivity extends Activity {
         });
 
         if (btnLog != null) {
+            // 改成打开整页日志：能慢慢滚、能截图、能复制。
+            // 原来的「复制 + 2 秒 Toast」根本来不及看。
             btnLog.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    try {
-                        android.content.ClipboardManager cm = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                        cm.setText(CLog.report());
-                        Toast.makeText(SettingsActivity.this, R.string.settings_log_copied, Toast.LENGTH_LONG).show();
-                    } catch (Throwable t) {
-                        Toast.makeText(SettingsActivity.this, getString(R.string.settings_log_failed, t), Toast.LENGTH_LONG).show();
-                    }
+                    startActivity(new Intent(SettingsActivity.this, LogViewActivity.class));
                 }
             });
         }
