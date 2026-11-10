@@ -173,12 +173,8 @@ jobs:
           {"version":"$VER","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-$VER-beta.apk","channel":"beta","force":false}
           EOF
           cat version.json
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add version.json
-          if git diff --cached --quiet; then echo "version.json unchanged"; exit 0; fi
-          git commit -m "chore: version.json -> $VER [skip ci]"
-          git push origin HEAD:beta || true
+          # 不再由 CI 提交 version.json 回 beta：那会把发版提交顶掉，线上版本号永远落后
+          echo 'version.json 由发版提交维护，CI 不提交'
 
       - name: Release beta
         if: github.ref == 'refs/heads/beta'
