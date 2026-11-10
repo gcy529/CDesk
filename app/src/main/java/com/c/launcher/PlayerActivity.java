@@ -67,6 +67,23 @@ public class PlayerActivity extends Activity {
     private PlayStats stats;
     private android.widget.TextView tvStats;
     private boolean statsShown = false;
+    private final Runnable hideStats = new Runnable() {
+        @Override public void run() {
+            statsShown = false;
+            if (tvStats != null) { tvStats.setVisibility(View.GONE); }
+        }
+    };
+    private final Runnable statsTick = new Runnable() {
+        @Override public void run() {
+            try {
+                if (player != null && stats != null && tvStats != null) {
+                    tvStats.setText(stats.line(player));
+                    if (statsShown) { tvStats.setVisibility(View.VISIBLE); }
+                }
+            } catch (Throwable ignored) { }
+            ui.postDelayed(this, 2000);
+        }
+    };
     private boolean dragging = false;
     private int retries = 0;
     private int resizeIdx = 0;
@@ -251,11 +268,44 @@ public class PlayerActivity extends Activity {
             player.setPlayWhenReady(true);
             player.prepare();
             CLog.i("player start: " + u);
+            showStatsForAWhile();
         } catch (Throwable t) {
             if (loading != null) loading.setVisibility(View.GONE);
             showError(t.getClass().getSimpleName() + ": " + t.getMessage());
             CLog.e("player create failed", t);
         }
+    }
+
+    /**
+     * 播放开始后把统计显示十来秒：卡不卡、机器解不解得动，一眼就看得出来。
+     * 之后如果出现丢帧会自动再弹一次。
+     */
+    private void showStatsForAWhile() {
+        if (tvStats == null) {
+            tvStats = new android.widget.TextView(this);
+            tvStats.setTextSize(11f);
+            tvStats.setTextColor(0xCCFFFFFF);
+            tvStats.setBackgroundColor(0x88000000);
+            tvStats.setPadding(10, 6, 10, 6);
+            try {
+                ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+                android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.gravity = android.view.Gravity.BOTTOM | android.view.Gravity.LEFT;
+                lp.leftMargin = 24;
+                lp.bottomMargin = 24;
+                root.addView(tvStats, lp);
+            } catch (Throwable t) {
+                CLog.e("stats overlay failed: " + t);
+                return;
+            }
+        }
+        statsShown = true;
+        tvStats.setVisibility(View.VISIBLE);
+        ui.removeCallbacks(statsTick);
+        ui.removeCallbacks(hideStats);
+        ui.postDelayed(statsTick, 1200);
+        ui.postDelayed(hideStats, 14000);
     }
 
     /** 把失败原因摊在画面正中间，方便截图定位 */

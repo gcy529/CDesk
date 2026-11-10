@@ -1,6 +1,7 @@
 package com.c.launcher;
 
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.analytics.AnalyticsListener;
 
@@ -27,7 +28,7 @@ public final class PlayStats implements AnalyticsListener {
 
     public long dropped() { return dropped; }
 
-    public String line(Player p) {
+    public String line(ExoPlayer p) {
         String res = "-";
         String codec = "-";
         long kbps = 0;
@@ -39,7 +40,7 @@ public final class PlayStats implements AnalyticsListener {
                 if (f.codecs != null) { codec = f.codecs; }
                 kbps = f.bitrate / 1000L;
             }
-            buf = p.getBufferedPercentage();
+            buf = ((Player) p).getBufferedPercentage();
         } catch (Throwable ignored) {
         }
         return "drop " + dropped + " | under " + underruns + " | " + res + " " + codec
