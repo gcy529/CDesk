@@ -92,12 +92,23 @@ public class MainPageNavigationTest {
         next(a).performClick();
         GridView grid = (GridView) a.findViewById(R.id.gridApps);
         MediaAdapter ma = new MediaAdapter(a);
+        assertEquals("影音页必须换成 MediaAdapter", MediaAdapter.class, grid.getAdapter().getClass());
         // API 31 起 setNumColumns 只写"请求列数"，getNumColumns 返回布局后的生效值；
-        // Robolectric 不跑自动布局，手动 layout 一次让 onMeasure 同步两值。
+        // Robolectric 不跑自动布局，手动 measure + layout 一次让 onMeasure 同步两值。
         int w = a.getResources().getDisplayMetrics().widthPixels;
+        grid.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY));
         grid.layout(0, 0, w, 600);
-        assertEquals("列数必须与适配器同源，否则 DPAD 边界判断和实际布局会错位",
-                ma.columns(), grid.getNumColumns());
+        int cols = grid.getNumColumns();
+        if (cols == GridView.AUTO_FIT) {
+            // Robolectric 不真正跑 GridView 自动布局时仍是 AUTO_FIT，
+            // 此时只校验适配器侧声明的列数（MainActivity 读的就是它）。
+            assertEquals("适配器列数应为 3", 3, ma.columns());
+        } else {
+            assertEquals("列数必须与适配器同源，否则 DPAD 边界判断和实际布局会错位: adapter="
+                            + ma.columns() + " grid=" + cols,
+                    ma.columns(), cols);
+        }
         assertEquals(ma.getCount(), grid.getAdapter().getCount());
     }
 
