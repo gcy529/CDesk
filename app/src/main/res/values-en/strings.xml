@@ -189,4 +189,12 @@
     <string name="guardian_battery_na">— Battery: no such mechanism</string>
     <string name="guardian_version">Version %1$s</string>
     <string name="update_failed">Update check failed (%1$s). Check your network.</string>
+    <string name="update_force_title">Update required to v%1$s</string>
+    <string name="update_force_msg">This version is no longer supported. Update to continue.</string>
+    <string name="update_soft_msg">A new version is available. Updating will not affect your current setup.</string>
+    <string name="update_now">Update now</string>
+    <string name="update_later">Later</string>
+    <string name="update_switch">Switch mirror</string>
+    <string name="update_downloading">Downloading (mirror %1$s)</string>
+    <string name="update_download_failed">Download failed. Try another mirror.</string>
 </resources>

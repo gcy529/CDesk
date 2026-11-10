@@ -188,4 +188,12 @@
     <string name="guardian_battery_na">— 電池優化：本系統無此機制</string>
     <string name="guardian_version">當前版本 %1$s</string>
     <string name="update_failed">檢查更新失敗（%1$s），請檢查網絡</string>
+    <string name="update_force_title">必須更新到 v%1$s</string>
+    <string name="update_force_msg">這個版本已經不能用了，更新完才能繼續使用。</string>
+    <string name="update_soft_msg">有新版本可用，更新不影響現在的使用。</string>
+    <string name="update_now">立即更新</string>
+    <string name="update_later">稍後</string>
+    <string name="update_switch">換條線路</string>
+    <string name="update_downloading">正在下載（線路 %1$s）</string>
+    <string name="update_download_failed">下載失敗，換條線路再試</string>
 </resources>

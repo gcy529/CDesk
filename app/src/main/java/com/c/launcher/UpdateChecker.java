@@ -28,6 +28,14 @@ public final class UpdateChecker {
         void onLatest(String remoteVersion);
         /** 全部源都拿不到时回调；默认静默，避免每日自动检查打扰 */
         default void onError(String reason) { }
+        /**
+         * 服务端在 version.json 里标了 "force":"true" 才走这里：这次不更新就用不了。
+         * 开关放服务器而不是写死在代码里 —— 万一哪天下载线路全挂了，
+         * 改一下 json 就能把人放出来，不用等用户卸载重装。
+         */
+        default void onForceUpdate(String remoteVersion, String downloadUrl) {
+            onUpdate(remoteVersion, downloadUrl);
+        }
     }
 
     private UpdateChecker() { }
@@ -75,6 +83,7 @@ public final class UpdateChecker {
 
     static final class Res {
         boolean failed;
+        boolean force;
         String err;
         String ver;
         String url;
@@ -90,6 +99,15 @@ public final class UpdateChecker {
 
     public static void checkNow(final Activity act, final Callback cb) {
         fetchAsync(act, cb);
+    }
+
+    /** 同一条下载地址的所有加速线路；应用内下载失败就自动换下一条 */
+    public static String[] mirrorUrls(String url) {
+        if (url == null || url.length() == 0) { return new String[0]; }
+        if (!url.startsWith("https://github.com/")) { return new String[] { url }; }
+        String[] out = new String[MIRRORS.length];
+        for (int i = 0; i < MIRRORS.length; i++) { out[i] = MIRRORS[i] + url; }
+        return out;
     }
 
     public static void checkIfNeeded(final Activity act, final Callback cb) {
@@ -111,7 +129,8 @@ public final class UpdateChecker {
                         if (res.failed) {
                             cb.onError(res.err == null ? "network" : res.err);
                         } else if (res.ver != null && res.url != null && isNewer(res.ver, cur)) {
-                            cb.onUpdate(res.ver, downloadUrl(res.url, res.mirror));
+                            if (res.force) { cb.onForceUpdate(res.ver, downloadUrl(res.url, res.mirror)); }
+                            else { cb.onUpdate(res.ver, downloadUrl(res.url, res.mirror)); }
                         } else {
                             cb.onLatest(res.ver);
                         }
@@ -191,6 +210,7 @@ public final class UpdateChecker {
             Res r = new Res();
             r.ver = v;
             r.url = extract(s, "url", 0);
+            r.force = "true".equals(extract(s, "force", 0));
             return r;
         }
         // GitHub releases 列表

@@ -190,4 +190,12 @@
     <string name="guardian_battery_na">— 电池优化：本系统无此机制</string>
     <string name="guardian_version">当前版本 %1$s</string>
     <string name="update_failed">检查更新失败（%1$s），请检查网络</string>
+    <string name="update_force_title">必须更新到 v%1$s</string>
+    <string name="update_force_msg">这个版本已经不能用了，更新完才能继续使用。</string>
+    <string name="update_soft_msg">有新版本可用，更新不影响现在使用。</string>
+    <string name="update_now">立即更新</string>
+    <string name="update_later">稍后</string>
+    <string name="update_switch">换条线路</string>
+    <string name="update_downloading">正在下载（线路 %1$s）</string>
+    <string name="update_download_failed">下载失败，换条线路再试</string>
 </resources>

@@ -10,6 +10,8 @@
     <!-- 前台服务保活 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- 应用内下载更新包后调用系统安装器（API 26+ 才需要，低版本自动忽略） -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- 局域网传输需要读 Wi-Fi IP -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
@@ -141,6 +143,17 @@
             android:screenOrientation="landscape"
             android:name=".MusicShellActivity"
             android:theme="@style/AppTheme" />
+
+        <!-- 更新包用 content:// 交给安装器：Android 7 起 file:// 会直接抛 FileUriExposedException -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.updates"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <!-- foregroundServiceType 只在 targetSdk 34+ 生效，低版本自动忽略 -->
         <service

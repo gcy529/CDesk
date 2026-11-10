@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 更新包下载到 getExternalFilesDir(null)，这里把它暴露给系统安装器 -->
+<paths>
+    <external-files-path name="updates" path="." />
+    <cache-path name="cache_updates" path="." />
+</paths>
