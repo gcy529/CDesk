@@ -196,4 +196,5 @@
     <string name="update_switch">換條線路</string>
     <string name="update_downloading">正在下載（線路 %1$s）</string>
     <string name="update_download_failed">下載失敗，換條線路再試</string>
+    <string name="ep_line_fallback">線路 %1$d</string>
 </resources>

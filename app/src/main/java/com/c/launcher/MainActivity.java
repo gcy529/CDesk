@@ -170,7 +170,8 @@ public class MainActivity extends Activity {
 
         // 启动时确认这个包是不是我们发的：别人重签过的话签名对不上
         if (!SelfCheck.isOfficial(this)) {
-            CLog.e("非官方签名：这个包被改过或被重新签名");
+            // 日志会显示在日志页上，一律用英文：中文会被「英文界面不许出现中文」的测试抓出来
+            CLog.e("unofficial signature: package was modified or re-signed");
         }
 
         btnPagePrev = (Button) findViewById(R.id.btnPagePrev);

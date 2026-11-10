@@ -131,7 +131,73 @@ public final class SourceApi {
         return parsePlayUrl(play, c);
     }
 
-    /** 解析 `第1集$http://a#第2集$http://b`，也支持 $$$ 分隔的多条线路（取第一条线路） */
+    /** 一条线路：名字 + 它下面的剧集。vod_play_from / vod_play_url 用 $$ 分隔，两边一一对应 */
+    public static final class Line {
+        public final String name;
+        public final List<Ep> eps;
+        public Line(String name, List<Ep> eps) { this.name = name; this.eps = eps; }
+    }
+
+    /** 详情页要的全部内容：标题、封面、简介、所有线路 */
+    public static final class Detail {
+        public String name;
+        public String pic;
+        public String desc;
+        public String year;
+        public String area;
+        public final List<Line> lines = new ArrayList<Line>();
+    }
+
+    /**
+     * 详情：一次拿到所有线路和剧集。
+     * 老接口只给了第一条线路，多线路的源在详情页就只剩一条可选，这是之前「选了线路还是那一个」的原因。
+     */
+    public static Detail detail(String base, String vodId, Context c) throws Exception {
+        String txt = get(join(base, "ac=detail&ids=" + vodId));
+        Detail d = new Detail();
+        JSONArray arr = root(txt).optJSONArray("list");
+        if (arr == null || arr.length() == 0) { return d; }
+        JSONObject o = arr.optJSONObject(0);
+        if (o == null) { return d; }
+        d.name = str(o, new String[] { "vod_name", "name", "title" });
+        d.pic = str(o, new String[] { "vod_pic", "pic" });
+        d.desc = str(o, new String[] { "vod_content", "vod_blurb", "content", "desc" });
+        d.year = str(o, new String[] { "vod_year", "year" });
+        d.area = str(o, new String[] { "vod_area", "area" });
+        String from = str(o, new String[] { "vod_play_from", "play_from" });
+        String urls = str(o, new String[] { "vod_play_url", "play_url", "url" });
+        String[] froms = from == null ? new String[0] : from.split("\\$\\$\\$");
+        String[] groups = urls == null ? new String[0] : urls.split("\\$\\$\\$");
+        for (int i = 0; i < groups.length; i++) {
+            String nm = (i < froms.length && froms[i].trim().length() > 0)
+                    ? froms[i].trim()
+                    : c.getString(R.string.ep_line_fallback, i + 1);
+            List<Ep> eps = parsePlayUrl(groups[i], c);
+            if (!eps.isEmpty()) { d.lines.add(new Line(nm, eps)); }
+        }
+        return d;
+    }
+
+    /** 搜索：苹果CMS 的 ac=videolist&wd=关键词 */
+    public static List<Video> search(String base, String key) throws Exception {
+        String txt = get(join(base, "ac=videolist&wd=" + java.net.URLEncoder.encode(key, "UTF-8")));
+        List<Video> out = new ArrayList<Video>();
+        JSONArray arr = root(txt).optJSONArray("list");
+        if (arr == null) { return out; }
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null) { continue; }
+            String id = str(o, new String[] { "vod_id", "id" });
+            String name = str(o, new String[] { "vod_name", "name", "title" });
+            if (id == null || name == null) { continue; }
+            out.add(new Video(id, name,
+                    str(o, new String[] { "vod_pic", "pic" }),
+                    str(o, new String[] { "vod_remarks", "remarks", "note" })));
+        }
+        return out;
+    }
+
+    /** 解析 `第1集$http://a#第2集$http://b`，也支持 $$ 分隔的多条线路（取第一条线路） */
     static List<Ep> parsePlayUrl(String s, Context c) {
         List<Ep> out = new ArrayList<Ep>();
         if (s == null || s.length() == 0) return out;

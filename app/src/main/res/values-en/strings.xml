@@ -197,4 +197,5 @@
     <string name="update_switch">Switch mirror</string>
     <string name="update_downloading">Downloading (mirror %1$s)</string>
     <string name="update_download_failed">Download failed. Try another mirror.</string>
+    <string name="ep_line_fallback">Line %1$d</string>
 </resources>
