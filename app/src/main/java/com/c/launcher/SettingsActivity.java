@@ -93,8 +93,11 @@ public class SettingsActivity extends Activity {
                             startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)));
                         } catch (Throwable ignored) { }
                     }
-                    @Override public void onLatest() {
-                        Toast.makeText(SettingsActivity.this, R.string.update_latest, Toast.LENGTH_SHORT).show();
+                    @Override public void onLatest(String remoteVer) {
+                        // 带上远端版本号：能弹出版本号 = 真的连上服务器了，不是网络失败被当成最新
+                        String msg = getString(R.string.update_latest);
+                        if (remoteVer != null && remoteVer.length() > 0) msg = msg + " (" + remoteVer + ")";
+                        Toast.makeText(SettingsActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                     @Override public void onError(String reason) {
                         // 网络不通必须说清楚，不能继续冒充「已是最新」

@@ -25,7 +25,7 @@ public final class UpdateChecker {
 
     public interface Callback {
         void onUpdate(String remoteVersion, String downloadUrl);
-        void onLatest();
+        void onLatest(String remoteVersion);
         /** 全部源都拿不到时回调；默认静默，避免每日自动检查打扰 */
         default void onError(String reason) { }
     }
@@ -113,7 +113,7 @@ public final class UpdateChecker {
                         } else if (res.ver != null && res.url != null && isNewer(res.ver, cur)) {
                             cb.onUpdate(res.ver, downloadUrl(res.url, res.mirror));
                         } else {
-                            cb.onLatest();
+                            cb.onLatest(res.ver);
                         }
                     }
                 });

@@ -142,7 +142,7 @@ public class MainActivity extends Activity {
         
         // 更新提醒：每天最多查一次，静默失败
         UpdateChecker.checkIfNeeded(this, new UpdateChecker.Callback() {
-            @Override public void onLatest() { }
+            @Override public void onLatest(String v) { }
             @Override public void onUpdate(String ver, String url) {
                 if (tvBadge != null) {
                     tvBadge.setText(getString(R.string.update_found, ver));
