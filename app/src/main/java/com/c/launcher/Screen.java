@@ -29,7 +29,9 @@ public final class Screen {
             w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             hideBars(a);
-            applySafeArea(a);
+            // 不再给内容区补 cutout 安全边距：挖孔机型上系统报的边距有 100 多像素，
+            // 内容被整体推进去，空出来的那块露出窗口底色，就是"旁边一道黑边"。
+            // 壁纸要铺满，宁可让挖孔压住一点点画面。
         } catch (Throwable ignored) { }
     }
 

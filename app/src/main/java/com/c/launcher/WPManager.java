@@ -204,6 +204,11 @@ public final class WPManager {
         }
         bg.setScaleType(ImageView.ScaleType.CENTER_CROP);
         bg.setImageDrawable(new BitmapDrawable(a.getResources(), b));
+        // 画面主体（人物）偏左压着图标区：放大 12% 再整体右移，
+        // 放大让出的余量刚够平移，不会露出底色。
+        bg.setScaleX(1.12f);
+        bg.setScaleY(1.12f);
+        bg.setTranslationX(a.getResources().getDisplayMetrics().widthPixels * 0.055f);
         bg.setVisibility(View.VISIBLE);
         colorBg1.setVisibility(View.GONE);
         colorBg2.setVisibility(View.GONE);

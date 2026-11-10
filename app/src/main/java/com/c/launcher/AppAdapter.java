@@ -87,6 +87,12 @@ public class AppAdapter extends BaseAdapter {
             }
             Collections.sort(all, new Comparator<AppItem>() {
                 @Override public int compare(AppItem a, AppItem b) {
+                    // 自己排第一：点自己会唤出系统「选择桌面」，
+                    // 这是车机固件锁死 Home 键时唯一能切换默认桌面的入口，
+                    // 排在一堆应用中间根本找不到。
+                    boolean sa = ctx.getPackageName().equals(a.pkg);
+                    boolean sb = ctx.getPackageName().equals(b.pkg);
+                    if (sa != sb) return sa ? -1 : 1;
                     return a.label.compareToIgnoreCase(b.label);
                 }
             });
