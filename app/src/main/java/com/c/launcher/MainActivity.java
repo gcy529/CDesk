@@ -375,6 +375,9 @@ public class MainActivity extends Activity {
         boolean media = page == PAGE_MEDIA;
         gridApps.setAdapter(media ? mediaAdapter : adapter);
         gridApps.setNumColumns(media ? mediaAdapter.columns() : APP_COLS);
+        // 影音页右侧留给壁纸人物：4 张卡片只占左边四分之三
+        int gapRight = media ? (int) (getResources().getDisplayMetrics().widthPixels * 0.26f) : 0;
+        gridApps.setPadding(0, gridApps.getPaddingTop(), gapRight, gridApps.getPaddingBottom());
         gridApps.setSelection(0);
 
         List<AppAdapter.AppItem> all = adapter.allItems();

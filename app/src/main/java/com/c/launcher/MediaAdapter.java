@@ -41,7 +41,7 @@ public class MediaAdapter extends BaseAdapter {
     public String typeAt(int pos) { return TYPES[pos % TYPES.length]; }
 
     /** 网格列数：MainActivity 的 DPAD 边界判断和 setNumColumns 都读这里，不许两处各写一个字面量 */
-    public int columns() { return 3; }
+    public int columns() { return 4; }
 
     @Override public int getCount() { return TYPES.length; }
     @Override public Object getItem(int position) { return typeAt(position); }
@@ -86,49 +86,51 @@ public class MediaAdapter extends BaseAdapter {
         });
         ImageView iv = (ImageView) v.findViewById(R.id.ivMediaIcon);
         TextView tv = (TextView) v.findViewById(R.id.tvMediaName);
-        // 画真正的图标：圆角色块 + 白色图形（播放/音符/胶片/书本）
-        int[] colors = STROKES;
-        int ci = position % colors.length;
+        // 只画图形本身，颜色按类型区分；卡片底板交给 bg_media_card，
+        // 不再在 bitmap 里再画一个深色圆角块（那样是"方块套方块"，远看四块黑板）。
         android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(dp(96), dp(96), android.graphics.Bitmap.Config.ARGB_8888);
         android.graphics.Canvas cv = new android.graphics.Canvas(bmp);
         android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
-        // 底色圆角块
-        paint.setColor(0xF2161C2C);
-        android.graphics.RectF rf = new android.graphics.RectF(0, 0, dp(96), dp(96));
-        cv.drawRoundRect(rf, dp(24), dp(24), paint);
-        // 描边
-        paint.setStyle(android.graphics.Paint.Style.STROKE);
-        paint.setStrokeWidth(dp(2));
-        paint.setColor(colors[ci]);
-        cv.drawRoundRect(rf, dp(24), dp(24), paint);
-        // 白色图形
-        paint.setStyle(android.graphics.Paint.Style.FILL);
-        paint.setColor(0xFFFFFFFF);
         int type = position % TYPES.length;
-        float cx = dp(48), cy = dp(48), r = dp(18);
+        paint.setColor(STROKES[type]);
+        paint.setStyle(android.graphics.Paint.Style.FILL);
+        float cx = dp(48), cy = dp(48), r = dp(26);
         if (type == 0) {
             // 直播：播放三角
             android.graphics.Path tri = new android.graphics.Path();
-            tri.moveTo(cx - r * 0.5f, cy - r * 0.8f);
-            tri.lineTo(cx - r * 0.5f, cy + r * 0.8f);
-            tri.lineTo(cx + r * 0.9f, cy);
+            tri.moveTo(cx - r * 0.55f, cy - r * 0.85f);
+            tri.lineTo(cx - r * 0.55f, cy + r * 0.85f);
+            tri.lineTo(cx + r * 0.95f, cy);
             tri.close();
             cv.drawPath(tri, paint);
         } else if (type == 1) {
-            // 影视：胶片（两个方块+中间竖线）
-            cv.drawRect(cx - r, cy - r * 0.7f, cx - r * 0.2f, cy + r * 0.7f, paint);
-            cv.drawRect(cx + r * 0.2f, cy - r * 0.7f, cx + r, cy + r * 0.7f, paint);
+            // 点播：屏幕 + 里面的播放三角（原来画两根竖条，远看就是"暂停"，难怪别扭）
+            paint.setStyle(android.graphics.Paint.Style.STROKE);
+            paint.setStrokeWidth(dp(3));
+            android.graphics.RectF screen = new android.graphics.RectF(cx - r, cy - r * 0.72f, cx + r, cy + r * 0.72f);
+            cv.drawRoundRect(screen, dp(6), dp(6), paint);
+            paint.setStyle(android.graphics.Paint.Style.FILL);
+            android.graphics.Path t2 = new android.graphics.Path();
+            t2.moveTo(cx - r * 0.22f, cy - r * 0.34f);
+            t2.lineTo(cx - r * 0.22f, cy + r * 0.34f);
+            t2.lineTo(cx + r * 0.4f, cy);
+            t2.close();
+            cv.drawPath(t2, paint);
         } else if (type == 2) {
-            // 音乐：音符（圆+竖线）
-            cv.drawCircle(cx - r * 0.4f, cy + r * 0.5f, r * 0.45f, paint);
-            paint.setStrokeWidth(dp(4));
+            // 音乐：音符
+            cv.drawCircle(cx - r * 0.45f, cy + r * 0.45f, r * 0.42f, paint);
+            paint.setStyle(android.graphics.Paint.Style.STROKE);
+            paint.setStrokeWidth(dp(5));
             paint.setStrokeCap(android.graphics.Paint.Cap.ROUND);
-            cv.drawLine(cx - r * 0.4f, cy + r * 0.5f, cx - r * 0.4f, cy - r * 0.8f, paint);
-            cv.drawLine(cx - r * 0.4f, cy - r * 0.8f, cx + r * 0.6f, cy - r * 0.5f, paint);
+            cv.drawLine(cx - r * 0.45f, cy + r * 0.45f, cx - r * 0.45f, cy - r * 0.75f, paint);
+            cv.drawLine(cx - r * 0.45f, cy - r * 0.75f, cx + r * 0.55f, cy - r * 0.45f, paint);
         } else {
-            // 书库：书本（两个竖矩形）
-            cv.drawRect(cx - r * 0.9f, cy - r * 0.6f, cx - r * 0.1f, cy + r * 0.6f, paint);
-            cv.drawRect(cx + r * 0.1f, cy - r * 0.6f, cx + r * 0.9f, cy + r * 0.6f, paint);
+            // 书库：三本书脊
+            paint.setStyle(android.graphics.Paint.Style.FILL);
+            for (int k = -1; k <= 1; k++) {
+                float x0 = cx + k * r * 0.62f;
+                cv.drawRoundRect(new android.graphics.RectF(x0 - r * 0.16f, cy - r * 0.72f, x0 + r * 0.16f, cy + r * 0.72f), dp(3), dp(3), paint);
+            }
         }
         if (iv != null) iv.setImageBitmap(bmp);
         if (tv != null) {

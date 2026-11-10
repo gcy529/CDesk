@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 影音入口卡片：玻璃面板 + 焦点亮边。
+     之前卡片底色是代码里画的深色圆角块，套在 item 自己的 bg_focus 里，
+     变成"方块套方块"，远看就是四块黑板 —— 这次只留一层皮，图标只画图形本身。 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <solid android:color="#73161C2C" />
+            <stroke android:width="2dp" android:color="#FFFFD166" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <solid android:color="#99222535" />
+            <stroke android:width="2dp" android:color="#FF8AA3FF" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <gradient
+                android:angle="270"
+                android:startColor="#4D161C2C"
+                android:endColor="#26161C2C" />
+            <stroke android:width="1dp" android:color="#26FFFFFF" />
+        </shape>
+    </item>
+</selector>
