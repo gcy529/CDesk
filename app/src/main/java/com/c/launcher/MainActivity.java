@@ -618,49 +618,99 @@ public class MainActivity extends Activity {
         };
     }
 
+    /**
+     * 启动应用。
+     *
+     * 旧实现把 doLaunch 挂在 ViewPropertyAnimator 的 withEndAction 上，
+     * 只有那 160ms 动画正常收尾才会真正启动 —— 窗口失焦、系统关掉动画、
+     * view 被回收，回调就不会来，图标点了毫无反应（作为桌面时最容易复现）。
+     * 现在改成：先启动，动效只做视觉反馈，不影响启动。
+     */
     private void launchApp(final AppAdapter.AppItem it) {
         if (it == null) return;
-
-        // 启动动效：下压回弹后切出（深海与微光 · 模块5）
-        final View focused = getCurrentFocus();
-        if (focused != null) {
-            focused.animate().scaleX(0.92f).scaleY(0.92f).setDuration(70)
-                    .withEndAction(new Runnable() {
-                        @Override public void run() {
-                            focused.animate().scaleX(1.06f).scaleY(1.06f).setDuration(90)
-                                    .withEndAction(new Runnable() {
-                                        @Override public void run() { doLaunch(it); }
-                                    }).start();
-                        }
-                    }).start();
-            return;
-        }
         doLaunch(it);
+        try {
+            View focused = getCurrentFocus();
+            if (focused != null) {
+                focused.animate().scaleX(0.94f).scaleY(0.94f).setDuration(60).start();
+            }
+        } catch (Throwable ignored) { }
     }
 
+    /**
+     * 三级兜底启动，任何一级成功就返回：
+     *   1. 显式 ComponentName（最快最准）
+     *   2. PackageManager 给的启动 Intent（适配包可见性过滤）
+     *   3. 隐式 ACTION_MAIN + CATEGORY_LAUNCHER + setPackage
+     * 全失败才提示，并把原因一起显示出来，便于截图定位。
+     */
     private void doLaunch(AppAdapter.AppItem it) {
+        if (it == null) return;
 
-        // 点自己：不是再启动一次，而是唤出系统的「选择桌面」窗口。
-        // 系统没有默认桌面时会弹出"始终 / 仅此一次"，
-        // 这是被固件锁死 Home 键的设备上唯一能设默认的入口。
+        // 点自己：唤出系统「选择桌面」窗口，而不是再启动一次
         if (getPackageName().equals(it.pkg)) {
             openHomeChooser();
             return;
         }
 
-        try {
-            ComponentName cn = new ComponentName(it.pkg, it.cls);
-            Intent i = new Intent(Intent.ACTION_MAIN);
-            i.addCategory(Intent.CATEGORY_LAUNCHER);
-            i.setComponent(cn);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            startActivity(i);
-            pushRecent(it.pkg);
-        } catch (Throwable t) {
-            Toast.makeText(this, it.label + "  " + getString(R.string.launch_failed),
-                    Toast.LENGTH_SHORT).show();
+        Throwable last = null;
+
+        // 1) 显式组件
+        if (it.cls != null) {
+            try {
+                ComponentName cn = new ComponentName(it.pkg, it.cls);
+                Intent i = new Intent(Intent.ACTION_MAIN);
+                i.addCategory(Intent.CATEGORY_LAUNCHER);
+                i.setComponent(cn);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                startActivity(i);
+                CLog.i("launch ok(component) " + it.pkg + "/" + it.cls);
+                pushRecent(it.pkg);
+                return;
+            } catch (Throwable t) {
+                last = t;
+                CLog.e("launch component failed " + it.pkg, t);
+            }
         }
+
+        // 2) 系统启动 Intent
+        try {
+            Intent li = getPackageManager().getLaunchIntentForPackage(it.pkg);
+            if (li != null) {
+                li.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                startActivity(li);
+                CLog.i("launch ok(intent) " + it.pkg);
+                pushRecent(it.pkg);
+                return;
+            }
+        } catch (Throwable t) {
+            last = t;
+            CLog.e("launch intent failed " + it.pkg, t);
+        }
+
+        // 3) 隐式
+        try {
+            Intent im = new Intent(Intent.ACTION_MAIN);
+            im.addCategory(Intent.CATEGORY_LAUNCHER);
+            im.setPackage(it.pkg);
+            im.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            startActivity(im);
+            CLog.i("launch ok(implicit) " + it.pkg);
+            pushRecent(it.pkg);
+            return;
+        } catch (Throwable t) {
+            last = t;
+            CLog.e("launch implicit failed " + it.pkg, t);
+        }
+
+        String why = last == null ? "" : last.getClass().getSimpleName()
+                + (last.getMessage() == null ? "" : ": " + last.getMessage());
+        if (why.length() > 90) why = why.substring(0, 90);
+        Toast.makeText(this, it.label + "  " + getString(R.string.launch_failed)
+                + (why.length() > 0 ? "\n" + why : ""), Toast.LENGTH_LONG).show();
     }
 
     /** 桌面不该被返回键退出 */
