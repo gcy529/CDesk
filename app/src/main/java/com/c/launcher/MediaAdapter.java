@@ -25,7 +25,18 @@ public class MediaAdapter extends BaseAdapter {
 
     private final Context ctx;
 
+    /** 卡片点击回调：卡片自己是可点的，点完直接回调，不依赖 GridView 的 onItemClick。
+     *  原因：item_media 是 focusable 的，DPAD/触摸的确认事件会落在卡片上，
+     *  GridView 收不到，onItemClick 永远不触发 —— 这就是「点了没反应」。 */
+    public interface OnCardClick {
+        void onCardClick(int position, String type);
+    }
+
+    private OnCardClick cardClick;
+
     public MediaAdapter(Context c) { ctx = c; }
+
+    public void setOnCardClick(OnCardClick l) { cardClick = l; }
 
     public String typeAt(int pos) { return TYPES[pos % TYPES.length]; }
 
@@ -42,8 +53,17 @@ public class MediaAdapter extends BaseAdapter {
         if (v == null) {
             v = LayoutInflater.from(ctx).inflate(R.layout.item_media, parent, false);
         }
+        final int pos = position;
         v.setScaleX(1f);
         v.setScaleY(1f);
+        v.setClickable(true);
+        v.setFocusable(true);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View vv) {
+                CLog.i("media card click pos=" + pos + " type=" + typeAt(pos));
+                if (cardClick != null) cardClick.onCardClick(pos, typeAt(pos));
+            }
+        });
         v.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override public void onFocusChange(View vv, boolean has) {
                 FocusAnimator.setFocusState(vv, has);

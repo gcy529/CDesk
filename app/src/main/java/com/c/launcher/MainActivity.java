@@ -183,6 +183,16 @@ public class MainActivity extends Activity {
 
         adapter = new AppAdapter(this);
         mediaAdapter = new MediaAdapter(this);
+        mediaAdapter.setOnCardClick(new MediaAdapter.OnCardClick() {
+            @Override public void onCardClick(int pos, String type) {
+                Class<?> t = "live".equals(type) ? LiveShellActivity.class
+                        : "audio".equals(type) ? MusicShellActivity.class
+                        : "library".equals(type) ? LibraryActivity.class
+                        : VodShellActivity.class;
+                CLog.i("open shell " + t.getSimpleName());
+                startActivity(new Intent(MainActivity.this, t));
+            }
+        });
         gridApps.setAdapter(adapter);
 
         ThemeManager.Palette p = ThemeManager.current(this);
@@ -364,6 +374,7 @@ public class MainActivity extends Activity {
         int next = ((target % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT;
         if (next == page) return;
         page = next;
+        CLog.i("switchPage -> " + page);
         applyPage(page);
         gridApps.setSelection(0);
         gridApps.requestFocus();
