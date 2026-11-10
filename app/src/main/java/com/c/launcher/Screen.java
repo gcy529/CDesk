@@ -29,9 +29,7 @@ public final class Screen {
             w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             hideBars(a);
-            // 不再给内容区补 cutout 安全边距：挖孔机型上系统报的边距有 100 多像素，
-            // 内容被整体推进去，空出来的那块露出窗口底色，就是"旁边一道黑边"。
-            // 壁纸要铺满，宁可让挖孔压住一点点画面。
+            applySafeArea(a);
         } catch (Throwable ignored) { }
     }
 
@@ -48,10 +46,17 @@ public final class Screen {
         } catch (Throwable ignored) { }
     }
 
-    /** 内容躲开刘海 / 挖孔：给内容区补 padding，背景仍然铺满 */
+    /**
+     * 内容躲开刘海 / 挖孔。
+     *
+     * 关键：只给【内容层】补 padding，不能碰 android.R.id.content。
+     * 之前补在最外层，壁纸 ImageView 是它的子 View，跟着一起被缩小，
+     * 空出来的那条就露出窗口底色 —— 手机上看到的那道黑边就是这么来的。
+     * 现在壁纸铺满整屏，只有图标/文字往安全区内缩。
+     */
     private static void applySafeArea(final Activity a) {
         if (Build.VERSION.SDK_INT < 20) return;
-        final View root = a.findViewById(android.R.id.content);
+        final View root = a.findViewById(R.id.contentMain);
         if (root == null) return;
         final int pl = root.getPaddingLeft();
         final int pt = root.getPaddingTop();
