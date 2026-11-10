@@ -206,7 +206,6 @@
     <string name="vodpg_search_hint">输入片名搜索</string>
     <string name="vodpg_source">换源</string>
     <string name="vodpg_no_source">还没设置影视接口，先去设置里填地址</string>
-    <string name="live_title">直播</string>
     <string name="livepg_no_source">还没设置直播源，先去设置里填地址</string>
     <string name="music_title">音乐</string>
     <string name="musicpg_empty">没有找到歌曲，插上 U 盘或把歌放进本机试试</string>

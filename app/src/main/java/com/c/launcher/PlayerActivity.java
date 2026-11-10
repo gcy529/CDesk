@@ -12,8 +12,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
@@ -61,6 +64,9 @@ public class PlayerActivity extends Activity {
     private String[] alts = new String[0];
     private boolean live = false;
     private boolean prepared = false;
+    private PlayStats stats;
+    private android.widget.TextView tvStats;
+    private boolean statsShown = false;
     private boolean dragging = false;
     private int retries = 0;
     private int resizeIdx = 0;
@@ -225,12 +231,22 @@ public class PlayerActivity extends Activity {
                     .setConnectTimeoutMs(15000)
                     .setReadTimeoutMs(20000)
                     .setAllowCrossProtocolRedirects(true);
-            player = new ExoPlayer.Builder(this)
+            // 车机无线网弱、码率一高就一顿一顿：缓冲给足，
+            // 硬解不支持的编码让它自动退回软解
+            DefaultRenderersFactory rf = new DefaultRenderersFactory(this)
+                    .setEnableDecoderFallback(true);
+            DefaultLoadControl lc = new DefaultLoadControl.Builder()
+                    .setBufferDurationsMs(15000, 60000, 2500, 5000)
+                    .build();
+            player = new ExoPlayer.Builder(this, rf)
                     .setMediaSourceFactory(new DefaultMediaSourceFactory(http))
+                    .setLoadControl(lc)
                     .build();
             if (playerView != null) playerView.setPlayer(player);
             player.setHandleAudioBecomingNoisy(true);
             player.addListener(listener);
+            stats = new PlayStats();
+            player.addAnalyticsListener(stats);
             player.setMediaItem(MediaItem.fromUri(u));
             player.setPlayWhenReady(true);
             player.prepare();
