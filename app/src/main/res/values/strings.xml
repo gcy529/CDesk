@@ -145,8 +145,8 @@
     <string name="shell_recv_from_phone">已收到手机发来的地址</string>
     <string name="vod_api_title">影视源接口</string>
     <string name="vod_api_hint">接口地址或播放列表，形如 http://…?ac=list</string>
-    <string name="settings_filter_on">隐藏成人内容：已开启（点击关闭）</string>
-    <string name="settings_filter_off">隐藏成人内容：已关闭（点击开启）</string>
+    <string name="settings_filter_on">青少年模式：已开启（点击关闭）</string>
+    <string name="settings_filter_off">青少年模式：已关闭（点击开启）</string>
     <string name="settings_title">设置</string>
     <string name="settings_check_update">检查更新</string>
     <string name="ticker_text">本应用仅为播放壳，不提供、不存储、不分发任何内容。内容源均由使用者自行配置，相关责任由使用者自负。　官网：gcy5.cn.mt　公众号：韭菜超先生</string>

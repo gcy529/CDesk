@@ -144,8 +144,8 @@
     <string name="shell_recv_from_phone">Address received from phone</string>
     <string name="vod_api_title">Video source API</string>
     <string name="vod_api_hint">API endpoint or playlist, e.g. http://…?ac=list</string>
-    <string name="settings_filter_on">Hide adult titles: ON (tap to turn off)</string>
-    <string name="settings_filter_off">Hide adult titles: OFF (tap to turn on)</string>
+    <string name="settings_filter_on">Teen mode: ON (tap to turn off)</string>
+    <string name="settings_filter_off">Teen mode: OFF (tap to turn on)</string>
     <string name="settings_title">Settings</string>
     <string name="settings_check_update">Check for updates</string>
     <string name="ticker_text">This app is a player shell only. It does not provide, store or distribute any content. All sources are configured by the user, who bears full responsibility.  Site: gcy5.cn.mt</string>

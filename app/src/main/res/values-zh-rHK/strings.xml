@@ -143,8 +143,8 @@
     <string name="shell_recv_from_phone">收到手機傳嚟嘅地址</string>
     <string name="vod_api_title">影視源接口</string>
     <string name="vod_api_hint">接口網址或者播放清單，形如 http://…?ac=list</string>
-    <string name="settings_filter_on">隱藏成人內容：已開（撳一下關）</string>
-    <string name="settings_filter_off">隱藏成人內容：已關（撳一下開）</string>
+    <string name="settings_filter_on">青少年模式：已開啟（點擊關閉）</string>
+    <string name="settings_filter_off">青少年模式：已關閉（點擊開啟）</string>
     <string name="settings_title">設定</string>
     <string name="settings_check_update">檢查更新</string>
     <string name="ticker_text">本應用淨係播片殼，唔提供、唔儲存、唔分發任何內容。內容源由用家自己設定，責任自負。　官網：gcy5.cn.mt　公眾號：韭菜超先生</string>

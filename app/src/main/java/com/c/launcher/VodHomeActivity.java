@@ -93,12 +93,32 @@ public class VodHomeActivity extends Activity {
         startActivity(i);
     }
 
+    /**
+     * 换源 = 直接在这填接口地址。
+     * 以前点「换源」只是跳设置页，可设置页里根本没有这一项，等于让人无处可填。
+     */
     private void openSourceSettings() {
-        try {
-            startActivity(new Intent(this, SettingsActivity.class));
-        } catch (Throwable t) {
-            Toast.makeText(this, R.string.vodpg_no_source, Toast.LENGTH_SHORT).show();
-        }
+        final EditText et = new EditText(this);
+        et.setHint(R.string.vodpg_api_hint);
+        et.setSingleLine(true);
+        if (base != null) { et.setText(base); }
+        et.setSelection(et.getText().length());
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.vodpg_api_title)
+                .setMessage(R.string.vodpg_api_msg)
+                .setView(et)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface d, int w) {
+                        String v = et.getText().toString().trim();
+                        getSharedPreferences("cdesk_core", MODE_PRIVATE)
+                                .edit().putString("vod_api", v).commit();
+                        base = v;
+                        CLog.i("plugin: api saved " + v);
+                        load();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private void openSearch() {

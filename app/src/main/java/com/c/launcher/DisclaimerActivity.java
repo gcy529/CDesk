@@ -34,15 +34,27 @@ public class DisclaimerActivity extends Activity {
         TextView body = (TextView) findViewById(R.id.tvDisclaimerBody);
         body.setText(R.string.disclaimer_body);
 
+        // 点弹窗任意位置都等于「同意」并关掉：遥控器/触屏都不用去够按钮
+        View box = findViewById(R.id.boxDisclaimer);
+        if (box != null) { box.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { agree(); }
+        }); }
+        View root = findViewById(R.id.rootDisclaimer);
+        if (root != null) { root.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { agree(); }
+        }); }
+
         Button ok = (Button) findViewById(R.id.btnAgree);
         ok.setText(R.string.disclaimer_ok);
         ok.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                getSharedPreferences(PREFS, Activity.MODE_PRIVATE)
-                        .edit().putBoolean(KEY_OK, true).commit();
-                finish();
-            }
+            @Override public void onClick(View v) { agree(); }
         });
+    }
+
+    private void agree() {
+        getSharedPreferences(PREFS, Activity.MODE_PRIVATE)
+                .edit().putBoolean(KEY_OK, true).commit();
+        finish();
     }
 
     @Override

@@ -37,7 +37,8 @@ public class SettingsActivity extends Activity {
         WPManager.applyToRoot(this, root);
 
         TextView title = (TextView) findViewById(R.id.tvSetTitle);
-        title.setTextColor(p.isLight ? p.fg : p.accent);
+        // 标题跟旁边文字同一套颜色：之前深色主题下标题用强调色（紫），跟旁边的字对不上，很突兀
+        title.setTextColor(p.fg);
         TextView ver = (TextView) findViewById(R.id.tvSetVersion);
         ver.setText("v" + getString(R.string.app_version));
         ver.setTextColor(p.dim);
