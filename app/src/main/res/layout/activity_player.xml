@@ -5,41 +5,186 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!-- 官方控制条：进度条、播放/暂停、快退快进、缓冲圈、剩余时间，全部现成 -->
+    <!-- 只用它渲染画面，控制条我们自己画 -->
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:use_controller="true"
-        app:show_buffering="always"
+        app:use_controller="false"
+        app:show_buffering="never"
         app:resize_mode="fit"
-        app:show_timeout="4000"
-        app:hide_on_touch="true" />
+        app:surface_type="surface_view" />
 
     <TextView
         android:id="@+id/tvPlayerTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_margin="20dp"
-        android:textSize="18sp"
+        android:layout_gravity="top|start"
+        android:layout_marginLeft="28dp"
+        android:layout_marginTop="22dp"
+        android:textSize="19sp"
         android:textStyle="bold"
         android:textColor="#F8FAFC"
         android:shadowColor="#CC000000"
         android:shadowDx="1"
         android:shadowDy="1"
-        android:shadowRadius="4" />
+        android:shadowRadius="5" />
 
     <TextView
         android:id="@+id/tvClockP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
-        android:layout_margin="20dp"
+        android:layout_gravity="top|end"
+        android:layout_marginRight="28dp"
+        android:layout_marginTop="22dp"
         android:textSize="15sp"
         android:textColor="#CBD5E1"
         android:shadowColor="#CC000000"
         android:shadowDx="1"
         android:shadowDy="1"
-        android:shadowRadius="4" />
+        android:shadowRadius="5" />
+
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- 失败时把错误码直接打在屏幕上，截图就能发给我 -->
+    <TextView
+        android:id="@+id/tvPlayerError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:gravity="center"
+        android:lineSpacingExtra="6dp"
+        android:textSize="16sp"
+        android:textColor="#FCA5A5"
+        android:visibility="gone" />
+
+    <!-- 控制条：底部玻璃，不压画面中间；按钮 64dp，遥控器焦点明显 -->
+    <LinearLayout
+        android:id="@+id/ctrlBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="@drawable/bg_player_bar"
+        android:paddingLeft="28dp"
+        android:paddingRight="28dp"
+        android:paddingTop="26dp"
+        android:paddingBottom="22dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvPos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#E2E8F0"
+                android:text="00:00" />
+
+            <SeekBar
+                android:id="@+id/sbProgress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp" />
+
+            <TextView
+                android:id="@+id/tvDur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#E2E8F0"
+                android:text="00:00" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/btnRew"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="#F8FAFC"
+                android:text="-10s"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <TextView
+                android:id="@+id/btnPlayPause"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1.2"
+                android:layout_marginLeft="12dp"
+                android:gravity="center"
+                android:textSize="22sp"
+                android:textColor="#FFFFFF"
+                android:text="&#9654;"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <TextView
+                android:id="@+id/btnFwd"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="12dp"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="#F8FAFC"
+                android:text="+10s"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <TextView
+                android:id="@+id/btnResize"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="12dp"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="#F8FAFC"
+                android:text="FIT"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <TextView
+                android:id="@+id/btnClose"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="0.8"
+                android:layout_marginLeft="12dp"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textColor="#F8FAFC"
+                android:text="&#10005;"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true" />
+        </LinearLayout>
+    </LinearLayout>
 </FrameLayout>
