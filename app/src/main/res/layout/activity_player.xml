@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <SurfaceView
-        android:id="@+id/surfacePlayer"
+    <!-- 官方控制条：进度条、播放/暂停、快退快进、缓冲圈、剩余时间，全部现成 -->
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <ProgressBar
-        android:id="@+id/pbLoading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        android:layout_height="match_parent"
+        app:use_controller="true"
+        app:show_buffering="always"
+        app:resize_mode="fit"
+        app:show_timeout="4000"
+        app:hide_on_touch="true"
+        app:fastforward_increment="10000"
+        app:rewind_increment="10000" />
 
     <TextView
         android:id="@+id/tvPlayerTitle"
@@ -42,127 +44,4 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="4" />
-
-    <!-- 控制条：深色玻璃底 + 大按钮，遥控器/触摸都好点 -->
-    <LinearLayout
-        android:id="@+id/playerCtrl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="18dp"
-        android:background="#D90B0F19"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/tvPos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="#E2E8F0"
-                android:text="00:00" />
-
-            <SeekBar
-                android:id="@+id/sbProgress"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp" />
-
-            <TextView
-                android:id="@+id/tvDur"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="#E2E8F0"
-                android:text="00:00" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/btnPlayPause"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textSize="17sp"
-                android:textColor="#F8FAFC"
-                android:background="@drawable/bg_pill"
-                android:focusable="true"
-                android:clickable="true"
-                android:text="&#9654;" />
-
-            <TextView
-                android:id="@+id/btnBack10"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:gravity="center"
-                android:textSize="15sp"
-                android:textColor="#F8FAFC"
-                android:background="@drawable/bg_pill"
-                android:focusable="true"
-                android:clickable="true"
-                android:text="-10s" />
-
-            <TextView
-                android:id="@+id/btnFwd10"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:gravity="center"
-                android:textSize="15sp"
-                android:textColor="#F8FAFC"
-                android:background="@drawable/bg_pill"
-                android:focusable="true"
-                android:clickable="true"
-                android:text="+10s" />
-
-            <TextView
-                android:id="@+id/btnSpeed"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:gravity="center"
-                android:textSize="15sp"
-                android:textColor="#F8FAFC"
-                android:background="@drawable/bg_pill"
-                android:focusable="true"
-                android:clickable="true"
-                android:text="1.0x" />
-
-            <TextView
-                android:id="@+id/btnKernel"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:gravity="center"
-                android:textSize="15sp"
-                android:textColor="#F8FAFC"
-                android:background="@drawable/bg_pill"
-                android:focusable="true"
-                android:clickable="true"
-                android:text="HD" />
-        </LinearLayout>
-    </LinearLayout>
 </FrameLayout>

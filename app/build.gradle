@@ -26,8 +26,8 @@ android {
         applicationId project.hasProperty('appId') ? project.property('appId') : "com.c.launcher"
         minSdk 16
         targetSdk 34
-        versionCode 12
-        versionName "0.5.5"
+        versionCode 13
+        versionName "0.6.0"
         // 版本号只写这一处：桌面角标、设置页、更新检查的「当前版本」全读它。
         // 手抄进 strings.xml 会漂——四语曾一起停在 0.4.1，导致更新检查
         // 提示用户升级到已经装着的版本。
@@ -55,8 +55,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-        // ExoPlayer 2.18 在 minSdk 16 上需要 java.time / java.util.function 的语法糖
-        coreLibraryDesugaringEnabled true
     }
 
     lintOptions {
@@ -85,7 +83,9 @@ dependencies {
     // 只取 core + hls：不引 exoplayer-ui，避免把 androidx.media / recyclerview 一起拖进来。
     implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.1'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    // 官方控制条（PlayerView）：播放/暂停、进度条、快退快进、缓冲圈都是现成的，
+    // 比自己手搓的好看也稳。会带入 androidx.media + recyclerview，可接受。
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
 
     // 仅测试期依赖，不进 APK
     testImplementation 'junit:junit:4.13.2'
