@@ -90,9 +90,8 @@ public class SettingsActivity extends Activity {
                     @Override public void onUpdate(String verName, String url) {
                         Toast.makeText(SettingsActivity.this,
                                 getString(R.string.update_found, verName), Toast.LENGTH_LONG).show();
-                        try {
-                            startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)));
-                        } catch (Throwable ignored) { }
+                        // 车机上没有浏览器，跳浏览器等于更新不了：改成应用内下载 + 调安装器
+                        UpdatePrompt.show(SettingsActivity.this, verName, url, false);
                     }
                     @Override public void onLatest(String remoteVer) {
                         // 带上远端版本号：能弹出版本号 = 真的连上服务器了，不是网络失败被当成最新

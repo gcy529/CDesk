@@ -156,7 +156,22 @@ public class MainActivity extends Activity {
                     });
                 }
             }
+
+            @Override public void onForceUpdate(String ver, String url) {
+                // 服务端 version.json 标了 "force":true：这次必须更新，对话框关不掉
+                if (tvBadge != null) {
+                    tvBadge.setText(getString(R.string.update_found, ver));
+                    tvBadge.setTextColor(ThemeManager.ACCENT2);
+                }
+                CLog.i("force update required: " + ver);
+                UpdatePrompt.show(MainActivity.this, ver, url, true);
+            }
         });
+
+        // 启动时确认这个包是不是我们发的：别人重签过的话签名对不上
+        if (!SelfCheck.isOfficial(this)) {
+            CLog.e("非官方签名：这个包被改过或被重新签名");
+        }
 
         btnPagePrev = (Button) findViewById(R.id.btnPagePrev);
         btnPageNext = (Button) findViewById(R.id.btnPageNext);
