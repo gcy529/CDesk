@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
         TextView tvVersion = (TextView) findViewById(R.id.tvVersion);
         if (tvVersion != null) {
             try {
-                tvVersion.setText("v" + getPackageManager()
+                tvVersion.setText("b" + getPackageManager()
                         .getPackageInfo(getPackageName(), 0).versionName);
             } catch (Exception ignored) { }
         }

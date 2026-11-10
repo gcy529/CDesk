@@ -30,25 +30,44 @@
         android:paddingTop="28dp"
         android:paddingBottom="24dp">
 
-        <!-- 顶部滚动条：免责 + 官网 + 公众号，循环滚动 -->
-        <TextView
-            android:id="@+id/tvTicker"
+        <!-- 顶部滚动条 + 版本号：同一根深色条，版本号不再压在壁纸上 -->
+        <LinearLayout
+            android:id="@+id/barTop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_dock"
             android:paddingLeft="14dp"
             android:paddingRight="14dp"
             android:paddingTop="7dp"
-            android:paddingBottom="7dp"
-            android:background="@drawable/bg_dock"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:textSize="13sp"
-            android:textColor="#8E9BAE"
-            android:text="@string/ticker_text" />
+            android:paddingBottom="7dp">
+
+            <TextView
+                android:id="@+id/tvTicker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:textSize="13sp"
+                android:textColor="#C7D2E3"
+                android:text="@string/ticker_text" />
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:singleLine="true"
+                android:text="@string/app_version"
+                android:textSize="12sp"
+                android:textColor="#E8EEF7" />
+        </LinearLayout>
 
         <!-- 顶栏 -->
         <LinearLayout
@@ -62,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:background="@drawable/bg_clock_scrim"
+                android:background="@drawable/bg_dock"
                 android:paddingLeft="16dp"
                 android:paddingRight="20dp"
                 android:paddingTop="10dp"
@@ -291,15 +310,6 @@
         android:layout_marginLeft="48dp"
         android:layout_marginBottom="24dp"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:text="@string/app_version"
-            android:textSize="11sp"
-            android:textColor="#CCFFFFFF" />
 
         <ImageView
             android:id="@+id/ivStatusDown"
