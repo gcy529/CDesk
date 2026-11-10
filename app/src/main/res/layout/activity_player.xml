@@ -14,9 +14,7 @@
         app:show_buffering="always"
         app:resize_mode="fit"
         app:show_timeout="4000"
-        app:hide_on_touch="true"
-        app:fastforward_increment="10000"
-        app:rewind_increment="10000" />
+        app:hide_on_touch="true" />
 
     <TextView
         android:id="@+id/tvPlayerTitle"
