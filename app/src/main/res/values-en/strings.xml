@@ -205,4 +205,6 @@
     <string name="vodpg_search_hint">Search by title</string>
     <string name="vodpg_source">Source</string>
     <string name="vodpg_no_source">No video API configured, set it in Settings first</string>
+    <string name="live_title">Live TV</string>
+    <string name="livepg_no_source">No live source configured, set it in Settings first</string>
 </resources>
