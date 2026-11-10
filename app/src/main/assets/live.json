@@ -1,0 +1,22 @@
+[
+ {
+  "n": "NASA TV",
+  "g": "内置频道",
+  "u": "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8"
+ },
+ {
+  "n": "DW 德国之声",
+  "g": "内置频道",
+  "u": "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8"
+ },
+ {
+  "n": "France 24",
+  "g": "内置频道",
+  "u": "https://static.france24.com/live/F24_EN_LO_HLS/live_web.m3u8"
+ },
+ {
+  "n": "Red Bull TV",
+  "g": "内置频道",
+  "u": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8"
+ }
+]
