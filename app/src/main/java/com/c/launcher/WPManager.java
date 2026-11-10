@@ -67,11 +67,17 @@ public final class WPManager {
     }
 
     public static void setWhich(Context c, int v) {
-        prefs(c).edit().putInt(KEY_WP, v).commit();
+        // 手动选过就以手动为准，不再被时间覆盖
+        prefs(c).edit().putInt(KEY_WP, v).putBoolean(KEY_AUTO, false).commit();
     }
 
     /** 日夜自动：开 = 6:00-18:00 用白天壁纸，其余用夜间壁纸；关 = 固定用户选择 */
-    public static boolean isAuto(Context c) { return prefs(c).getBoolean(KEY_AUTO, true); }
+    /**
+     * 自动跟随时间：默认关。
+     * 原来默认开，等于用户选什么都白选 —— effective() 一到白天就强行换成晨光、
+     * 晚上换成日落，选少女/夜晚永远看不到效果，看着就像"设置只跟晨光一张图走"。
+     */
+    public static boolean isAuto(Context c) { return prefs(c).getBoolean("auto_fixed", false) && prefs(c).getBoolean(KEY_AUTO, false); }
 
     public static void setAuto(Context c, boolean v) { prefs(c).edit().putBoolean(KEY_AUTO, v).commit(); }
 
