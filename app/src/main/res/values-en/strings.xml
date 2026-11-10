@@ -221,4 +221,5 @@ multiple lines ok</string>
     <string name="musicpg_local">Local music</string>
     <string name="musicpg_radio_cn">CN radio</string>
     <string name="musicpg_radio_intl">World radio</string>
+    <string name="wp_mint">Mint</string>
 </resources>

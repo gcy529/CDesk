@@ -34,6 +34,7 @@ public final class WPManager {
     public static final int WP_DAY = 3;    // 晨光（睁眼窗光）
     public static final int WP_SUNSET = 4; // 金色时刻（日落）
     public static final int WP_CUSTOM = 5; // 用户自己的图片（局域网传入或本地选择）
+    public static final int WP_MINT = 6;   // 薄荷纯色（真·另一张，跟少女那张不重复）
 
     private static final String PREFS = "cdesk_wallpaper";
     private static final String KEY_WP = "which";
@@ -63,7 +64,7 @@ public final class WPManager {
             p.edit().putBoolean(KEY_MIGRATED, true).commit();
         }
         int v = p.getInt(KEY_WP, WP_GIRL);
-        return (v < WP_GIRL || v > WP_CUSTOM) ? WP_GIRL : v;
+        return (v < WP_GIRL || v > WP_MINT) ? WP_GIRL : v;
     }
 
     public static void setWhich(Context c, int v) {
@@ -158,7 +159,8 @@ public final class WPManager {
         }
         if (b == null) {
             try {
-                int res = wp == WP_GIRL ? R.drawable.final_wallpaper_4k
+                int res = wp == WP_MINT ? R.drawable.wall_mint
+                : wp == WP_GIRL ? R.drawable.final_wallpaper_4k
                         : wp == WP_NIGHT ? R.drawable.wall_night
                         : wp == WP_DAY ? R.drawable.wall_day : R.drawable.wall_sunset;
                 int w = a.getResources().getDisplayMetrics().widthPixels;

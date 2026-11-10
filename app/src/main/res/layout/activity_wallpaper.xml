@@ -45,12 +45,12 @@
                     <TextView style="@style/WpLabel" android:text="@string/wp_girl" />
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/cardWpSunset"
+                <LinearLayout android:id="@+id/cardWpMint"
                     style="@style/WpCard">
-                    <ImageView android:id="@+id/thumbSunset" style="@style/WpThumb"
-                        android:contentDescription="@string/wp_sunset"
-                        android:src="@drawable/wall_sunset" />
-                    <TextView style="@style/WpLabel" android:text="@string/wp_sunset" />
+                    <ImageView android:id="@+id/thumbMint" style="@style/WpThumb"
+                        android:contentDescription="@string/wp_mint"
+                        android:src="@drawable/wall_mint" />
+                    <TextView style="@style/WpLabel" android:text="@string/wp_night" />
                 </LinearLayout>
 
                 <LinearLayout android:id="@+id/cardWpNight"

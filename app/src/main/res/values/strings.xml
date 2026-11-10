@@ -222,4 +222,5 @@
     <string name="musicpg_local">本机音乐</string>
     <string name="musicpg_radio_cn">国内电台</string>
     <string name="musicpg_radio_intl">国际电台</string>
+    <string name="wp_mint">薄荷</string>
 </resources>

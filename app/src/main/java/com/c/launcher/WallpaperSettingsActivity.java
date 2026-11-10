@@ -54,7 +54,7 @@ public class WallpaperSettingsActivity extends Activity {
         // 缩略图卡片：点击选壁纸（日光少女第一张 = 默认）
         card(R.id.cardWpGirl, WPManager.WP_GIRL);
         card(R.id.cardWpNight, WPManager.WP_NIGHT);
-        card(R.id.cardWpSunset, WPManager.WP_SUNSET);
+        card(R.id.cardWpMint, WPManager.WP_MINT);
 
         // 4K 原图绝不能直接当缩略图（OOM）——inSampleSize 降采样后小图设置
         ImageView girlThumb = (ImageView) findViewById(R.id.thumbGirl);
