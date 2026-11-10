@@ -187,7 +187,7 @@ public class MainActivity extends Activity {
                 Class<?> t = "live".equals(type) ? LiveShellActivity.class
                         : "audio".equals(type) ? MusicShellActivity.class
                         : "library".equals(type) ? LibraryActivity.class
-                        : VodShellActivity.class;
+                        : VodHomeActivity.class;
                 CLog.i("open shell " + t.getSimpleName());
                 startActivity(new Intent(MainActivity.this, t));
             }
@@ -242,7 +242,7 @@ public class MainActivity extends Activity {
                     Class<?> target = "live".equals(type) ? LiveShellActivity.class
                             : "audio".equals(type) ? MusicShellActivity.class
                             : "library".equals(type) ? LibraryActivity.class
-                            : VodShellActivity.class;
+                            : VodHomeActivity.class;
                     startActivity(new Intent(MainActivity.this, target));
                 } else {
                     launchApp(adapter.getItem(position));
