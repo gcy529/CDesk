@@ -245,6 +245,8 @@ public final class UpdateChecker {
                             .compile("CDesk-([0-9.]+?)-beta\\.apk").matcher(apk);
                     if (m.find()) ver = m.group(1);
                 }
+                // app-debug.apk 这种通用名一律不认：文件名跟里面装的版本没有任何关系
+                if (apk != null && apk.endsWith("app-debug.apk")) { apk = null; }
                 if (looksVer(ver) && isNewer(ver, cur) && apk != null) {
                     if (best == null || isNewer(ver, best.ver)) {
                         Rel r2 = new Rel();
