@@ -91,3 +91,16 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.11.1'
 }
+
+// 测试失败时把断言内容打到 CI 日志里。
+// 默认只报「某某测试 FAILED + 行号」，看不到到底哪个控件、哪段文字出问题，
+// 排查只能靠猜。
+tasks.withType(Test).configureEach {
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+        showStackTraces true
+        showExceptions true
+        showCauses true
+    }
+}
