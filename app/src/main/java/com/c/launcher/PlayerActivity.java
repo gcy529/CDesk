@@ -252,6 +252,20 @@ public class PlayerActivity extends Activity {
         if (body.length() > 220) body = body.substring(0, 220) + "...";
         tvError.setText(head + "\n" + body + (host.length() > 0 ? "\n" + host : ""));
         CLog.i("player showError: " + head + " | " + body + " | " + host);
+
+        // 出错时顺手把「为什么连不上」测一遍，直接摊在画面上，省得靠猜
+        if (tvError != null) {
+            NetDiag.diag(url, new NetDiag.Sink() {
+                @Override public void line(final String s) {
+                    CLog.i("diag: " + s);
+                    runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            if (tvError != null) { tvError.append("\n" + s); }
+                        }
+                    });
+                }
+            });
+        }
     }
 
     private static String hostOf(String u) {
