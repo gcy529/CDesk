@@ -128,28 +128,21 @@ jobs:
         run: |
           VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo '?')
           {
-            echo '## 尝鲜版 Beta'
-            echo ''
-            echo '开发分支自动构建，**可能不稳定**。功能在 beta 上验证通过后，才合并进 main 成为正式版。'
-            echo ''
-            echo '| 版本 | 提交 |'
-            echo '| --- | --- |'
-            echo "| $VER | ${GITHUB_SHA:0:7} |"
+            echo "## CDesk ${VER} beta"
             echo ''
             if [ -f CHANGELOG.md ]; then
               awk '/^## /{ if (++c==2) exit } c>=1' CHANGELOG.md
+              echo ''
             fi
-            echo ''
             echo '### 下载'
             echo ''
-            echo "- 带版本号：https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk（推荐，看得出是哪版）"
+            echo "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk"
             echo ''
-            echo '### 安装说明'
+            echo '国内下不动就用这两条（同一个包）：'
             echo ''
-            echo '与正式版同一签名，可直接覆盖安装；想回正式版就下 Releases 里的最新正式版。'
+            echo "https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk"
             echo ''
-            echo '---'
-            echo '[稳定版](https://github.com/gcy529/CDesk/releases/latest) · [官网](https://gcy5.cn.mt) · [全部更新日志](https://github.com/gcy529/CDesk/blob/main/CHANGELOG.md)'
+            echo "https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk"
           } > release_body_beta.md
       - name: Copy versioned APK (beta)
         if: github.ref == 'refs/heads/beta'
@@ -202,7 +195,8 @@ jobs:
       - name: Report size
         run: ls -lh app/build/outputs/apk/debug/*.apk
 
-      - name: Sync download links on site
+      - name: Sync download links in index.html (retired)
+        if: false
         if: startsWith(github.ref, 'refs/tags/v')
         continue-on-error: true
         run: |
