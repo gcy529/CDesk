@@ -177,6 +177,12 @@ public class MainActivity extends Activity {
             }
         });
         gridApps.setAdapter(adapter);
+        // 触摸点击走 item 自己的监听：item 是 focusable，GridView.onItemClick 在触摸下收不到
+        adapter.setOnCardClick(new AppAdapter.OnCardClick() {
+            @Override public void onAppClick(int position) {
+                if (page == PAGE_APPS) launchApp(adapter.getItem(position));
+            }
+        });
 
         ThemeManager.Palette p = ThemeManager.current(this);
         curBgTop = p.bgTop;

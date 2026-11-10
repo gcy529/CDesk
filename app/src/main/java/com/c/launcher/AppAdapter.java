@@ -41,11 +41,24 @@ public class AppAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * 触摸点击回调。
+     * item 根布局是 focusable + focusableInTouchMode，手指点下去 item 会抢焦点，
+     * 此时 GridView.onItemClick 不会触发 —— 必须在 item 上自己挂 OnClickListener。
+     * 遥控器走 GridView 的按键路径不受影响。
+     */
+    public interface OnCardClick {
+        void onAppClick(int position);
+    }
+
     private final Context ctx;
     private final List<AppItem> items = new ArrayList<AppItem>();
     private final List<AppItem> all = new ArrayList<AppItem>();
     /** 浅色壁纸（日光少女/晨光）下图标名换深灰，海盐灰在奶油底上看不清 */
     private volatile boolean lightBg = false;
+    private OnCardClick cardClick;
+
+    public void setOnCardClick(OnCardClick l) { this.cardClick = l; }
 
     public AppAdapter(Context context) {
         this.ctx = context;
@@ -152,6 +165,15 @@ public class AppAdapter extends BaseAdapter {
                         return false;
                 }
                 return false;
+            }
+        });
+
+        final int pos = position;
+        v.setClickable(true);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View vv) {
+                CLog.i("app card click pos=" + pos);
+                if (cardClick != null) cardClick.onAppClick(pos);
             }
         });
         return v;
