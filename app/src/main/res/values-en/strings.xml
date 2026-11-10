@@ -204,17 +204,16 @@
     <string name="vodpg_search">Search</string>
     <string name="vodpg_search_hint">Search by title</string>
     <string name="vodpg_source">Source</string>
-    <string name="vodpg_no_source">No API yet. Tap "API" above to add one</string>
-    <string name="livepg_no_source">No API yet. Tap "API" above to add one</string>
+    <string name="vodpg_no_source">No source yet. Paste a CMS API or a TVBox subscription (.json)</string>
+    <string name="livepg_no_source">No playlist yet. Paste an m3u/txt URL or a TVBox subscription (.json)</string>
     <string name="musicpg_empty">No songs found. Plug in a USB drive or copy songs to this device</string>
     <string name="vodpg_api_title">Video API address</string>
     <string name="vodpg_api_msg">Paste your MacCMS-style API address. This app ships no sources</string>
-    <string name="vodpg_api_hint">http://your-api/api.php/provide/vod/</string>
+    <string name="vodpg_api_hint">CMS API URL, or a TVBox subscription (.json with sites)</string>
     <string name="entry_api">API</string>
     <string name="livepg_api_title">Live source address</string>
     <string name="livepg_api_msg">One source per line. M3U or the txt format with genre headers. This app ships no sources</string>
-    <string name="livepg_api_hint">http://...
-multiple lines ok</string>
+    <string name="livepg_api_hint">m3u/txt playlist URL, or a TVBox subscription (.json with lives)</string>
     <string name="musicpg_api_title">Music API address</string>
     <string name="musicpg_api_msg">A playlist URL (m3u/m3u8, or txt with name,url). TVBox .js spiders do not work here</string>
     <string name="musicpg_api_hint">http://.../list.m3u</string>
