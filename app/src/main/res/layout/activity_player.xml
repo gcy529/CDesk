@@ -2,18 +2,17 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="#000000">
 
-    <VideoView
-        android:id="@+id/vvPlayer"
+    <SurfaceView
+        android:id="@+id/surfacePlayer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_height="match_parent" />
 
     <ProgressBar
         android:id="@+id/pbLoading"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
 
@@ -21,117 +20,149 @@
         android:id="@+id/tvPlayerTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_margin="@dimen/page_pad"
-        android:padding="8dp"
-        android:background="@color/bg_scrim"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_card_title"
-        android:text="" />
+        android:layout_gravity="top|left"
+        android:layout_margin="20dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#F8FAFC"
+        android:shadowColor="#CC000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="4" />
 
     <TextView
         android:id="@+id/tvClockP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_margin="@dimen/page_pad"
-        android:padding="8dp"
-        android:background="@color/bg_scrim"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_body"
-        android:text="00:00" />
+        android:layout_gravity="top|right"
+        android:layout_margin="20dp"
+        android:textSize="15sp"
+        android:textColor="#CBD5E1"
+        android:shadowColor="#CC000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="4" />
 
+    <!-- 控制条：深色玻璃底 + 大按钮，遥控器/触摸都好点 -->
     <LinearLayout
         android:id="@+id/playerCtrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:background="@color/bg_scrim"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="14dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="18dp"
+        android:background="#D90B0F19"
         android:visibility="gone">
-
-        <SeekBar
-            android:id="@+id/sbProgress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="4dp">
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tvPos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:00"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_caption" />
+                android:textSize="13sp"
+                android:textColor="#E2E8F0"
+                android:text="00:00" />
 
-            <TextView
-                android:id="@+id/btnSpeed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:padding="8dp"
-                android:background="@color/bg_card"
-                android:text="1.0x"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_body"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/btnSkipHead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:padding="8dp"
-                android:background="@color/bg_card"
-                android:text="@string/player_skip_head"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_body"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/btnSkipTail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:padding="8dp"
-                android:background="@color/bg_card"
-                android:text="@string/player_skip_tail"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_body"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/btnKernel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:padding="8dp"
-                android:background="@color/bg_card"
-                android:text="@string/player_kernel_sys"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_body"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/tvDur"
+            <SeekBar
+                android:id="@+id/sbProgress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="end"
-                android:text="00:00"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_caption" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+
+            <TextView
+                android:id="@+id/tvDur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="#E2E8F0"
+                android:text="00:00" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/btnPlayPause"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="17sp"
+                android:textColor="#F8FAFC"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="&#9654;" />
+
+            <TextView
+                android:id="@+id/btnBack10"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="#F8FAFC"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="-10s" />
+
+            <TextView
+                android:id="@+id/btnFwd10"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="#F8FAFC"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="+10s" />
+
+            <TextView
+                android:id="@+id/btnSpeed"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="#F8FAFC"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="1.0x" />
+
+            <TextView
+                android:id="@+id/btnKernel"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="#F8FAFC"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="HD" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

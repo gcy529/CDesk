@@ -55,6 +55,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        // ExoPlayer 2.18 在 minSdk 16 上需要 java.time / java.util.function 的语法糖
+        coreLibraryDesugaringEnabled true
     }
 
     lintOptions {
@@ -79,7 +81,13 @@ dependencies {
     // 仅用于局域网传输二维码（QRCodeWriter），纯 Java 无 native；R8 裁剪后增量很小
     implementation 'com.google.zxing:core:3.5.3'
 
-    // 仅测试期依赖，不进 APK；运行时仍保持零第三方库
+    // ExoPlayer 2.18.1 是最后一版支持 minSdk 16 的（media3 起要求 API 21，老车机用不了）。
+    // 只取 core + hls：不引 exoplayer-ui，避免把 androidx.media / recyclerview 一起拖进来。
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
+    // 仅测试期依赖，不进 APK
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.11.1'
 }
