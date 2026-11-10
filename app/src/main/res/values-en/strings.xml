@@ -198,4 +198,11 @@
     <string name="update_downloading">Downloading (mirror %1$s)</string>
     <string name="update_download_failed">Download failed. Try another mirror.</string>
     <string name="ep_line_fallback">Line %1$d</string>
+    <string name="vodpg_loading">Loading...</string>
+    <string name="vodpg_empty">Nothing here</string>
+    <string name="vodpg_failed">Failed: %1$s</string>
+    <string name="vodpg_search">Search</string>
+    <string name="vodpg_search_hint">Search by title</string>
+    <string name="vodpg_source">Source</string>
+    <string name="vodpg_no_source">No video API configured, set it in Settings first</string>
 </resources>

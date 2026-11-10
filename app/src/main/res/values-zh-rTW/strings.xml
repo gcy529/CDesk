@@ -197,4 +197,11 @@
     <string name="update_downloading">正在下載（線路 %1$s）</string>
     <string name="update_download_failed">下載失敗，換條線路再試</string>
     <string name="ep_line_fallback">線路 %1$d</string>
+    <string name="vodpg_loading">正在載入…</string>
+    <string name="vodpg_empty">這裡什麼都沒有</string>
+    <string name="vodpg_failed">載入失敗：%1$s</string>
+    <string name="vodpg_search">搜尋</string>
+    <string name="vodpg_search_hint">輸入片名搜尋</string>
+    <string name="vodpg_source">換源</string>
+    <string name="vodpg_no_source">還沒設定影視接口，先去設定裡填地址</string>
 </resources>

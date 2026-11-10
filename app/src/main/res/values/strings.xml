@@ -199,4 +199,11 @@
     <string name="update_downloading">正在下载（线路 %1$s）</string>
     <string name="update_download_failed">下载失败，换条线路再试</string>
     <string name="ep_line_fallback">线路 %1$d</string>
+    <string name="vodpg_loading">正在加载…</string>
+    <string name="vodpg_empty">这里什么都没有</string>
+    <string name="vodpg_failed">加载失败：%1$s</string>
+    <string name="vodpg_search">搜索</string>
+    <string name="vodpg_search_hint">输入片名搜索</string>
+    <string name="vodpg_source">换源</string>
+    <string name="vodpg_no_source">还没设置影视接口，先去设置里填地址</string>
 </resources>
