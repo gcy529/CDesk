@@ -224,4 +224,5 @@
     <string name="musicpg_test">檢測線路</string>
     <string name="musicpg_testing">正在檢測線路…</string>
     <string name="settings_card">設定</string>
+    <string name="update_apk_stale">下載到的包版本比目前還舊，已丟棄（更新線路給錯了包）</string>
 </resources>

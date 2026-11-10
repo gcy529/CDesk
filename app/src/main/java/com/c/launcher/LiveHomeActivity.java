@@ -185,7 +185,7 @@ public class LiveHomeActivity extends Activity {
             java.util.LinkedHashMap<String, LiveApi.Group> byName = new java.util.LinkedHashMap<String, LiveApi.Group>();
             for (int i = 0; i < arr.length(); i++) {
                 org.json.JSONObject o = arr.getJSONObject(i);
-                String gname = o.optString("g", "内置频道");
+                String gname = o.optString("g", "Built-in");
                 String name = o.optString("n", "");
                 String u = o.optString("u", "");
                 if (name.length() == 0 || u.length() == 0) { continue; }

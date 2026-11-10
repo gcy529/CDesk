@@ -57,7 +57,10 @@ public final class UpdateChecker {
         String[] out = new String[MIRRORS.length + 2];
         for (int i = 0; i < MIRRORS.length; i++) out[i] = MIRRORS[i] + VERSION_PATH;
         out[MIRRORS.length] = "https://cdn.jsdelivr.net/gh/gcy529/CDesk@beta/version.json";
-        out[MIRRORS.length + 1] = "https://api.github.com/repos/gcy529/CDesk/releases?per_page=20";
+        // 只认 beta 这一个 release：以前这里是 releases 列表，会按 tag 名挑"最新"，
+        // 而老 release 的 tag（v0.5.1）和里面那个 app-debug.apk 的实际版本根本不是一回事，
+        // 结果就是更新下回来一个 0.6.1 的旧包。
+        out[MIRRORS.length + 1] = "https://api.github.com/repos/gcy529/CDesk/releases/tags/beta";
         return out;
     }
 

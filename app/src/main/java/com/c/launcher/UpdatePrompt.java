@@ -106,6 +106,20 @@ public final class UpdatePrompt {
     }
 
     private static void install(Activity a, File apk) {
+        // 装之前读一眼这个包里的真实版本号：不比当前新就说明下错了包，宁可报错也不让人装回旧版
+        try {
+            android.content.pm.PackageInfo pi = a.getPackageManager()
+                    .getPackageArchiveInfo(apk.getAbsolutePath(), 0);
+            String cur = a.getString(R.string.app_version);
+            if (pi != null && pi.versionName != null && !UpdateChecker.isNewer(pi.versionName, cur)) {
+                CLog.e("update apk stale: " + pi.versionName + " <= " + cur);
+                Toast.makeText(a, R.string.update_apk_stale, Toast.LENGTH_LONG).show();
+                apk.delete();
+                return;
+            }
+        } catch (Throwable t) {
+            CLog.e("update verify failed " + t);
+        }
         try {
             Intent i = new Intent(Intent.ACTION_VIEW);
             Uri uri;

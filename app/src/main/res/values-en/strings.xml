@@ -225,4 +225,5 @@ multiple lines ok</string>
     <string name="musicpg_test">Test</string>
     <string name="musicpg_testing">Testing…</string>
     <string name="settings_card">Settings</string>
+    <string name="update_apk_stale">Downloaded APK is not newer than the installed one; discarded</string>
 </resources>
