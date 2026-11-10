@@ -143,7 +143,6 @@ jobs:
             echo '### 下载'
             echo ''
             echo "- 带版本号：https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk（推荐，看得出是哪版）"
-            echo "- 固定直链：https://github.com/gcy529/CDesk/releases/download/beta/app-debug.apk（永远指向最新）"
             echo ''
             echo '### 安装说明'
             echo ''
@@ -171,7 +170,7 @@ jobs:
         run: |
           if [ -z "$VER" ]; then echo "VER empty, skip"; exit 0; fi
           cat > version.json <<EOF
-          {"version":"$VER","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-$VER-beta.apk","channel":"beta"}
+          {"version":"$VER","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-$VER-beta.apk","channel":"beta","force":false}
           EOF
           cat version.json
           git config user.name "github-actions[bot]"
@@ -190,9 +189,9 @@ jobs:
           body_path: release_body_beta.md
           prerelease: true
           make_latest: 'false'
+          # 只放带版本号的一个包：多一个 app-debug.apk 会让人搞不清该下哪个
           files: |
             app/build/outputs/apk/debug/CDesk-*-beta.apk
-            app/build/outputs/apk/debug/app-debug.apk
       - name: Cleanup old runs
         continue-on-error: true
         env:
