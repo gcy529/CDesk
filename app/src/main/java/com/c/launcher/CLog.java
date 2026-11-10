@@ -96,9 +96,10 @@ public final class CLog {
         return sb.toString();
     }
 
+    /** 真实版本号：取自编译期生成的 BuildConfig，不再写死（之前写死 0.5.0 导致报告永远显示 0.5.0） */
     private static String appVer() {
         try {
-            return "0.5.0";
+            return BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")";
         } catch (Throwable t) { return "?"; }
     }
 }
