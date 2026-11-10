@@ -239,7 +239,7 @@ public class MusicHomeActivity extends Activity {
         if (b == null) { return; }
         try { ThemeManager.styleButton(b, ThemeManager.current(this)); } catch (Throwable ignored) { }
         b.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { loadRadio(cn); }
+            @Override public void onClick(View v) { loadBuiltin(cn); }
         });
     }
 
@@ -302,5 +302,44 @@ public class MusicHomeActivity extends Activity {
                 });
             }
         }).start();
+    }
+
+    /**
+     * 内置电台：assets/radio.json。
+     * 里面每一条都是实测能出流的地址（国内央广 5 个 + 国外 11 个），
+     * 不依赖任何第三方接口，打开就能听；内置表空了才退回公共接口。
+     */
+    private void loadBuiltin(final boolean cn) {
+        final List<String> n = new ArrayList<String>();
+        final List<String> u = new ArrayList<String>();
+        final List<String> s = new ArrayList<String>();
+        try {
+            java.io.InputStream in = getAssets().open("radio.json");
+            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            int len;
+            while ((len = in.read(buf)) > 0) { bo.write(buf, 0, len); }
+            in.close();
+            org.json.JSONArray arr = new org.json.JSONArray(new String(bo.toByteArray(), "UTF-8"));
+            for (int i = 0; i < arr.length(); i++) {
+                org.json.JSONObject o = arr.getJSONObject(i);
+                if (cn != "cn".equals(o.optString("c", "intl"))) { continue; }
+                String name = o.optString("n", "");
+                String url = o.optString("u", "");
+                if (name.length() == 0 || url.length() == 0) { continue; }
+                n.add(name);
+                u.add(url);
+                s.add(o.optString("s", ""));
+            }
+        } catch (Throwable t) {
+            CLog.e("music: builtin read failed " + t);
+        }
+        CLog.i("music: builtin cn=" + cn + " got=" + n.size());
+        if (n.isEmpty()) { loadRadio(cn); return; }
+        reset();
+        titles.addAll(n);
+        urls.addAll(u);
+        subs.addAll(s);
+        afterLoad();
     }
 }

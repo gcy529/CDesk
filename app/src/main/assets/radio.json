@@ -1,0 +1,98 @@
+[
+ {
+  "n": "中国之声",
+  "c": "cn",
+  "s": "央广 · 新闻",
+  "u": "http://ngcdn001.cnr.cn/live/zgzs/index.m3u8"
+ },
+ {
+  "n": "经济之声",
+  "c": "cn",
+  "s": "央广 · 财经",
+  "u": "http://ngcdn001.cnr.cn/live/jjzs/index.m3u8"
+ },
+ {
+  "n": "音乐之声",
+  "c": "cn",
+  "s": "央广 · 音乐",
+  "u": "http://ngcdn002.cnr.cn/live/yyzs/index.m3u8"
+ },
+ {
+  "n": "文艺之声",
+  "c": "cn",
+  "s": "央广 · 文艺",
+  "u": "http://ngcdn002.cnr.cn/live/wyzs/index.m3u8"
+ },
+ {
+  "n": "都市之声",
+  "c": "cn",
+  "s": "央广 · 都市",
+  "u": "http://ngcdn001.cnr.cn/live/dszs/index.m3u8"
+ },
+ {
+  "n": "Groove Salad",
+  "c": "intl",
+  "s": "SomaFM · 电子",
+  "u": "https://ice1.somafm.com/groovesalad-256-mp3"
+ },
+ {
+  "n": "Underground 80s",
+  "c": "intl",
+  "s": "SomaFM · 80s",
+  "u": "https://ice1.somafm.com/u80s-128-mp3"
+ },
+ {
+  "n": "Indie Pop Rocks",
+  "c": "intl",
+  "s": "SomaFM · 独立",
+  "u": "https://ice1.somafm.com/indiepop-128-mp3"
+ },
+ {
+  "n": "Radio Paradise",
+  "c": "intl",
+  "s": "美 · 摇滚",
+  "u": "https://stream.radioparadise.com/aac-320"
+ },
+ {
+  "n": "RP Mellow Mix",
+  "c": "intl",
+  "s": "美 · 舒缓",
+  "u": "https://stream.radioparadise.com/mellow-320"
+ },
+ {
+  "n": "FIP",
+  "c": "intl",
+  "s": "法 · 综合",
+  "u": "https://icecast.radiofrance.fr/fip-midfi.mp3"
+ },
+ {
+  "n": "FIP Jazz",
+  "c": "intl",
+  "s": "法 · 爵士",
+  "u": "https://icecast.radiofrance.fr/fipjazz-midfi.mp3"
+ },
+ {
+  "n": "France Musique",
+  "c": "intl",
+  "s": "法 · 古典",
+  "u": "https://icecast.radiofrance.fr/francemusique-midfi.mp3"
+ },
+ {
+  "n": "Mouv",
+  "c": "intl",
+  "s": "法 · 嘻哈",
+  "u": "https://icecast.radiofrance.fr/mouv-midfi.mp3"
+ },
+ {
+  "n": "NPR News",
+  "c": "intl",
+  "s": "美 · 新闻",
+  "u": "https://npr-ice.streamguys1.com/live.mp3"
+ },
+ {
+  "n": "NPO Radio 4",
+  "c": "intl",
+  "s": "荷 · 古典",
+  "u": "https://icecast.omroep.nl/radio4-bb-mp3"
+ }
+]
