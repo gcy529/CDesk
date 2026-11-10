@@ -206,4 +206,6 @@
     <string name="vodpg_no_source">還沒設定影視接口，先去設定裡填地址</string>
     <string name="live_title">直播</string>
     <string name="livepg_no_source">還沒設定直播源，先去設定裡填地址</string>
+    <string name="music_title">音樂</string>
+    <string name="musicpg_empty">沒有找到歌曲，插上 U 盤或把歌放進本機試試</string>
 </resources>

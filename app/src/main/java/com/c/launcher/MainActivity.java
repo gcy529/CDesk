@@ -185,7 +185,7 @@ public class MainActivity extends Activity {
         mediaAdapter.setOnCardClick(new MediaAdapter.OnCardClick() {
             @Override public void onCardClick(int pos, String type) {
                 Class<?> t = "live".equals(type) ? LiveShellActivity.class
-                        : "audio".equals(type) ? MusicShellActivity.class
+                        : "audio".equals(type) ? MusicHomeActivity.class
                         : "library".equals(type) ? LibraryActivity.class
                         : VodHomeActivity.class;
                 CLog.i("open shell " + t.getSimpleName());
@@ -240,7 +240,7 @@ public class MainActivity extends Activity {
                     String type = mediaAdapter.typeAt(position);
                     CLog.i("media click type=" + type + " pos=" + position);
                     Class<?> target = "live".equals(type) ? LiveShellActivity.class
-                            : "audio".equals(type) ? MusicShellActivity.class
+                            : "audio".equals(type) ? MusicHomeActivity.class
                             : "library".equals(type) ? LibraryActivity.class
                             : VodHomeActivity.class;
                     startActivity(new Intent(MainActivity.this, target));

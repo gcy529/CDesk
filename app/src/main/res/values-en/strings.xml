@@ -207,4 +207,6 @@
     <string name="vodpg_no_source">No video API configured, set it in Settings first</string>
     <string name="live_title">Live TV</string>
     <string name="livepg_no_source">No live source configured, set it in Settings first</string>
+    <string name="music_title">Music</string>
+    <string name="musicpg_empty">No songs found. Plug in a USB drive or copy songs to this device</string>
 </resources>
