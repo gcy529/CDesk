@@ -103,7 +103,7 @@ public class MainPageNavigationTest {
         if (cols == GridView.AUTO_FIT) {
             // Robolectric 不真正跑 GridView 自动布局时仍是 AUTO_FIT，
             // 此时只校验适配器侧声明的列数（MainActivity 读的就是它）。
-            assertEquals("适配器列数应为 3", 3, ma.columns());
+            assertEquals("适配器列数应与卡片数同源", 5, ma.columns());
         } else {
             assertEquals("列数必须与适配器同源，否则 DPAD 边界判断和实际布局会错位: adapter="
                             + ma.columns() + " grid=" + cols,
@@ -121,7 +121,7 @@ public class MainPageNavigationTest {
         MediaAdapter ma = new MediaAdapter(a);
         Class<?>[] expected = new Class<?>[] {
                 LiveHomeActivity.class, VodHomeActivity.class,
-                MusicHomeActivity.class, LibraryActivity.class };
+                MusicHomeActivity.class, LibraryActivity.class, SettingsActivity.class };
 
         assertEquals("卡片数与路由表必须一样长", expected.length, ma.getCount());
         for (int pos = 0; pos < ma.getCount(); pos++) {
