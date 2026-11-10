@@ -196,7 +196,6 @@ jobs:
         run: ls -lh app/build/outputs/apk/debug/*.apk
 
       - name: Sync download links in index.html (retired)
-        if: false
         if: startsWith(github.ref, 'refs/tags/v')
         continue-on-error: true
         run: |
