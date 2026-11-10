@@ -96,6 +96,12 @@ public class SettingsActivity extends Activity {
                     @Override public void onLatest() {
                         Toast.makeText(SettingsActivity.this, R.string.update_latest, Toast.LENGTH_SHORT).show();
                     }
+                    @Override public void onError(String reason) {
+                        // 网络不通必须说清楚，不能继续冒充「已是最新」
+                        Toast.makeText(SettingsActivity.this,
+                                getString(R.string.update_failed, reason), Toast.LENGTH_LONG).show();
+                        CLog.i("update check failed: " + reason);
+                    }
                 });
             }
         });

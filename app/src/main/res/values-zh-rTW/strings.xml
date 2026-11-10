@@ -187,4 +187,5 @@
     <string name="guardian_battery_bad">✗ 電池優化：未豁免（後台可能被系統殺）</string>
     <string name="guardian_battery_na">— 電池優化：本系統無此機制</string>
     <string name="guardian_version">當前版本 %1$s</string>
+    <string name="update_failed">檢查更新失敗（%1$s），請檢查網路</string>
 </resources>

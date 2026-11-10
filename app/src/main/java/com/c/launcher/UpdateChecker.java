@@ -3,89 +3,176 @@ package com.c.launcher;
 import android.app.Activity;
 import android.content.SharedPreferences;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * 更新提醒：扫 GitHub 全部 release（正式版 + beta 预发布），报最新的那个。
- * 旧版只查 releases/latest —— 该接口永远忽略 beta，导致 0.4.x 用户收不到更新提示。
- * 现在改为遍历 /releases 列表，按版本号比大小；下载直链从 asset 里现取，不再拼死 app-debug.apk。
+ * 更新检查。
  *
- *  - 对比 versionName，远端更新 → 状态栏文字提示 + 点击直达下载
- *  - 每天最多打扰一次（记录上次提醒日期）
- *  - 拿不到 / 没网络 / 超时 → 完全静默，绝不弹窗打扰
+ * 关键修复（0.6.1）：以前任何网络异常都走 onLatest —— 国内连不上 api.github.com 时，
+ * 用户点「检查更新」永远看到「已是最新」，等于把故障伪装成正常。
+ * 现在网络失败会明确回报失败原因，不再冒充最新。
+ *
+ * 取版本按顺序试，前三个是国内能通的加速源，最后才回落官方 API：
+ *   1. gh-proxy 加速的 raw version.json
+ *   2. ghfast 加速的 raw version.json
+ *   3. jsDelivr CDN 上的 version.json
+ *   4. api.github.com/releases（旧通道，国内多半不通）
  */
 public final class UpdateChecker {
 
     public interface Callback {
         void onUpdate(String remoteVersion, String downloadUrl);
         void onLatest();
+        /** 全部源都拿不到时回调；默认静默，避免每日自动检查打扰 */
+        default void onError(String reason) { }
     }
 
     private UpdateChecker() { }
 
-    private static final String API = "https://api.github.com/repos/gcy529/CDesk/releases?per_page=20";
+    private static final String[] ENDPOINTS = new String[] {
+            "https://gh-proxy.com/https://raw.githubusercontent.com/gcy529/CDesk/beta/version.json",
+            "https://ghfast.top/https://raw.githubusercontent.com/gcy529/CDesk/beta/version.json",
+            "https://cdn.jsdelivr.net/gh/gcy529/CDesk@beta/version.json",
+            "https://api.github.com/repos/gcy529/CDesk/releases?per_page=20"
+    };
+
+    /** 一次手动检查最多花这么久，超时就报失败，不无限等 */
+    private static final long BUDGET_MS = 15000L;
+
     private static final String PREFS = "cdesk_update";
     private static final String KEY_LAST = "last_remind_day";
     private static final String KEY_SKIP = "skip_version";
 
-    /** 每个候选版本 */
+    static final class Res {
+        boolean failed;
+        String err;
+        String ver;
+        String url;
+    }
+
     private static class Rel {
-        String tag;   // 如 v0.4.2 或 beta
-        String ver;   // 纯数字版本 0.4.2
-        String apk;   // asset 直链
+        String tag;
+        String ver;
+        String apk;
     }
 
-    /** 设置页「检查更新」用：不受每日一次限制，查完必定回调 */
     public static void checkNow(final Activity act, final Callback cb) {
-        fetchAsync(act, cb, true);
+        fetchAsync(act, cb);
     }
 
-    /** 每天最多提醒一次；用户点过"跳过此版本"则不再提醒该版本 */
     public static void checkIfNeeded(final Activity act, final Callback cb) {
         final SharedPreferences p = act.getSharedPreferences(PREFS, Activity.MODE_PRIVATE);
         String today = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US)
                 .format(new java.util.Date());
         if (today.equals(p.getString(KEY_LAST, null))) return;
         if (act.getString(R.string.app_version).equals(p.getString(KEY_SKIP, null))) return;
-        fetchAsync(act, cb, false);
+        fetchAsync(act, cb);
     }
 
-    private static void fetchAsync(final Activity act, final Callback cb, final boolean manual) {
+    private static void fetchAsync(final Activity act, final Callback cb) {
         new Thread(new Runnable() {
             @Override public void run() {
-                String json = null;
-                try {
-                    HttpURLConnection c = (HttpURLConnection) new URL(API).openConnection();
-                    c.setConnectTimeout(manual ? 6000 : 4000);
-                    c.setReadTimeout(manual ? 8000 : 5000);
-                    c.setRequestProperty("User-Agent", "CDesk/" + act.getString(R.string.app_version));
-                    c.setRequestProperty("Accept", "application/vnd.github+json");
-                    InputStream in = c.getInputStream();
-                    BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) sb.append(line);
-                    r.close();
-                    c.disconnect();
-                    json = sb.toString();
-                } catch (Throwable ignored) { }
-
-                final Rel best = bestRelease(json, act.getString(R.string.app_version));
+                final String cur = act.getString(R.string.app_version);
+                final Res res = fetch(cur);
                 act.runOnUiThread(new Runnable() {
                     @Override public void run() {
-                        if (best == null) cb.onLatest();
-                        else cb.onUpdate(best.ver, best.apk);
+                        if (res.failed) {
+                            cb.onError(res.err == null ? "network" : res.err);
+                        } else if (res.ver != null && res.url != null && isNewer(res.ver, cur)) {
+                            cb.onUpdate(res.ver, res.url);
+                        } else {
+                            cb.onLatest();
+                        }
                     }
                 });
             }
         }).start();
     }
 
-    /** 在 releases 列表 JSON 里找「比 cur 新的最高版本」，同时把它的 apk 直链带上 */
+    /** 依次试所有源，第一个能解析出明确答案的就用 */
+    static Res fetch(String cur) {
+        long deadline = System.currentTimeMillis() + BUDGET_MS;
+        StringBuilder errs = new StringBuilder();
+        for (String ep : ENDPOINTS) {
+            if (System.currentTimeMillis() > deadline) { errs.append("timeout"); break; }
+            String body = httpGet(ep);
+            if (body == null) { errs.append(hostOf(ep)).append("× "); continue; }
+            Res r = parse(body, cur);
+            if (r != null) return r;
+            errs.append(hostOf(ep)).append("? ");
+        }
+        Res f = new Res();
+        f.failed = true;
+        f.err = errs.length() == 0 ? "network" : errs.toString().trim();
+        return f;
+    }
+
+    private static String hostOf(String url) {
+        try {
+            return new URL(url).getHost().replace("www.", "");
+        } catch (Throwable t) {
+            return "url";
+        }
+    }
+
+    static String httpGet(String url) {
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(3000);
+            c.setReadTimeout(3500);
+            c.setInstanceFollowRedirects(true);
+            c.setRequestProperty("User-Agent", "CDesk-updater");
+            c.setRequestProperty("Accept", "*/*");
+            int code = c.getResponseCode();
+            if (code < 200 || code >= 300) return null;
+            InputStream in = c.getInputStream();
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            byte[] buf = new byte[2048];
+            int n;
+            while ((n = in.read(buf)) > 0) {
+                bo.write(buf, 0, n);
+                if (bo.size() > 256 * 1024) break;
+            }
+            in.close();
+            return new String(bo.toByteArray(), "UTF-8");
+        } catch (Throwable t) {
+            return null;
+        } finally {
+            if (c != null) c.disconnect();
+        }
+    }
+
+    /** 解析一个响应体；返回 null 表示这个源的内容不可用 */
+    static Res parse(String body, String cur) {
+        if (body == null) return null;
+        String s = body.trim();
+        if (s.length() == 0) return null;
+        // 我们自己维护的 version.json
+        if (s.charAt(0) == '{' && s.contains("\"version\"")) {
+            String v = extract(s, "version", 0);
+            if (!looksVer(v)) return null;
+            Res r = new Res();
+            r.ver = v;
+            r.url = extract(s, "url", 0);
+            return r;
+        }
+        // GitHub releases 列表
+        Rel best = bestRelease(s, cur);
+        if (best != null) {
+            Res r = new Res();
+            r.ver = best.ver;
+            r.url = best.apk;
+            return r;
+        }
+        // 合法的 release 列表但没有更新的 → 真·最新
+        if (s.contains("\"tag_name\"") || s.equals("[]")) return new Res();
+        return null;
+    }
+
     static Rel bestRelease(String json, String cur) {
         if (json == null) return null;
         Rel best = null;
@@ -93,12 +180,10 @@ public final class UpdateChecker {
         while (i >= 0) {
             String tag = extract(json, "tag_name", i);
             if (tag != null) {
-                // 在这个 release 的范围里找第一个 .apk asset 直链
                 int next = json.indexOf("\"tag_name\"", i + 1);
                 if (next < 0) next = json.length();
                 String apk = findApk(json, i, next);
                 String ver = tag.startsWith("v") ? tag.substring(1) : tag;
-                // beta 渠道 tag 就是 "beta"，版本号从 asset 名 CDesk-0.4.2-beta.apk 里取
                 if (!looksVer(ver) && apk != null) {
                     java.util.regex.Matcher m = java.util.regex.Pattern
                             .compile("CDesk-([0-9.]+?)-beta\\.apk").matcher(apk);
@@ -117,7 +202,6 @@ public final class UpdateChecker {
         return best;
     }
 
-    /** 从 [from,to) 区间里取第一个以 .apk 结尾的 browser_download_url */
     private static String findApk(String json, int from, int to) {
         String probe = "\"browser_download_url\":\"";
         int i = json.indexOf(probe, from);
@@ -137,7 +221,6 @@ public final class UpdateChecker {
         return s != null && s.matches("[0-9]+(\\.[0-9]+)*");
     }
 
-    /** 从 json 的第 startAt 位起，取 "key":"value" 的 value */
     static String extract(String json, String key, int startAt) {
         String probe = "\"" + key + "\":\"";
         int i = json.indexOf(probe, startAt);
@@ -147,7 +230,6 @@ public final class UpdateChecker {
         return e > s ? json.substring(s, e) : null;
     }
 
-    /** 语义化版本比较：0.2.1 > 0.2.0 */
     static boolean isNewer(String remote, String current) {
         try {
             String[] a = remote.split("\\.");

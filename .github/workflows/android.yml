@@ -167,6 +167,20 @@ jobs:
           gh release view beta --json assets -q '.assets[].name' 2>/dev/null | while read -r n; do
             gh release delete-asset beta "$n" -y || true
           done
+      - name: Write version.json (update checker)
+        run: |
+          if [ -z "$VER" ]; then echo "VER empty, skip"; exit 0; fi
+          cat > version.json <<EOF
+          {"version":"$VER","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-$VER-beta.apk","channel":"beta"}
+          EOF
+          cat version.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add version.json
+          if git diff --cached --quiet; then echo "version.json unchanged"; exit 0; fi
+          git commit -m "chore: version.json -> $VER [skip ci]"
+          git push origin HEAD:beta || true
+
       - name: Release beta
         if: github.ref == 'refs/heads/beta'
         uses: softprops/action-gh-release@v2

@@ -188,4 +188,5 @@
     <string name="guardian_battery_bad">✗ Battery: not exempted (may be killed)</string>
     <string name="guardian_battery_na">— Battery: no such mechanism</string>
     <string name="guardian_version">Version %1$s</string>
+    <string name="update_failed">Update check failed (%1$s). Check your network.</string>
 </resources>
