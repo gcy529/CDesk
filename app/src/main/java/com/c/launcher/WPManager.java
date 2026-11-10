@@ -168,10 +168,11 @@ public final class WPManager {
         }
         if (b == null) {
             try {
+                // 晨光 / 金色时刻 跟「日光少女」是同一张图的重编码，已经把图删了；
+                // 老存档里存着 3 / 4 的也一律当少女处理，否则又是"两张卡一张图"。
                 int res = wp == WP_MINT ? R.drawable.wall_mint
-                : wp == WP_GIRL ? R.drawable.final_wallpaper_4k
                         : wp == WP_NIGHT ? R.drawable.wall_night
-                        : wp == WP_DAY ? R.drawable.wall_day : R.drawable.wall_sunset;
+                        : R.drawable.final_wallpaper_4k;
                 int w = a.getResources().getDisplayMetrics().widthPixels;
                 int h = a.getResources().getDisplayMetrics().heightPixels;
                 b = decode(a, res, w, h);
@@ -232,6 +233,7 @@ public final class WPManager {
     /** 壁纸是深色还是浅色（决定桌面文字用白还是深灰）：
      *  只有晨光是浅底；日光少女是深色夕阳（文字用白） */
     public static boolean isDarkWallpaper(int wp) {
-        return wp == WP_CUSTOM;
+        // 桌面文字下面有半透明底衬，所以一律按"深色底、白字"走，壁纸换哪张都不影响可读性
+        return true;
     }
 }
