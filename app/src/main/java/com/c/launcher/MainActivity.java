@@ -108,6 +108,10 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        // 切语言会把 Activity 重建一遍，之前每次都掉回「最近」那一页。
+        // 记住上次停在哪一页，重建后回到原处。
+        page = getSharedPreferences("cdesk_core", MODE_PRIVATE).getInt("page_last", PAGE_RECENT);
+        if (page < 0 || page >= PAGE_COUNT) { page = PAGE_RECENT; }
 
         ivWallpaper = (ImageView) findViewById(R.id.ivWallpaper);
         ivStatusDown = (ImageView) findViewById(R.id.ivStatusDown);
@@ -785,5 +789,13 @@ public class MainActivity extends Activity {
 
     private int dp(float v) {
         return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    /** 记住当前页号，切语言/重建后回到这一页 */
+    private void savePage() {
+        try {
+            getSharedPreferences("cdesk_core", MODE_PRIVATE).edit().putInt("page_last", page).commit();
+        } catch (Throwable ignored) {
+        }
     }
 }

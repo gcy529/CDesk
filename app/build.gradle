@@ -26,8 +26,8 @@ android {
         applicationId project.hasProperty('appId') ? project.property('appId') : "com.c.launcher"
         minSdk 16
         targetSdk 34
-        versionCode 17
-        versionName "0.7.2"
+        versionCode 18
+        versionName "0.7.3"
         // 版本号只写这一处：桌面角标、设置页、更新检查的「当前版本」全读它。
         // 手抄进 strings.xml 会漂——四语曾一起停在 0.4.1，导致更新检查
         // 提示用户升级到已经装着的版本。
