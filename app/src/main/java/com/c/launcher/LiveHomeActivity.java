@@ -26,6 +26,7 @@ public class LiveHomeActivity extends Activity {
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
         setContentView(R.layout.activity_live_home);
+        wireApiButton();
         Screen.apply(this);
         url = getSharedPreferences("cdesk_core", MODE_PRIVATE).getString("live_api", "");
         grid = (GridView) findViewById(R.id.gridLive);
@@ -110,5 +111,39 @@ public class LiveHomeActivity extends Activity {
             ((TextView) v).setText(g.name + " (" + g.channels.size() + ")");
             return v;
         }
+    }
+
+    /**
+     * 接口入口：跟点播页一样直接填，不跳设置。
+     * 直播源可以填多个，一行一个（也支持用 | 分隔）。
+     */
+    private void wireApiButton() {
+        android.widget.Button b = (android.widget.Button) findViewById(R.id.btnLiveApi);
+        if (b == null) { return; }
+        try { ThemeManager.styleButton(b, ThemeManager.current(this)); } catch (Throwable ignored) { }
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                final android.widget.EditText et = new android.widget.EditText(LiveHomeActivity.this);
+                et.setHint(R.string.livepg_api_hint);
+                et.setMinLines(3);
+                et.setGravity(android.view.Gravity.TOP | android.view.Gravity.LEFT);
+                String cur = getSharedPreferences("cdesk_core", MODE_PRIVATE).getString("live_api", "");
+                if (cur != null) { et.setText(cur); }
+                new android.app.AlertDialog.Builder(LiveHomeActivity.this)
+                        .setTitle(R.string.livepg_api_title)
+                        .setMessage(R.string.livepg_api_msg)
+                        .setView(et)
+                        .setPositiveButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener() {
+                            @Override public void onClick(android.content.DialogInterface d, int w) {
+                                String val = et.getText().toString().trim();
+                                getSharedPreferences("cdesk_core", MODE_PRIVATE).edit().putString("live_api", val).commit();
+                                CLog.i("live: api saved lines=" + (val.length() == 0 ? 0 : val.split("[\\r\\n|]+").length));
+                                recreate();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+            }
+        });
     }
 }
