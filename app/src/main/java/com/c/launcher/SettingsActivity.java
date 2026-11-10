@@ -32,7 +32,8 @@ public class SettingsActivity extends Activity {
         setContentView(R.layout.activity_settings);
 
         ThemeManager.Palette p = ThemeManager.current(this);
-        View root = findViewById(R.id.rootSettings);
+        // 壁纸必须挂在 ScrollView 上：挂在里面的 LinearLayout 上会跟着内容一起滚
+        View root = findViewById(R.id.scrollSettings);
         WPManager.applyToRoot(this, root);
 
         TextView title = (TextView) findViewById(R.id.tvSetTitle);

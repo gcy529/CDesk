@@ -36,13 +36,14 @@ public final class LangManager {
             .edit().putInt(KEY, i).commit();
     }
 
-    /** 循环切换：跟随系统 -> 简 -> 繁 -> EN -> 跟随系统 */
+    /** 循环切换：简 -> 繁 -> EN -> 简（只有三档，点三下回到原点）。
+     *  跟随系统只是"没设过"的初始状态，不再参与循环。 */
     public static void cycle(Activity a) {
         int i = index(a);
         if (i == FOLLOW) i = SIMP;
         else if (i == SIMP) i = TRAD;
         else if (i == TRAD) i = ENG;
-        else i = FOLLOW;
+        else i = SIMP;
         setIndex(a, i);
         a.recreate();
     }
