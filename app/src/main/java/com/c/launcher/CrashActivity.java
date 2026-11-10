@@ -76,5 +76,14 @@ public class CrashActivity extends Activity {
         });
 
         setContentView(root);
+
+        // 崩溃页只停留 6 秒：够看清、够截图，又不至于一直占着屏幕。
+        // 到点先 finish 再结束进程，避免把这个坏掉的进程留在后台。
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override public void run() {
+                try { finish(); } catch (Throwable ignored) { }
+                try { android.os.Process.killProcess(android.os.Process.myPid()); } catch (Throwable ignored) { }
+            }
+        }, 6000L);
     }
 }

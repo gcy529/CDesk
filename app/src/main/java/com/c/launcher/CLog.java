@@ -87,11 +87,11 @@ public final class CLog {
     /** 设备信息 + 日志，方便发给我定位 */
     public static String report() {
         StringBuilder sb = new StringBuilder();
-        sb.append("CDesk 诊断报告\n");
+        sb.append("CDesk report\n");
         sb.append("App: ").append(appVer()).append("\n");
         sb.append("Android: ").append(Build.VERSION.RELEASE).append(" (API ").append(Build.VERSION.SDK_INT).append(")\n");
-        sb.append("机型: ").append(Build.MODEL).append(" / ").append(Build.MANUFACTURER).append("\n");
-        sb.append("--- 日志 ---\n");
+        sb.append("Model: ").append(Build.MODEL).append(" / ").append(Build.MANUFACTURER).append("\n");
+        sb.append("--- log ---\n");
         sb.append(read());
         return sb.toString();
     }
