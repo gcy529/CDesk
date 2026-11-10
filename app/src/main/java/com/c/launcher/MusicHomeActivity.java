@@ -74,6 +74,13 @@ public class MusicHomeActivity extends Activity {
             }
         });
 
+        View testBtn = findViewById(R.id.btnRadioTest);
+        if (testBtn != null) {
+            try { ThemeManager.styleButton((android.widget.Button) testBtn, ThemeManager.current(this)); } catch (Throwable ignored) { }
+            testBtn.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { testLatency(); }
+            });
+        }
         wireRadio(R.id.btnRadioCn, true);
         wireRadio(R.id.btnRadioIntl, false);
 
@@ -341,5 +348,51 @@ public class MusicHomeActivity extends Activity {
         urls.addAll(u);
         subs.addAll(s);
         afterLoad();
+    }
+
+    /**
+     * 线路检测：真的去连每个台的地址，量握手耗时。
+     * 拿到响应头就算通（不读完整个流），连不上的标「超时」。
+     */
+    private void testLatency() {
+        if (urls.isEmpty()) { return; }
+        tvState.setVisibility(View.VISIBLE);
+        tvState.setText(R.string.musicpg_testing);
+        final String[] base = new String[subs.size()];
+        for (int i = 0; i < subs.size(); i++) { base[i] = subs.get(i); }
+        final List<String> targets = new ArrayList<String>(urls);
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final long[] ms = new long[targets.size()];
+                for (int i = 0; i < targets.size(); i++) {
+                    long t0 = android.os.SystemClock.elapsedRealtime();
+                    java.net.HttpURLConnection conn = null;
+                    try {
+                        conn = (java.net.HttpURLConnection) new java.net.URL(targets.get(i)).openConnection();
+                        conn.setConnectTimeout(3500);
+                        conn.setReadTimeout(3500);
+                        conn.setRequestProperty("User-Agent", "CDesk");
+                        conn.getResponseCode();
+                        ms[i] = android.os.SystemClock.elapsedRealtime() - t0;
+                    } catch (Throwable t) {
+                        ms[i] = -1;
+                    } finally {
+                        if (conn != null) { conn.disconnect(); }
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        for (int i = 0; i < subs.size() && i < ms.length; i++) {
+                            String b = base[i] == null ? "" : base[i];
+                            int cut = b.indexOf(" \u00b7 ");
+                            if (cut > 0) { b = b.substring(0, cut); }
+                            subs.set(i, b + " \u00b7 " + (ms[i] < 0 ? "超时" : ms[i] + "ms"));
+                        }
+                        afterLoad();
+                        tvState.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }).start();
     }
 }

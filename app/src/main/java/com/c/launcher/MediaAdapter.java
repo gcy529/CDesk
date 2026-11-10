@@ -17,11 +17,11 @@ import android.widget.TextView;
  */
 public class MediaAdapter extends BaseAdapter {
 
-    private static final String[] TYPES = new String[] { "live", "video", "audio", "library" };
+    private static final String[] TYPES = new String[] { "live", "video", "audio", "library", "settings" };
     /** 卡片：深色玻璃实底 + 彩色描边。之前用 20% 透明色块，在壁纸上几乎隐形（真 bug） */
     private static final int FILL = 0xF2161C2C;
-    private static final int[] STROKES = new int[] { 0xFFFF7E9D, 0xFF4D6BFE, 0xFF2DD4BF, 0xFFF59E0B };
-    private static final int[] LABELS = new int[] { R.string.live_title, R.string.vod_title, R.string.music_title, R.string.library_title };
+    private static final int[] STROKES = new int[] { 0xFFFF7E9D, 0xFF4D6BFE, 0xFF2DD4BF, 0xFFF59E0B, 0xFFA78BFA };
+    private static final int[] LABELS = new int[] { R.string.live_title, R.string.vod_title, R.string.music_title, R.string.library_title, R.string.settings_card };
 
     private final Context ctx;
 
@@ -41,7 +41,7 @@ public class MediaAdapter extends BaseAdapter {
     public String typeAt(int pos) { return TYPES[pos % TYPES.length]; }
 
     /** 网格列数：MainActivity 的 DPAD 边界判断和 setNumColumns 都读这里，不许两处各写一个字面量 */
-    public int columns() { return 4; }
+    public int columns() { return 5; }
 
     @Override public int getCount() { return TYPES.length; }
     @Override public Object getItem(int position) { return typeAt(position); }
@@ -125,6 +125,20 @@ public class MediaAdapter extends BaseAdapter {
             paint.setStrokeCap(android.graphics.Paint.Cap.ROUND);
             cv.drawLine(cx - r * 0.45f, cy + r * 0.45f, cx - r * 0.45f, cy - r * 0.75f, paint);
             cv.drawLine(cx - r * 0.45f, cy - r * 0.75f, cx + r * 0.55f, cy - r * 0.45f, paint);
+        } else if (type == 4) {
+            // 设置：齿轮（圆 + 四根齿）
+            paint.setStyle(android.graphics.Paint.Style.STROKE);
+            paint.setStrokeWidth(dp(4));
+            cv.drawCircle(cx, cy, r * 0.62f, paint);
+            for (int k = 0; k < 4; k++) {
+                double ang = Math.PI / 4 + k * Math.PI / 2;
+                float x1 = (float) (cx + Math.cos(ang) * r * 0.78f);
+                float y1 = (float) (cy + Math.sin(ang) * r * 0.78f);
+                float x2 = (float) (cx + Math.cos(ang) * r * 1.02f);
+                float y2 = (float) (cy + Math.sin(ang) * r * 1.02f);
+                cv.drawLine(x1, y1, x2, y2, paint);
+            }
+            paint.setStyle(android.graphics.Paint.Style.FILL);
         } else {
             // 书库：三本书脊
             paint.setStyle(android.graphics.Paint.Style.FILL);

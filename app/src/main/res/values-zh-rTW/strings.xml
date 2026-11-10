@@ -221,4 +221,7 @@
     <string name="musicpg_radio_cn">國內電台</string>
     <string name="musicpg_radio_intl">國際電台</string>
     <string name="wp_mint">薄荷</string>
+    <string name="musicpg_test">檢測線路</string>
+    <string name="musicpg_testing">正在檢測線路…</string>
+    <string name="settings_card">設定</string>
 </resources>

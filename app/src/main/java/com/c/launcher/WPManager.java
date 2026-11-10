@@ -78,7 +78,16 @@ public final class WPManager {
      * 原来默认开，等于用户选什么都白选 —— effective() 一到白天就强行换成晨光、
      * 晚上换成日落，选少女/夜晚永远看不到效果，看着就像"设置只跟晨光一张图走"。
      */
-    public static boolean isAuto(Context c) { return prefs(c).getBoolean(KEY_AUTO, false); }
+    public static boolean isAuto(Context c) {
+        SharedPreferences p = prefs(c);
+        // 老版本默认开过自动跟随时间，存进去的 true 得清一次，
+        // 否则装了新包还是"到白天就变晨光"，选什么都白选。
+        if (!p.getBoolean("auto_off_v1", false)) {
+            p.edit().putBoolean(KEY_AUTO, false).putBoolean("auto_off_v1", true).commit();
+            return false;
+        }
+        return p.getBoolean(KEY_AUTO, false);
+    }
 
     public static void setAuto(Context c, boolean v) { prefs(c).edit().putBoolean(KEY_AUTO, v).commit(); }
 

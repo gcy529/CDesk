@@ -294,7 +294,7 @@
             android:layout_marginBottom="6dp"
             android:text="@string/app_version"
             android:textSize="11sp"
-            android:textColor="#668E9BAE" />
+            android:textColor="#CCFFFFFF" />
 
         <ImageView
             android:id="@+id/ivStatusDown"
