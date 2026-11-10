@@ -128,7 +128,7 @@ jobs:
         run: |
           VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo '?')
           {
-            echo "## CDesk ${VER} beta"
+            echo "## CDesk b${VER}（测试版）"
             echo ''
             if [ -f CHANGELOG.md ]; then
               awk '/^## /{ if (++c==2) exit } c>=1' CHANGELOG.md

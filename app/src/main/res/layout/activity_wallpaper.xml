@@ -50,7 +50,7 @@
                     <ImageView android:id="@+id/thumbMint" style="@style/WpThumb"
                         android:contentDescription="@string/wp_mint"
                         android:src="@drawable/wall_mint" />
-                    <TextView style="@style/WpLabel" android:text="@string/wp_night" />
+                    <TextView style="@style/WpLabel" android:text="@string/wp_mint" />
                 </LinearLayout>
 
                 <LinearLayout android:id="@+id/cardWpNight"

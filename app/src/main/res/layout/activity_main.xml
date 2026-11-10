@@ -61,7 +61,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/bg_clock_scrim"
+                android:paddingLeft="16dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="12dp">
 
                 <TextView
                     android:id="@+id/tvClock"
@@ -80,7 +85,7 @@
                     android:layout_marginTop="2dp"
                     android:text="2026-11-07  Saturday"
                     android:textSize="16sp"
-                    android:textColor="#8E9BAE" />
+                    android:textColor="#F2F6FC" />
 
                 <TextView
                     android:id="@+id/tvWeather"
@@ -89,7 +94,7 @@
                     android:layout_marginTop="4dp"
                     android:singleLine="true"
                     android:textSize="13sp"
-                    android:textColor="#8E9BAE" />
+                    android:textColor="#F2F6FC" />
             </LinearLayout>
 
             <LinearLayout

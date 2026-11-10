@@ -232,6 +232,6 @@ public final class WPManager {
     /** 壁纸是深色还是浅色（决定桌面文字用白还是深灰）：
      *  只有晨光是浅底；日光少女是深色夕阳（文字用白） */
     public static boolean isDarkWallpaper(int wp) {
-        return wp == WP_CUSTOM ? true : wp != WP_DAY;
+        return wp == WP_CUSTOM;
     }
 }
