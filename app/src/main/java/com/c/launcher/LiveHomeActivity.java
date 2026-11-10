@@ -42,6 +42,7 @@ public class LiveHomeActivity extends Activity {
             }
         });
         load();
+        autoPromptLive();
     }
 
     private void load() {
@@ -143,6 +144,20 @@ public class LiveHomeActivity extends Activity {
                         })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
+            }
+        });
+    }
+
+    /** 直播页同理：没源就直接弹出来 */
+    private void autoPromptLive() {
+        String cur = getSharedPreferences("cdesk_core", MODE_PRIVATE).getString("live_api", "");
+        if (cur != null && cur.trim().length() > 0) { return; }
+        View root = findViewById(android.R.id.content);
+        if (root == null) { return; }
+        root.post(new Runnable() {
+            @Override public void run() {
+                View b = findViewById(R.id.btnLiveApi);
+                if (b != null) { b.requestFocus(); b.performClick(); }
             }
         });
     }

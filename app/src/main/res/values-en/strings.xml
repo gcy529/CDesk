@@ -204,8 +204,8 @@
     <string name="vodpg_search">Search</string>
     <string name="vodpg_search_hint">Search by title</string>
     <string name="vodpg_source">Source</string>
-    <string name="vodpg_no_source">No video API configured, set it in Settings first</string>
-    <string name="livepg_no_source">No live source configured, set it in Settings first</string>
+    <string name="vodpg_no_source">No API yet. Tap "API" above to add one</string>
+    <string name="livepg_no_source">No API yet. Tap "API" above to add one</string>
     <string name="musicpg_empty">No songs found. Plug in a USB drive or copy songs to this device</string>
     <string name="vodpg_api_title">Video API address</string>
     <string name="vodpg_api_msg">Paste your MacCMS-style API address. This app ships no sources</string>

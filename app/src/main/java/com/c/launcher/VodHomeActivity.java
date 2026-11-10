@@ -50,6 +50,7 @@ public class VodHomeActivity extends Activity {
             @Override public void onClick(View v) { openSearch(); }
         });
         load();
+        autoPromptIfEmpty();
     }
 
     private void load() {
@@ -152,5 +153,18 @@ public class VodHomeActivity extends Activity {
             ((TextView) v).setText(cats.get(pos).name);
             return v;
         }
+    }
+
+    /** 第一次进来还没填接口：直接把输入框弹出来，省得用户对着空白页不知道点哪 */
+    private void autoPromptIfEmpty() {
+        if (base != null && base.trim().length() > 0) { return; }
+        View root = findViewById(android.R.id.content);
+        if (root == null) { return; }
+        root.post(new Runnable() {
+            @Override public void run() {
+                View b = findViewById(R.id.btnVodSource);
+                if (b != null) { b.requestFocus(); b.performClick(); }
+            }
+        });
     }
 }

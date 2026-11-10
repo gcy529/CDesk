@@ -205,8 +205,8 @@
     <string name="vodpg_search">搜索</string>
     <string name="vodpg_search_hint">输入片名搜索</string>
     <string name="vodpg_source">换源</string>
-    <string name="vodpg_no_source">还没设置影视接口，先去设置里填地址</string>
-    <string name="livepg_no_source">还没设置直播源，先去设置里填地址</string>
+    <string name="vodpg_no_source">还没有接口地址，点上面的「接口」填一个</string>
+    <string name="livepg_no_source">还没有接口地址，点上面的「接口」填一个</string>
     <string name="musicpg_empty">没有找到歌曲，插上 U 盘或把歌放进本机试试</string>
     <string name="vodpg_api_title">影视接口地址</string>
     <string name="vodpg_api_msg">填采集接口地址（苹果CMS 那种），本应用不内置任何源</string>

@@ -4,24 +4,24 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp"
+    android:padding="6dp"
     android:focusable="true"
     android:clickable="true"
     android:background="@drawable/bg_media_card">
 
     <ImageView
         android:id="@+id/ivMediaIcon"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/tvMediaName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="7dp"
         android:singleLine="true"
-        android:textSize="16sp"
+        android:textSize="11sp"
         android:textStyle="bold"
         android:textColor="#F8FAFC" />
 </LinearLayout>
