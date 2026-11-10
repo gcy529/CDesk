@@ -77,7 +77,7 @@ public final class WPManager {
      * 原来默认开，等于用户选什么都白选 —— effective() 一到白天就强行换成晨光、
      * 晚上换成日落，选少女/夜晚永远看不到效果，看着就像"设置只跟晨光一张图走"。
      */
-    public static boolean isAuto(Context c) { return prefs(c).getBoolean("auto_fixed", false) && prefs(c).getBoolean(KEY_AUTO, false); }
+    public static boolean isAuto(Context c) { return prefs(c).getBoolean(KEY_AUTO, false); }
 
     public static void setAuto(Context c, boolean v) { prefs(c).edit().putBoolean(KEY_AUTO, v).commit(); }
 
