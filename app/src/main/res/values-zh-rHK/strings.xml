@@ -206,4 +206,7 @@
     <string name="vodpg_no_source">還沒設定影視接口，先去設定裡填地址</string>
     <string name="livepg_no_source">還沒設定直播源，先去設定裡填地址</string>
     <string name="musicpg_empty">沒有找到歌曲，插上 U 盤或把歌放進本機試試</string>
+    <string name="vodpg_api_title">影視接口地址</string>
+    <string name="vodpg_api_msg">填採集接口地址（蘋果CMS 那種），本應用不內置任何源</string>
+    <string name="vodpg_api_hint">http://你的接口/api.php/provide/vod/</string>
 </resources>
