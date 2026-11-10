@@ -120,7 +120,7 @@ public class MainPageNavigationTest {
         GridView grid = (GridView) a.findViewById(R.id.gridApps);
         MediaAdapter ma = new MediaAdapter(a);
         Class<?>[] expected = new Class<?>[] {
-                LiveShellActivity.class, VodShellActivity.class,
+                LiveShellActivity.class, VodHomeActivity.class,
                 MusicShellActivity.class, LibraryActivity.class };
 
         assertEquals("卡片数与路由表必须一样长", expected.length, ma.getCount());
