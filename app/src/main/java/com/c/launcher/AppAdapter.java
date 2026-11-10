@@ -136,7 +136,16 @@ public class AppAdapter extends BaseAdapter {
         AppItem it = getItem(position);
         ImageView iv = (ImageView) v.findViewById(R.id.ivIcon);
         final TextView tv = (TextView) v.findViewById(R.id.tvName);
-        if (iv != null) iv.setImageDrawable(it.icon);
+        if (iv != null) {
+            iv.setImageDrawable(it.icon);
+            int side = Screen.iconSide(parent.getContext());
+            ViewGroup.LayoutParams lp = iv.getLayoutParams();
+            if (lp != null && (lp.width != side || lp.height != side)) {
+                lp.width = side;
+                lp.height = side;
+                iv.setLayoutParams(lp);
+            }
+        }
         if (tv != null) {
             tv.setText(it.label);
             tv.setTextColor(lightBg ? 0xFF5A6474 : ThemeManager.TEXT_SUB);

@@ -88,13 +88,14 @@ public class MediaAdapter extends BaseAdapter {
         TextView tv = (TextView) v.findViewById(R.id.tvMediaName);
         // 只画图形本身，颜色按类型区分；卡片底板交给 bg_media_card，
         // 不再在 bitmap 里再画一个深色圆角块（那样是"方块套方块"，远看四块黑板）。
-        android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(dp(96), dp(96), android.graphics.Bitmap.Config.ARGB_8888);
+        int side = Screen.iconSide(ctx);
+        android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(side, side, android.graphics.Bitmap.Config.ARGB_8888);
         android.graphics.Canvas cv = new android.graphics.Canvas(bmp);
         android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
         int type = position % TYPES.length;
         paint.setColor(STROKES[type]);
         paint.setStyle(android.graphics.Paint.Style.FILL);
-        float cx = dp(48), cy = dp(48), r = dp(26);
+        float cx = side / 2f, cy = side / 2f, r = side * 0.27f;
         if (type == 0) {
             // 直播：播放三角
             android.graphics.Path tri = new android.graphics.Path();
@@ -132,7 +133,15 @@ public class MediaAdapter extends BaseAdapter {
                 cv.drawRoundRect(new android.graphics.RectF(x0 - r * 0.16f, cy - r * 0.72f, x0 + r * 0.16f, cy + r * 0.72f), dp(3), dp(3), paint);
             }
         }
-        if (iv != null) iv.setImageBitmap(bmp);
+        if (iv != null) {
+            iv.setImageBitmap(bmp);
+            ViewGroup.LayoutParams lp = iv.getLayoutParams();
+            if (lp != null && (lp.width != side || lp.height != side)) {
+                lp.width = side;
+                lp.height = side;
+                iv.setLayoutParams(lp);
+            }
+        }
         if (tv != null) {
             tv.setText(LABELS[position % LABELS.length]);
             tv.setTextColor(ThemeManager.TEXT_MAIN);

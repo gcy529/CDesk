@@ -80,4 +80,22 @@ public final class Screen {
         });
         root.requestApplyInsets();
     }
+
+    /**
+     * 图标边长（px）：按屏幕短边取比例，不写死 dp。
+     * dp 只跟 density 走，而车机经常把 dpi 报成 mdpi —— 1080p 的屏按 dp 算出来只有 640dp 宽，
+     * 图标就小得用遥控器点不准；按比例算，大屏自然大、小屏自然小。
+     */
+    public static int iconSide(android.content.Context c) {
+        try {
+            android.util.DisplayMetrics dm = c.getResources().getDisplayMetrics();
+            int min = Math.min(dm.widthPixels, dm.heightPixels);
+            int side = (int) (min * 0.105f);
+            int lo = (int) (40 * dm.density);
+            int hi = (int) (110 * dm.density);
+            return Math.max(lo, Math.min(hi, side));
+        } catch (Throwable t) {
+            return 64;
+        }
+    }
 }
