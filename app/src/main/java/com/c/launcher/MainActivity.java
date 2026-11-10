@@ -184,7 +184,7 @@ public class MainActivity extends Activity {
         mediaAdapter = new MediaAdapter(this);
         mediaAdapter.setOnCardClick(new MediaAdapter.OnCardClick() {
             @Override public void onCardClick(int pos, String type) {
-                Class<?> t = "live".equals(type) ? LiveShellActivity.class
+                Class<?> t = "live".equals(type) ? LiveHomeActivity.class
                         : "audio".equals(type) ? MusicHomeActivity.class
                         : "library".equals(type) ? LibraryActivity.class
                         : VodHomeActivity.class;
@@ -239,7 +239,7 @@ public class MainActivity extends Activity {
                 if (page == PAGE_MEDIA) {
                     String type = mediaAdapter.typeAt(position);
                     CLog.i("media click type=" + type + " pos=" + position);
-                    Class<?> target = "live".equals(type) ? LiveShellActivity.class
+                    Class<?> target = "live".equals(type) ? LiveHomeActivity.class
                             : "audio".equals(type) ? MusicHomeActivity.class
                             : "library".equals(type) ? LibraryActivity.class
                             : VodHomeActivity.class;
