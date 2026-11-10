@@ -1,2 +1,6 @@
 {
-  "force": false,"version":"0.6.1","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.6.1-beta.apk","channel":"beta"}
+  "version": "0.7.0",
+  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.0-beta.apk",
+  "channel": "beta",
+  "force": false
+}
