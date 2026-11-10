@@ -262,6 +262,21 @@ public class VodShellActivity extends Activity {
                         if (config && !fs.isEmpty()) {
                             configMode = true;
                             sites.addAll(fs);
+                            // 上次选的源如果还在这份配置里，就直接进分类：
+                            // 一个订阅能挂一百多个源，每次重新在长列表里找一遍太难受。
+                            String lastApi = prefs().getString("vod_site_api", "");
+                            boolean hit = false;
+                            for (int i = 0; i < sites.size(); i++) {
+                                if (sites.get(i).api.equals(lastApi)) { hit = true; break; }
+                            }
+                            if (hit) {
+                                apiBase = lastApi;
+                                level = LEVEL_CATS;
+                                tvStatus.setText(getString(R.string.shell_loaded) + " " + sites.size());
+                                refresh();
+                                loadCats();
+                                return;
+                            }
                             level = LEVEL_SITES;
                             tvStatus.setText(getString(R.string.shell_loaded) + " " + fs.size());
                         } else if (!fc.isEmpty()) {
@@ -378,6 +393,8 @@ public class VodShellActivity extends Activity {
         if (level == LEVEL_SITES) {
             if (pos >= sites.size()) return;
             apiBase = sites.get(pos).api;
+            // 记住这次选的源，下次从同一个订阅进来直接进分类
+            prefs().edit().putString("vod_site_api", apiBase).commit();
             level = LEVEL_CATS;
             loadCats();
         } else if (level == LEVEL_CATS) {
