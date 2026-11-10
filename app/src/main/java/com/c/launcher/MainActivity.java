@@ -243,7 +243,8 @@ public class MainActivity extends Activity {
                 if (page == PAGE_MEDIA) {
                     String type = mediaAdapter.typeAt(position);
                     CLog.i("media click type=" + type + " pos=" + position);
-                    Class<?> target = "live".equals(type) ? LiveHomeActivity.class
+                    Class<?> target = "settings".equals(type) ? SettingsActivity.class
+                            : "live".equals(type) ? LiveHomeActivity.class
                             : "audio".equals(type) ? MusicHomeActivity.class
                             : "library".equals(type) ? LibraryActivity.class
                             : VodHomeActivity.class;
