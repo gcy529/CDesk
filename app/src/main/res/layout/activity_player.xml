@@ -108,6 +108,15 @@
                 android:textSize="14sp"
                 android:textColor="#E2E8F0"
                 android:text="00:00" />
+
+            <TextView
+                android:id="@+id/tvBuf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:textSize="12sp"
+                android:textColor="#8FD3A0"
+                android:text="缓 0%" />
         </LinearLayout>
 
         <LinearLayout
@@ -171,6 +180,20 @@
                 android:background="@drawable/bg_pill"
                 android:focusable="true"
                 android:clickable="true" />
+
+            <TextView
+                android:id="@+id/btnLockOrient"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="0.8"
+                android:layout_marginLeft="12dp"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textColor="#F8FAFC"
+                android:background="@drawable/bg_pill"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="\uD83D\uDD13" />
 
             <TextView
                 android:id="@+id/btnClose"

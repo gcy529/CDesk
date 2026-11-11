@@ -203,12 +203,40 @@ public class SettingsActivity extends Activity {
             }
         });
 
+        // 磁盘缓存：默认开，切关时清掉已缓存文件
+        final Button cacheBtn = mkToggle(box,
+                c.getBoolean("player_disk_cache", true)
+                        ? R.string.player_cache_on : R.string.player_cache_off);
+        cacheBtn.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                boolean next = !cfg().getBoolean("player_disk_cache", true);
+                cfg().edit().putBoolean("player_disk_cache", next).commit();
+                cacheBtn.setText(next ? R.string.player_cache_on : R.string.player_cache_off);
+                if (!next) DiskCache.clear(SettingsActivity.this);
+            }
+        });
+
+        // 缓存上限：128/256/512/1024 MB 循环
+        final Button cacheSizeBtn = mkToggle(box, cacheSizeLabel(cfg().getInt("player_cache_mb", 256)));
+        cacheSizeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                int cur = cfg().getInt("player_cache_mb", 256);
+                int next = cur == 128 ? 256 : (cur == 256 ? 512 : (cur == 512 ? 1024 : 128));
+                cfg().edit().putInt("player_cache_mb", next).commit();
+                cacheSizeBtn.setText(cacheSizeLabel(next));
+            }
+        });
+
         dlg.setView(box);
         dlg.show();
     }
 
     private String stepLabel(int s) {
         return getString(s == 30 ? R.string.player_step_30 : s == 60 ? R.string.player_step_60 : R.string.player_step_10);
+    }
+
+    private String cacheSizeLabel(int mb) {
+        return getString(R.string.player_cache_mb_label, mb);
     }
 
     private Button mkToggle(LinearLayout box, String label) {

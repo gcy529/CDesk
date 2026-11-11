@@ -60,6 +60,7 @@ public class LiveListActivity extends Activity {
                 i.putExtra(PlayerActivity.EXTRA_URL, c.url);
                 i.putExtra(PlayerActivity.EXTRA_NAME, c.name);
                 i.putExtra(PlayerActivity.EXTRA_LIVE, true);
+                i.putExtra(PlayerActivity.EXTRA_KIND, "live");
                 if (alts.length > 0) { i.putExtra(PlayerActivity.EXTRA_ALT, alts); }
                 startActivity(i);
                 CLog.i("live: play " + c.name + " alts=" + alts.length);

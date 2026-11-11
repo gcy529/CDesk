@@ -18,11 +18,11 @@ import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.video.VideoSize;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +45,9 @@ public class PlayerActivity extends Activity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_LIVE = "live";
     public static final String EXTRA_ALT = "alt_urls";
+    /** 来自哪个壳：music / live / vod。播放器据此区分控制条（上一首/下一首 vs 切频道 vs 选集），
+     *  进度续播的 key 也带上 kind，点播和音乐撞到同一条不串 */
+    public static final String EXTRA_KIND = "kind";
 
     private static final long SEEK_STEP_MS = 10000L;
     private static final int[] RESIZE_MODES = new int[] {
@@ -53,6 +56,8 @@ public class PlayerActivity extends Activity {
             AspectRatioFrameLayout.RESIZE_MODE_FILL
     };
     private static final String[] RESIZE_NAMES = new String[] { "FIT", "ZOOM", "FILL" };
+    private TextView tvBuf;
+    private int seekStepMs = 10000;
 
     private ExoPlayer player;
     private PlayerView playerView;
@@ -64,6 +69,7 @@ public class PlayerActivity extends Activity {
     private String url;
     private String[] alts = new String[0];
     private boolean live = false;
+    private String kind = "vod";
     private boolean prepared = false;
     private PlayStats stats;
     private android.widget.TextView tvStats;
@@ -112,9 +118,12 @@ public class PlayerActivity extends Activity {
         url = getIntent() == null ? null : getIntent().getStringExtra(EXTRA_URL);
         String name = getIntent() == null ? null : getIntent().getStringExtra(EXTRA_NAME);
         live = getIntent() != null && getIntent().getBooleanExtra(EXTRA_LIVE, false);
+        kind = getIntent() == null ? "vod" : getIntent().getStringExtra(EXTRA_KIND);
+        if (kind == null || kind.length() == 0) kind = live ? "live" : "vod";
         alts = getIntent() == null ? null : getIntent().getStringArrayExtra(EXTRA_ALT);
         if (alts == null) alts = new String[0];
-        playKey = "pos_" + String.valueOf(url).hashCode();
+        // 进度 key 带上 kind：同一条 url 在点播和音乐里不串
+        playKey = "pos_" + kind + "_" + String.valueOf(url).hashCode();
         titleBackup = name == null ? "" : name;
 
         playerView = (PlayerView) findViewById(R.id.playerView);
@@ -128,6 +137,11 @@ public class PlayerActivity extends Activity {
         btnPlayPause = (TextView) findViewById(R.id.btnPlayPause);
         btnResize = (TextView) findViewById(R.id.btnResize);
         seek = (SeekBar) findViewById(R.id.sbProgress);
+        tvBuf = (TextView) findViewById(R.id.tvBuf);
+        // 快进快退步长读设置（10/30/60s），不写死 10s
+        int step = getSharedPreferences("cdesk_settings", Context.MODE_PRIVATE).getInt("player_seek_step", 30);
+        seekStepMs = step == 10 ? 10000 : (step == 60 ? 60000 : 30000);
+        wireLockOrientButton();
 
         if (tvTitle != null && titleBackup.length() > 0) tvTitle.setText(titleBackup);
         // 直播没有总时长，进度条藏起来
@@ -169,6 +183,9 @@ public class PlayerActivity extends Activity {
         if (btnResize != null) btnResize.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { cycleResize(); }
         });
+        if (btnLockOrient != null) btnLockOrient.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { toggleLockOrient(); }
+        });
         View close = findViewById(R.id.btnClose);
         if (close != null) close.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }
@@ -189,6 +206,11 @@ public class PlayerActivity extends Activity {
                 if (!dragging && seek != null && dur > 0) seek.setProgress((int) Math.min(pos, Integer.MAX_VALUE));
                 if (tvPos != null) tvPos.setText(fmt(pos));
                 if (tvDur != null && dur > 0) tvDur.setText(fmt(dur));
+                if (tvBuf != null) {
+                    long buffered = player.getBufferedPosition();
+                    int pct = dur > 0 ? (int) (buffered * 100 / dur) : 0;
+                    tvBuf.setText("缓 " + Math.max(0, pct) + "%");
+                }
                 if (!live) saveProgress(pos);
             }
             ui.postDelayed(this, 1000);
@@ -225,6 +247,12 @@ public class PlayerActivity extends Activity {
         if (dur > 0 && target > dur) target = dur;
         player.seekTo(target);
         if (tvPos != null) tvPos.setText(fmt(target));
+        // 快进按钮的标签也按步长显示
+        View rew = findViewById(R.id.btnRew);
+        View fwd = findViewById(R.id.btnFwd);
+        int s = seekStepMs / 1000;
+        if (rew != null) rew.setText("-" + s + "s");
+        if (fwd != null) fwd.setText("+" + s + "s");
     }
 
     private void cycleResize() {
@@ -232,6 +260,42 @@ public class PlayerActivity extends Activity {
         if (playerView != null) playerView.setResizeMode(RESIZE_MODES[resizeIdx]);
         if (btnResize != null) btnResize.setText(RESIZE_NAMES[resizeIdx]);
         CLog.i("player resize -> " + RESIZE_NAMES[resizeIdx]);
+    }
+
+    /** 锁方向：点一下锁住当前方向（车机开车场景），再点解锁跟传感器。
+     *  车机没锁定的能自由转，锁了的用户想竖着看停车时手动切。 */
+    private TextView btnLockOrient;
+    private boolean orientLocked = false;
+    private static final String LOCK_ICON = "\uD83D\uDD12";
+    private static final String UNLOCK_ICON = "\uD83D\uDD13";
+
+    private void wireLockOrientButton() {
+        btnLockOrient = (TextView) findViewById(R.id.btnLockOrient);
+        if (btnLockOrient == null) return;
+        btnLockOrient.setText(UNLOCK_ICON);
+        btnLockOrient.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { toggleLockOrient(); }
+        });
+    }
+
+    private void toggleLockOrient() {
+        orientLocked = !orientLocked;
+        if (orientLocked) {
+            // 锁住当前方向：横屏内容锁横，竖屏内容锁竖
+            int cur = getRequestedOrientation();
+            boolean isLandscape = cur == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    || cur == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            setRequestedOrientation(isLandscape
+                    ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            if (btnLockOrient != null) btnLockOrient.setText(LOCK_ICON);
+            CLog.i("player orientation locked");
+        } else {
+            // 解锁：跟传感器，按视频宽高比自动转
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            if (btnLockOrient != null) btnLockOrient.setText(UNLOCK_ICON);
+            CLog.i("player orientation unlocked");
+        }
     }
 
     private void startPlay(String u) {
@@ -244,20 +308,16 @@ public class PlayerActivity extends Activity {
         if (loading != null) loading.setVisibility(View.VISIBLE);
         try {
             releasePlayer();
-            DefaultHttpDataSource.Factory http = new DefaultHttpDataSource.Factory()
-                    .setUserAgent("CDesk/1.0")
-                    .setConnectTimeoutMs(15000)
-                    .setReadTimeoutMs(20000)
-                    .setAllowCrossProtocolRedirects(true);
-            // 车机无线网弱、码率一高就一顿一顿：缓冲给足，
-            // 硬解不支持的编码让它自动退回软解
+            // 点播/音乐走磁盘缓存（边播边存），直播直接 http
+            com.google.android.exoplayer2.upstream.DataSource.Factory dsFactory =
+                    DiskCache.factory(this, live);
             DefaultRenderersFactory rf = new DefaultRenderersFactory(this)
                     .setEnableDecoderFallback(true);
             DefaultLoadControl lc = new DefaultLoadControl.Builder()
                     .setBufferDurationsMs(15000, 60000, 2500, 5000)
                     .build();
             player = new ExoPlayer.Builder(this, rf)
-                    .setMediaSourceFactory(new DefaultMediaSourceFactory(http))
+                    .setMediaSourceFactory(new DefaultMediaSourceFactory(dsFactory))
                     .setLoadControl(lc)
                     .build();
             if (playerView != null) playerView.setPlayer(player);
@@ -420,12 +480,12 @@ public class PlayerActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
-            seekBy(-SEEK_STEP_MS);
+            seekBy(-seekStepMs);
             showCtrl();
             return true;
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-            seekBy(SEEK_STEP_MS);
+            seekBy(seekStepMs);
             showCtrl();
             return true;
         }
@@ -437,6 +497,7 @@ public class PlayerActivity extends Activity {
             togglePlay();
             return true;
         }
+        // 音量键在车机方向盘上很常见：长按锁屏方向
         return super.onKeyDown(keyCode, event);
     }
 

@@ -24,6 +24,7 @@ public class LiveShellActivity extends BaseShellActivity {
         i.putExtra(PlayerActivity.EXTRA_URL, it.url);
         i.putExtra(PlayerActivity.EXTRA_NAME, it.name);
         i.putExtra(PlayerActivity.EXTRA_LIVE, true);
+        i.putExtra(PlayerActivity.EXTRA_KIND, "live");
         startActivity(i);
     }
 }

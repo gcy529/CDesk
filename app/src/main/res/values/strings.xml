@@ -170,6 +170,9 @@
     <string name="player_step_10">快进快退步长：10 秒</string>
     <string name="player_por_on">竖屏模式（短剧）：开</string>
     <string name="player_por_off">竖屏模式（短剧）：关</string>
+    <string name="player_cache_on">磁盘缓存（断网可看已缓存）：开</string>
+    <string name="player_cache_off">磁盘缓存（断网可看已缓存）：关</string>
+    <string name="player_cache_mb_label">缓存上限：%1$d MB（循环 128/256/512/1024）</string>
     <string name="fav_added">已收藏</string>
     <string name="fav_removed">已取消收藏</string>
     <string name="library_title">影音书架</string>

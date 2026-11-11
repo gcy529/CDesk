@@ -401,6 +401,7 @@ public class VodShellActivity extends Activity {
             i.putExtra(PlayerActivity.EXTRA_URL, e.url);
             i.putExtra(PlayerActivity.EXTRA_NAME, videoName + " " + e.name);
             i.putExtra(PlayerActivity.EXTRA_LIVE, false);
+            i.putExtra(PlayerActivity.EXTRA_KIND, "vod");
             i.putExtra(PlayerActivity.EXTRA_ALT, allLines(eps, pos));
             startActivity(i);
         }
@@ -426,6 +427,7 @@ public class VodShellActivity extends Activity {
         i.putExtra(PlayerActivity.EXTRA_URL, url);
         i.putExtra(PlayerActivity.EXTRA_NAME, name);
         i.putExtra(PlayerActivity.EXTRA_LIVE, false);
+        i.putExtra(PlayerActivity.EXTRA_KIND, "vod");
         startActivity(i);
     }
 

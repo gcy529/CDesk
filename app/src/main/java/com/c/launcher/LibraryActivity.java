@@ -148,6 +148,7 @@ public class LibraryActivity extends Activity {
         i.putExtra(PlayerActivity.EXTRA_URL, url);
         i.putExtra(PlayerActivity.EXTRA_NAME, name);
         i.putExtra(PlayerActivity.EXTRA_LIVE, "live".equals(kind));
+        i.putExtra(PlayerActivity.EXTRA_KIND, kind == null ? "vod" : kind);
         startActivity(i);
     }
 
