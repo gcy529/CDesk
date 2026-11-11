@@ -6,3 +6,7 @@
 -keep class com.c.launcher.AutoContrast { *; }
 -keep class com.c.launcher.ThemeManager { *; }
 -keep class com.c.launcher.AppAdapter { *; }
+-keep class com.c.launcher.JsSource { *; }
+
+# Rhino JS 引擎：反射调用 NativeFunction / Context，不能混淆方法名
+-keep class org.mozilla.javascript.** { *; }

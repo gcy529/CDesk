@@ -24,37 +24,79 @@
         <Button
             android:id="@+id/btnMusicApi"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="56dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
             android:text="@string/entry_api" />
 
         <Button
             android:id="@+id/btnRadioTest"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="56dp"
             android:layout_marginLeft="12dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
             android:text="@string/musicpg_test" />
 
         <Button
             android:id="@+id/btnRadioCn"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="56dp"
             android:layout_marginLeft="12dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
             android:text="@string/musicpg_radio_cn" />
 
         <Button
             android:id="@+id/btnRadioIntl"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="56dp"
             android:layout_marginLeft="12dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
             android:text="@string/musicpg_radio_intl" />
 
         <Button
             android:id="@+id/btnMusicLocal"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="56dp"
             android:layout_marginLeft="12dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
             android:text="@string/musicpg_local" />
+
+        <Button
+            android:id="@+id/btnJsSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginLeft="12dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
+            android:text="@string/musicpg_js"
+            android:visibility="gone" />
     </LinearLayout>
+
+    <!-- 花音源搜索框：填了音源地址才显示，不干扰内置电台 -->
+    <EditText
+        android:id="@+id/etJsSearch"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:hint="@string/musicpg_js_hint"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:background="@drawable/bg_dock_item"
+        android:textColor="@color/text_primary" />
 
     <TextView
         android:id="@+id/tvMusicState"

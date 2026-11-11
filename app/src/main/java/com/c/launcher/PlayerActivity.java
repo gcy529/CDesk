@@ -465,9 +465,18 @@ public class PlayerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        // 音乐/电台：把 ExoPlayer 转交给 MusicKernel，桌面迷你条继续驱动，切页不断
+        // 视频点播：切走就停，直接 release
+        boolean isMusic = !live && url != null
+                && (url.startsWith("file") || url.startsWith("/storage") || url.startsWith("/sdcard"));
+        if (isMusic && player != null) {
+            MusicKernel.get(this).handoff(player, url, titleBackup, live);
+            player = null;   // 内核接管，这里不再 release
+        } else {
+            if (playerView != null) playerView.setPlayer(null);
+            releasePlayer();
+        }
         ui.removeCallbacksAndMessages(null);
-        if (playerView != null) playerView.setPlayer(null);
-        releasePlayer();
         super.onDestroy();
     }
 }

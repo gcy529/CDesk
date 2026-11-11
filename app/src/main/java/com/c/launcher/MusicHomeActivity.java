@@ -40,6 +40,8 @@ public class MusicHomeActivity extends Activity {
     private final List<String> urls = new ArrayList<String>();
     private TextView tvState;
     private BaseAdapter adapter;
+    private JsSource jsSource;
+    private boolean jsLoaded = false;
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -52,10 +54,8 @@ public class MusicHomeActivity extends Activity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override public void onItemClick(AdapterView<?> p, View v, int pos, long id) {
                 if (pos < 0 || pos >= urls.size()) { return; }
-                Intent i = new Intent(MusicHomeActivity.this, PlayerActivity.class);
-                i.putExtra(PlayerActivity.EXTRA_URL, urls.get(pos));
-                i.putExtra(PlayerActivity.EXTRA_NAME, titles.get(pos));
-                startActivity(i);
+                // 走内核，桌面迷你条继续驱动；切页不断
+                MusicKernel.get(MusicHomeActivity.this).play(urls.get(pos), titles.get(pos), false);
                 CLog.i("music: play " + titles.get(pos));
             }
         });
@@ -83,6 +83,7 @@ public class MusicHomeActivity extends Activity {
         }
         wireRadio(R.id.btnRadioCn, true);
         wireRadio(R.id.btnRadioIntl, false);
+        wireJsSource();
 
         String api0 = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_API, "");
         if (api0 != null && api0.trim().length() > 0) { loadRemote(api0.trim()); }
@@ -238,6 +239,149 @@ public class MusicHomeActivity extends Activity {
             else { r.setVisibility(View.VISIBLE); r.setText(a); }
             return v;
         }
+    }
+
+    /** 花音源：填了音源直链才显示搜索框，没填不干扰内置电台 */
+    private void wireJsSource() {
+        final android.widget.Button jsBtn = (android.widget.Button) findViewById(R.id.btnJsSearch);
+        final android.widget.EditText jsSearch = (android.widget.EditText) findViewById(R.id.etJsSearch);
+        if (jsBtn == null || jsSearch == null) return;
+        try {
+            ThemeManager.styleButton(jsBtn, ThemeManager.current(this));
+            ThemeManager.styleButton(jsBtn, ThemeManager.current(this));
+        } catch (Throwable ignored) { }
+        // 没填过花音源就完全藏起来（按钮和输入框都不显示）
+        String saved = JsSource.savedSource(this);
+        if (saved == null || saved.length() == 0) {
+            jsBtn.setVisibility(View.GONE);
+            jsSearch.setVisibility(View.GONE);
+            return;
+        }
+        jsBtn.setVisibility(View.VISIBLE);
+        jsSearch.setVisibility(View.VISIBLE);
+        jsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { askJsSource(); }
+        });
+        // 输入关键词 + OK：方向键选歌
+        jsSearch.setOnEditorActionListener(new android.widget.TextView.OnEditorActionListener() {
+            @Override public boolean onEditorAction(android.widget.TextView v, int actionId, android.view.KeyEvent event) {
+                if (actionId != android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) return false;
+                doJsSearch(jsSearch.getText().toString().trim());
+                return true;
+            }
+        });
+    }
+
+    private void askJsSource() {
+        final android.widget.EditText et = new android.widget.EditText(this);
+        et.setHint("https://.../flower/latest.js");
+        et.setSingleLine(true);
+        String cur = JsSource.savedSource(this);
+        if (cur != null) et.setText(cur);
+        new android.app.AlertDialog.Builder(this)
+                .setTitle(R.string.musicpg_js_title)
+                .setMessage(R.string.musicpg_js_msg)
+                .setView(et)
+                .setPositiveButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener() {
+                    @Override public void onClick(android.content.DialogInterface d, int w) {
+                        String v = et.getText().toString().trim();
+                        JsSource.saveSource(MusicHomeActivity.this, v);
+                        CLog.i("music: js source set " + v);
+                        if (v.length() == 0) {
+                            jsLoaded = false;
+                            ((android.widget.Button) findViewById(R.id.btnJsSearch)).setVisibility(View.GONE);
+                            ((android.widget.EditText) findViewById(R.id.etJsSearch)).setVisibility(View.GONE);
+                            return;
+                        }
+                        loadJsSource(v);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void loadJsSource(final String url) {
+        tvState.setVisibility(View.VISIBLE);
+        tvState.setText(R.string.vodpg_loading);
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final boolean[] ok = { false };
+                final JsSource[] src = { null };
+                final String[] err = { null };
+                try {
+                    JsSource s = new JsSource();
+                    s.load(url);
+                    src[0] = s;
+                    ok[0] = true;
+                } catch (Throwable t) {
+                    err[0] = String.valueOf(t);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        if (ok[0]) {
+                            jsSource = src[0];
+                            jsLoaded = true;
+                            // 搜索框显示出来
+                            ((android.widget.Button) findViewById(R.id.btnJsSearch)).setVisibility(View.VISIBLE);
+                            ((android.widget.EditText) findViewById(R.id.etJsSearch)).setVisibility(View.VISIBLE);
+                            CLog.i("music: js source ready " + url);
+                            loadJsList();
+                        } else {
+                            CLog.e("music: js source load failed " + err[0]);
+                            tvState.setText(R.string.vodpg_failed);
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
+
+    /** 拉花音源全列表 */
+    private void loadJsList() {
+        if (!jsLoaded || jsSource == null) return;
+        tvState.setVisibility(View.VISIBLE);
+        tvState.setText(R.string.vodpg_loading);
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final List<JsSource.Song> songs = jsSource.list();
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        reset();
+                        for (JsSource.Song s : songs) {
+                            titles.add(s.title);
+                            subs.add(s.sub);
+                            urls.add(s.url);
+                        }
+                        afterLoad();
+                        CLog.i("music: js list got=" + songs.size());
+                    }
+                });
+            }
+        }).start();
+    }
+
+    /** 搜索关键词，结果直接进列表 */
+    private void doJsSearch(final String kw) {
+        if (!jsLoaded || jsSource == null || kw.length() == 0) return;
+        tvState.setVisibility(View.VISIBLE);
+        tvState.setText(R.string.vodpg_loading);
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final List<JsSource.Song> songs = jsSource.search(kw);
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        reset();
+                        for (JsSource.Song s : songs) {
+                            titles.add(s.title);
+                            subs.add(s.sub);
+                            urls.add(s.url);
+                        }
+                        afterLoad();
+                        CLog.i("music: js search got=" + songs.size());
+                    }
+                });
+            }
+        }).start();
     }
 
     /** 内置公开电台：Radio Browser（公共接口，不用 key） */

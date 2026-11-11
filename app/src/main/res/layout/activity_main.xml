@@ -225,6 +225,63 @@
             android:nextFocusDown="@+id/btnPalette"
             android:listSelector="@android:color/transparent" />
 
+        <!-- 迷你播放条：音乐/电台在桌面也能继续播，切页不断。有播放时从屏幕底弹出 -->
+        <LinearLayout
+            android:id="@+id/miniPlaybar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_dock"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvMiniTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textSize="15sp"
+                android:textColor="#F8FAFC"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/btnMiniPause"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:minWidth="56dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:background="@drawable/bg_dock_item"
+                android:textSize="14sp"
+                android:textColor="#F8FAFC"
+                android:nextFocusUp="@+id/gridApps"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="‖" />
+
+            <TextView
+                android:id="@+id/btnMiniStop"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginLeft="8dp"
+                android:gravity="center"
+                android:minWidth="44dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:background="@drawable/bg_dock_item"
+                android:textSize="14sp"
+                android:textColor="#F8FAFC"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="✕" />
+        </LinearLayout>
+
         <!-- 底部按钮：玻璃 Dock（半透明圆角，深浅主题运行时染色）
              车机遥控器按键偏小 → 高度 48dp 提到 56dp，间距拉开；
              整条往屏幕下走，paddingBottom 留大一点不被系统导航条盖 -->

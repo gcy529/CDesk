@@ -26,8 +26,8 @@ android {
         applicationId project.hasProperty('appId') ? project.property('appId') : "com.c.launcher"
         minSdk 16
         targetSdk 34
-        versionCode 25
-        versionName "0.7.10"
+        versionCode 26
+        versionName "0.7.11"
         // 版本号只写这一处：桌面角标、设置页、更新检查的「当前版本」全读它。
         // 手抄进 strings.xml 会漂——四语曾一起停在 0.4.1，导致更新检查
         // 提示用户升级到已经装着的版本。
@@ -83,9 +83,13 @@ dependencies {
     // 只取 core + hls：不引 exoplayer-ui，避免把 androidx.media / recyclerview 一起拖进来。
     implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.1'
-    // 官方控制条（PlayerView）：播放/暂停、进度条、快退快进、缓冲圈都是现成的，
+    // 官方控制条（PlayerView）：播放/暂停、进度条、快进快退、缓冲圈都是现成的，
     // 比自己手搓的好看也稳。会带入 androidx.media + recyclerview，可接受。
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
+
+    // Rhino：跑音乐源 .js 脚本（花音源等 lx-music 格式），纯 Java 无 native，
+    // R8 裁剪后增量约 2.5MB，老车机内存吃紧时可换 Nashorn（API 16 没有，需 8+）
+    implementation 'org.mozilla:rhino:1.7.14'
 
     // 仅测试期依赖，不进 APK
     testImplementation 'junit:junit:4.13.2'

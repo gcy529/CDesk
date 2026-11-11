@@ -143,7 +143,10 @@ public class MainActivity extends Activity {
         btnTransfer = (Button) findViewById(R.id.btnTransfer);
         btnDonate = (Button) findViewById(R.id.btnDonate);
         gridApps = (GridView) findViewById(R.id.gridApps);
-        
+
+        // 迷你播放条：有音乐/电台在播时显示，切页不断
+        wireMiniPlaybar();
+
         // 更新提醒：每天最多查一次，静默失败
         UpdateChecker.checkIfNeeded(this, new UpdateChecker.Callback() {
             @Override public void onLatest(String v) { }
@@ -790,6 +793,35 @@ public class MainActivity extends Activity {
 
     private int dp(float v) {
         return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    // ---------- 迷你播放条：音乐/电台在桌面继续播 ----------
+    private void wireMiniPlaybar() {
+        final View bar = findViewById(R.id.miniPlaybar);
+        if (bar == null) return;
+        final TextView tvTitle = (TextView) findViewById(R.id.tvMiniTitle);
+        final TextView btnPause = (TextView) findViewById(R.id.btnMiniPause);
+        final TextView btnStop = (TextView) findViewById(R.id.btnMiniStop);
+
+        MusicKernel.get(this).addListener(new MusicKernel.Listener() {
+            @Override public void onStateChanged(boolean playing, String t, String u, boolean isLive) {
+                if (isFinishing()) return;
+                if (tvTitle == null || btnPause == null || btnStop == null) return;
+                if (t == null || t.length() == 0 || u == null || u.length() == 0) {
+                    bar.setVisibility(View.GONE);
+                    return;
+                }
+                bar.setVisibility(View.VISIBLE);
+                tvTitle.setText(t);
+                btnPause.setText(playing ? "\u2759\u2759" : "\u25B6");
+            }
+        });
+        if (btnPause != null) btnPause.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { MusicKernel.get(MainActivity.this).toggle(); }
+        });
+        if (btnStop != null) btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { MusicKernel.get(MainActivity.this).stop(); }
+        });
     }
 
     /** 记住当前页号，切语言/重建后回到这一页 */
