@@ -476,17 +476,17 @@ public class MainActivity extends Activity {
         tvDate.setText(new SimpleDateFormat("yyyy-MM-dd  EEEE", Locale.getDefault()).format(now));
     }
 
-    /** 点换肤键：循环 日光少女 -> 纯色 -> 鲸夜 -> 晨光 -> 金色时刻 -> 自定义 -> 日光少女。手动选定后关闭日夜自动 */
+    /** 点换肤键：循环 晨光 -> 纯色 -> 鲸夜 -> 傍晚 -> 薄荷 -> 自定义 -> 晨光。手动选定后关闭日夜自动 */
     private void cycleWallpaper() {
         int next = (WPManager.which(this) + 1) % 6;
-        if (next == WPManager.WP_CUSTOM && WPManager.customPath(this).length() == 0) next = WPManager.WP_GIRL;
+        if (next == WPManager.WP_CUSTOM && WPManager.customPath(this).length() == 0) next = WPManager.WP_MORNING;
         WPManager.setAuto(this, false);
         WPManager.setWhich(this, next);
         applyPalette(ThemeManager.current(this), false);
-        int nameRes = next == WPManager.WP_GIRL ? R.string.wp_girl
+        int nameRes = next == WPManager.WP_MORNING ? R.string.wp_morning
                 : next == WPManager.WP_NIGHT ? R.string.wp_night
-                : next == WPManager.WP_DAY ? R.string.wp_day
-                : next == WPManager.WP_SUNSET ? R.string.wp_sunset
+                : next == WPManager.WP_DUSK ? R.string.wp_dusk
+                : next == WPManager.WP_MINT ? R.string.wp_mint
                 : next == WPManager.WP_CUSTOM ? R.string.wp_custom : R.string.wp_none;
         Toast.makeText(this, nameRes, Toast.LENGTH_SHORT).show();
     }

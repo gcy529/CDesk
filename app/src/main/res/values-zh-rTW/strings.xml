@@ -84,10 +84,9 @@
     <string name="live_empty_title">直播源待接入</string>
     <string name="music_empty_title">歌單待匯入</string>
     <string name="status_uploading">上傳中</string>
-    <string name="wp_girl">日光少女（預設）</string>
-    <string name="wp_night">鯨夜</string>
-    <string name="wp_day">晨光</string>
-    <string name="wp_sunset">金色時刻</string>
+    <string name="wp_morning">晨光（預設）</string>
+    <string name="wp_night">鯨夜（夜晚）</string>
+    <string name="wp_dusk">傍晚</string>
     <string name="wp_none">純色（跟隨主題）</string>
     <string name="wp_auto">日夜自動切換</string>
     <string name="theme_dark">深海 · 微光</string>

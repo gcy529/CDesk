@@ -52,6 +52,12 @@ public class LogViewActivity extends Activity {
         body.setPadding(dp(16), dp(16), dp(16), dp(16));
         body.setTextIsSelectable(true);
         sv.addView(body);
+        // 倒序显示：最新的在最后。滚到底（或点复制）看到的就是最近发生的事
+        sv.post(new Runnable() {
+            @Override public void run() {
+                sv.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
         LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
         slp.topMargin = dp(16);

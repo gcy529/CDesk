@@ -85,10 +85,9 @@
     <string name="live_empty_title">No live source yet</string>
     <string name="music_empty_title">No playlist yet</string>
     <string name="status_uploading">Uploading</string>
-    <string name="wp_girl">Daylight Girl (default)</string>
+    <string name="wp_morning">Morning (default)</string>
     <string name="wp_night">Whale Night</string>
-    <string name="wp_day">Morning Light</string>
-    <string name="wp_sunset">Golden Hour</string>
+    <string name="wp_dusk">Golden Hour</string>
     <string name="wp_none">Solid color (follow theme)</string>
     <string name="wp_auto">Auto day/night</string>
     <string name="theme_dark">Deep Sea Glow</string>

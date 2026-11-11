@@ -69,7 +69,7 @@
                 android:textColor="#E8EEF7" />
         </LinearLayout>
 
-        <!-- 顶栏 -->
+        <!-- 顶栏：时间/日期/天气固定在左上角深色面板；徽章在右上角，不挡壁纸人物 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 翻页条 -->
+        <!-- 翻页条：按键加大，车机遥控器/方向盘点得中 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -150,12 +150,12 @@
 
             <Button
                 android:id="@+id/btnPagePrev"
-                android:layout_width="46dp"
-                android:layout_height="38dp"
+                android:layout_width="64dp"
+                android:layout_height="52dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/page_prev"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 android:padding="0dp"
                 android:minWidth="0dp"
                 android:focusable="true" />
@@ -190,12 +190,12 @@
 
             <Button
                 android:id="@+id/btnPageNext"
-                android:layout_width="46dp"
-                android:layout_height="38dp"
+                android:layout_width="64dp"
+                android:layout_height="52dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/page_next"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 android:padding="0dp"
                 android:minWidth="0dp"
                 android:focusable="true" />
@@ -225,7 +225,9 @@
             android:nextFocusDown="@+id/btnPalette"
             android:listSelector="@android:color/transparent" />
 
-        <!-- 底部按钮：玻璃 Dock（半透明圆角，深浅主题运行时染色） -->
+        <!-- 底部按钮：玻璃 Dock（半透明圆角，深浅主题运行时染色）
+             车机遥控器按键偏小 → 高度 48dp 提到 56dp，间距拉开；
+             整条往屏幕下走，paddingBottom 留大一点不被系统导航条盖 -->
         <LinearLayout
             android:id="@+id/dock"
             android:layout_width="match_parent"
@@ -239,64 +241,64 @@
             <Button
                 android:id="@+id/btnPalette"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:layout_marginRight="6dp"
+                android:layout_marginRight="8dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/wallpaper"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
 
             <Button
                 android:id="@+id/btnLang"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:layout_weight="1.6"
-                android:layout_marginRight="6dp"
+                android:layout_marginRight="8dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/lang_auto"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
 
             <Button
                 android:id="@+id/btnDonate"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:layout_marginRight="6dp"
+                android:layout_marginRight="8dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/donate"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
 
             <Button
                 android:id="@+id/btnSettings"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:layout_marginRight="6dp"
+                android:layout_marginRight="8dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/settings_title"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
 
             <Button
                 android:id="@+id/btnTransfer"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/transfer"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:nextFocusUp="@+id/gridApps"
                 android:focusable="true" />
         </LinearLayout>

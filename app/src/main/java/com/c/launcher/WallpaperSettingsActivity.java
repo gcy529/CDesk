@@ -51,31 +51,52 @@ public class WallpaperSettingsActivity extends Activity {
             }
         });
 
-        // 缩略图卡片：点击选壁纸（日光少女第一张 = 默认）
-        card(R.id.cardWpGirl, WPManager.WP_GIRL);
+        // 缩略图卡片：晨光(默认) / 鲸夜 / 傍晚 / 薄荷。自定义平时隐藏，有人传图才显示。
+        card(R.id.cardWpMorning, WPManager.WP_MORNING);
         card(R.id.cardWpNight, WPManager.WP_NIGHT);
+        card(R.id.cardWpDusk, WPManager.WP_DUSK);
         card(R.id.cardWpMint, WPManager.WP_MINT);
 
-        // 4K 原图绝不能直接当缩略图（OOM）——inSampleSize 降采样后小图设置
-        ImageView girlThumb = (ImageView) findViewById(R.id.thumbGirl);
-        if (girlThumb != null) {
+        // 默认壁纸缩略图（晨光 = 4K 原图）：绝不能直接当缩略图（OOM）——inSampleSize 降采样后小图设置
+        ImageView morningThumb = (ImageView) findViewById(R.id.thumbMorning);
+        if (morningThumb != null) {
+            try {
+                BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeResource(getResources(), R.drawable.wall_morning, o);
+                BitmapFactory.Options o2 = new BitmapFactory.Options();
+                o2.inSampleSize = 24;   // 3845x2157 -> 约160x90，正好缩略图大小
+                morningThumb.setImageBitmap(BitmapFactory.decodeResource(
+                        getResources(), R.drawable.wall_morning, o2));
+            } catch (Throwable ignored) { }
+        }
+
+        // 傍晚缩略图用 4K 原图降采样
+        ImageView duskThumb = (ImageView) findViewById(R.id.thumbDusk);
+        if (duskThumb != null) {
             try {
                 BitmapFactory.Options o = new BitmapFactory.Options();
                 o.inJustDecodeBounds = true;
                 BitmapFactory.decodeResource(getResources(), R.drawable.final_wallpaper_4k, o);
                 BitmapFactory.Options o2 = new BitmapFactory.Options();
-                o2.inSampleSize = 24;   // 3845x2157 -> 约160x90，正好缩略图大小
-                girlThumb.setImageBitmap(BitmapFactory.decodeResource(
+                o2.inSampleSize = 24;
+                duskThumb.setImageBitmap(BitmapFactory.decodeResource(
                         getResources(), R.drawable.final_wallpaper_4k, o2));
             } catch (Throwable ignored) { }
         }
 
         // 自定义图片：选系统相册里的照片；也支持局域网传入的图片
+        // 平时隐藏，只有真的传过/选过一张才显示，遥控器少一格点不动的东西
         View customCard = findViewById(R.id.cardWpCustom);
         if (customCard != null) {
-            customCard.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) { showCustomPicker(); }
-            });
+            boolean hasCustom = WPManager.customPath(this).length() > 0
+                    || CustomWallpapers.list(this).size() > 0;
+            customCard.setVisibility(hasCustom ? View.VISIBLE : View.GONE);
+            if (hasCustom) {
+                customCard.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick(View v) { showCustomPicker(); }
+                });
+            }
         }
 
         // 使用须知 + 返回

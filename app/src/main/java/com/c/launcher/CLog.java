@@ -84,6 +84,19 @@ public final class CLog {
         } catch (Throwable t) { return ""; }
     }
 
+    /** 读日志并倒序：最新的在最后。截图/复制发给开发者时，最关键的报错在底部，不用翻。 */
+    public static String readReversed() {
+        String raw = read();
+        if (raw.length() == 0) return raw;
+        String[] lines = raw.split("\n");
+        StringBuilder sb = new StringBuilder(raw.length() + 16);
+        for (int i = lines.length - 1; i >= 0; i--) {
+            if (i < lines.length - 1) sb.append('\n');
+            sb.append(lines[i]);
+        }
+        return sb.toString();
+    }
+
     /** 设备信息 + 日志，方便发给我定位 */
     public static String report() {
         StringBuilder sb = new StringBuilder();
@@ -91,8 +104,8 @@ public final class CLog {
         sb.append("App: ").append(appVer()).append("\n");
         sb.append("Android: ").append(Build.VERSION.RELEASE).append(" (API ").append(Build.VERSION.SDK_INT).append(")\n");
         sb.append("Model: ").append(Build.MODEL).append(" / ").append(Build.MANUFACTURER).append("\n");
-        sb.append("--- log ---\n");
-        sb.append(read());
+        sb.append("--- log (newest last) ---\n");
+        sb.append(readReversed());
         return sb.toString();
     }
 
