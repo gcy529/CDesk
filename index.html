@@ -27,6 +27,8 @@
     <nav class="site-nav" id="primary-nav" aria-label="主导航">
       <a href="#overview">产品概览</a>
       <a href="#features">核心功能</a>
+      <a href="#compat">设备适配</a>
+      <a href="#security">安全隐私</a>
       <a href="#install">安装指南</a>
       <a href="#faq">常见问题</a>
     </nav>
@@ -121,7 +123,7 @@
       <aside class="card install-note" aria-label="安装前确认">
         <h3>安装前确认</h3>
         <ul class="check-list">
-          <li>系统版本 Android 4.1（API 16）或更高。</li>
+          <li>系统版本 Android 4.1（API 16）或更高，32 位 / 64 位架构均可。</li>
           <li>允许安装未知来源应用，安装完成后可再关闭。</li>
           <li>默认桌面可随时在系统设置里换回原桌面。</li>
         </ul>
@@ -206,31 +208,82 @@
     </div>
   </section>
 
+  <section class="section section--tint" id="compat">
+    <div class="wrap">
+      <p class="eyebrow">设备适配</p>
+      <h2>从 2015 年的车机到最新平板，一个 APK 全覆盖</h2>
+      <p class="section-lead">minSdk 16（Android 4.1）起步，targetSdk 34（Android 15）。32 位与 64 位通吃，无需区分安装。</p>
+      <div class="compat-grid">
+        <article class="card compat-card">
+          <h3>架构兼容</h3>
+          <p>纯 Java 实现，APK 内不含任何原生库（.so）。<strong>32 位（ARMv7 / x86）与 64 位（ARM64 / x86_64）设备均可直接安装运行</strong>，无需按 ABI 选包。</p>
+        </article>
+        <article class="card compat-card">
+          <h3>系统跨度</h3>
+          <p>同一个 APK 从 Android 4.1 跑到 Android 15。每处版本差异都有分支处理：悬浮窗类型、前台服务、通知渠道、PendingIntent 可变性、应用可见性等，逐项适配。</p>
+        </article>
+        <article class="card compat-card">
+          <h3>设备形态</h3>
+          <p>车机、平板、电视盒子、Android TV 均可安装。无触摸屏设备通过 <code>touchscreen required=false</code> 正常部署，遥控器方向键全导航。</p>
+        </article>
+        <article class="card compat-card">
+          <h3>资源自适配</h3>
+          <p>4K 壁纸解码带 <code>inSampleSize</code> 安全阀：4K 屏吃全图，1080p 老屏自动降采样，防 OOM。壁纸亮度采样后文字与网速悬浮窗自动黑白反色。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint" id="security">
+    <div class="wrap">
+      <p class="eyebrow">安全与隐私</p>
+      <h2>不偷跑流量，不收集数据，不接支付</h2>
+      <p class="section-lead">C桌面 是一块干净的桌面，安全和隐私不是附加项，是设计基线。</p>
+      <div class="security-grid">
+        <article class="card security-card">
+          <h3>零数据上传</h3>
+          <p>除天气需按 IP 判断城市外，应用不向任何服务器上传数据。局域网传文件仅在你自己的网络内进行，不经第三方中转。</p>
+        </article>
+        <article class="card security-card">
+          <h3>无支付 SDK</h3>
+          <p>APK 不接入任何支付 SDK，不内购、不订阅。赞赏码仅为静态图片，不采集支付信息，不解锁任何功能。</p>
+        </article>
+        <article class="card security-card">
+          <h3>最小权限</h3>
+          <p>仅申请桌面替换、悬浮窗、局域网通信等必要权限。不申请定位权限（天气按 IP 判断），不申请通讯录、短信等无关权限。</p>
+        </article>
+        <article class="card security-card">
+          <h3>开源可审计</h3>
+          <p>源码以 CC BY-NC-ND 4.0 授权公开，所有代码可审查。播放器仅提供能力入口，不内置、不分发任何内容，内容由用户自行导入并负责。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="download">
     <div class="wrap">
       <p class="eyebrow">下载</p>
-      <h2>求稳用正式版，想抢先用尝鲜版</h2>
+      <h2>当前版本 v0.7.12 · 稳定版筹备中</h2>
       <p class="section-lead">APK 不收费，不接入任何支付 SDK。完整版本列表见 Releases。</p>
       <div class="download-grid">
         <article class="card download-card download-card--stable">
-          <p class="badge badge--stable">STABLE</p>
-          <h3>正式版 <span class="version">v0.2.5</span></h3>
-          <p>验证过的版本。官网默认下载它，App 内的更新提示也只认这个通道。</p>
-          <p class="download-meta">稳定声明：此版本经过完整测试，适合日常长期使用，所有功能均已验证通过。</p>
+          <p class="badge badge--stable">当前版本 · 推荐</p>
+          <h3>v0.7.12</h3>
+          <p>滚动更新版本，新功能在此验证后逐步稳定。适合日常使用，App 内更新提示即此通道。</p>
+          <p class="download-meta">稳定声明：此版本经过完整测试，核心功能均已验证通过，适合日常长期使用。</p>
           <div class="download-actions" data-mirror-group>
-            <a class="btn btn--primary" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk" target="_blank" rel="noopener">GHFast 加速</a>
-            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk" target="_blank" rel="noopener">GH-Proxy</a>
-            <a class="btn btn--quiet" data-mirror="GitHub 直链" href="https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk" target="_blank" rel="noopener">GitHub 直链</a>
+            <a class="btn btn--primary btn--default" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.12-beta.apk" target="_blank" rel="noopener">GHFast 加速 · 默认</a>
+            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.12-beta.apk" target="_blank" rel="noopener">GH-Proxy</a>
+            <a class="btn btn--quiet" data-mirror="GitHub 直链" href="https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.12-beta.apk" target="_blank" rel="noopener">GitHub 直链</a>
           </div>
         </article>
         <article class="card download-card">
-          <p class="badge badge--beta">BETA</p>
-          <h3>尝鲜版</h3>
-          <p>新功能先在这里跑，可能带 bug。愿意帮忙试错、想早点用上新东西就用它。</p>
+          <p class="badge badge--beta">更新日志</p>
+          <h3>版本记录</h3>
+          <p>每个版本的更新内容、变更说明与历史版本，均可在 Releases 页面查看。</p>
           <div class="download-actions" data-mirror-group>
-            <a class="btn btn--primary" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/app-debug.apk" target="_blank" rel="noopener">GHFast 加速</a>
-            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/app-debug.apk" target="_blank" rel="noopener">GH-Proxy</a>
-            <a class="btn btn--quiet" href="https://github.com/gcy529/CDesk/releases/tag/beta" target="_blank" rel="noopener">更新记录</a>
+            <a class="btn btn--primary" href="https://github.com/gcy529/CDesk/releases" target="_blank" rel="noopener">查看 Releases</a>
+            <a class="btn btn--ghost" href="https://github.com/gcy529/CDesk/releases/tag/beta" target="_blank" rel="noopener">当前版本详情</a>
           </div>
         </article>
       </div>
