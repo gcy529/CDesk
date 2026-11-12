@@ -45,15 +45,17 @@ public class SettingsActivity extends Activity {
 
         final Button btnFilter = (Button) findViewById(R.id.btnSetFilter);
         Button btnWall = (Button) findViewById(R.id.btnSetWallpaper);
+        final Button btnOrient = (Button) findViewById(R.id.btnSetOrient);
         Button btnLang = (Button) findViewById(R.id.btnSetLang);
         Button btnPlayer = (Button) findViewById(R.id.btnSetPlayer);
         Button btnUpdate = (Button) findViewById(R.id.btnSetUpdate);
         Button btnDisclaimer = (Button) findViewById(R.id.btnSetDisclaimer);
         Button btnCore = (Button) findViewById(R.id.btnSetCore);
         final Button btnLog = (Button) findViewById(R.id.btnSetLog);
-        Button btnBack = (Button) findViewById(R.id.btnSetBack);
+        final Button btnCleanup = (Button) findViewById(R.id.btnSetCleanup);
+        final Button btnBack = (Button) findViewById(R.id.btnSetBack);
 
-        Button[] all = new Button[] { btnFilter, btnCore, btnWall, btnLang, btnPlayer, btnUpdate, btnDisclaimer, btnLog, btnBack };
+        Button[] all = new Button[] { btnFilter, btnCore, btnWall, btnOrient, btnLang, btnPlayer, btnUpdate, btnDisclaimer, btnLog, btnCleanup, btnBack };
         for (int i = 0; i < all.length; i++) {
             if (all[i] != null) ThemeManager.styleButton(all[i], p);
         }
@@ -72,6 +74,20 @@ public class SettingsActivity extends Activity {
         btnWall.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 startActivity(new Intent(SettingsActivity.this, WallpaperSettingsActivity.class));
+            }
+        });
+
+        // 桌面朝向：自动 / 横 / 竖 循环。默认横（车机天生横放），手动定过才切
+        btnOrient.setText(orientLabel(Screen.desktopOrient(this)));
+        btnOrient.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                int cur = Screen.desktopOrient(SettingsActivity.this);
+                int next = cur == Screen.ORIENT_AUTO ? Screen.ORIENT_LANDSCAPE
+                        : (cur == Screen.ORIENT_LANDSCAPE ? Screen.ORIENT_PORTRAIT : Screen.ORIENT_AUTO);
+                Screen.setDesktopOrient(SettingsActivity.this, next);
+                Screen.applyOrientation(SettingsActivity.this);
+                btnOrient.setText(orientLabel(next));
+                CLog.i("desktop orient -> " + next);
             }
         });
 
@@ -127,6 +143,14 @@ public class SettingsActivity extends Activity {
             btnLog.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     startActivity(new Intent(SettingsActivity.this, LogViewActivity.class));
+                }
+            });
+        }
+
+        if (btnCleanup != null) {
+            btnCleanup.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    startActivity(new Intent(SettingsActivity.this, CleanupActivity.class));
                 }
             });
         }
@@ -237,6 +261,12 @@ public class SettingsActivity extends Activity {
 
     private String cacheSizeLabel(int mb) {
         return getString(R.string.player_cache_mb_label, mb);
+    }
+
+    private String orientLabel(int mode) {
+        return getString(mode == Screen.ORIENT_AUTO ? R.string.settings_orient_auto
+                : mode == Screen.ORIENT_PORTRAIT ? R.string.settings_orient_portrait
+                : R.string.settings_orient_landscape);
     }
 
     private Button mkToggle(LinearLayout box, String label) {

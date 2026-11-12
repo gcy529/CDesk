@@ -62,6 +62,7 @@ public class GuardianActivity extends Activity {
         ThemeManager.styleButton(btnFixDefault, p);
         ThemeManager.styleButton(btnFixOverlay, p);
         ThemeManager.styleButton(btnFixBattery, p);
+        ThemeManager.styleButton((Button) findViewById(R.id.btnPerfDiag), p);
         ThemeManager.styleButton((Button) findViewById(R.id.btnGuardBack), p);
 
         findViewById(R.id.btnGuardBack).setOnClickListener(new View.OnClickListener() {
@@ -75,6 +76,9 @@ public class GuardianActivity extends Activity {
         });
         btnFixBattery.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { openBatterySettings(); }
+        });
+        findViewById(R.id.btnPerfDiag).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runPerfDiag(); }
         });
 
         // 版本号
@@ -180,5 +184,36 @@ public class GuardianActivity extends Activity {
         } catch (Throwable t) {
             try { startActivity(new Intent(Settings.ACTION_SETTINGS)); } catch (Throwable ignored) { }
         }
+    }
+
+    private void runPerfDiag() {
+        final PerfDiag.Report report = PerfDiag.diagnose(this);
+        StringBuilder sb = new StringBuilder();
+        sb.append(getString(R.string.guardian_perf_score, report.score)).append("\n\n");
+        for (PerfDiag.Check c : report.checks) {
+            String statusLabel;
+            if (c.status == PerfDiag.STATUS_OK) statusLabel = getString(R.string.guardian_perf_ok);
+            else if (c.status == PerfDiag.STATUS_WARN) statusLabel = getString(R.string.guardian_perf_warn);
+            else if (c.status == PerfDiag.STATUS_BAD) statusLabel = getString(R.string.guardian_perf_bad);
+            else statusLabel = getString(R.string.guardian_perf_unknown);
+            sb.append("[").append(statusLabel).append("] ").append(c.name);
+            sb.append("：").append(c.detail);
+            if (c.suggestion != null && c.suggestion.length() > 0) {
+                sb.append("\n    ").append(c.suggestion);
+            }
+            sb.append("\n\n");
+        }
+
+        final TextView tvResult = new TextView(this);
+        tvResult.setText(sb.toString());
+        tvResult.setTextSize(14);
+        tvResult.setPadding(50, 30, 50, 30);
+        tvResult.setTextColor(0xFF333333);
+
+        new android.app.AlertDialog.Builder(this)
+            .setTitle(R.string.guardian_perf_result_title)
+            .setView(tvResult)
+            .setPositiveButton(R.string.guardian_perf_close, null)
+            .show();
     }
 }

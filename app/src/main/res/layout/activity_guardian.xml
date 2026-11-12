@@ -114,6 +114,31 @@
                 android:text="@string/guardian_fix" />
         </LinearLayout>
 
+        <!-- 性能体检 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/guardian_perf_title"
+            android:textSize="@dimen/text_card_title"
+            android:textStyle="bold"
+            android:textColor="@color/accent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/guardian_perf_desc"
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
+
+        <Button
+            android:id="@+id/btnPerfDiag"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/guardian_perf_run" />
+
         <Button
             android:id="@+id/btnGuardBack"
             android:layout_width="match_parent"

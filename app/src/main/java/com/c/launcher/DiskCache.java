@@ -1,12 +1,12 @@
 package com.c.launcher;
 
 import android.content.Context;
-import com.google.android.exoplayer2.cache.Cache;
-import com.google.android.exoplayer2.cache.LruRandomShiftingCache;
-import com.google.android.exoplayer2.cache.NoopCacheEvictor;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
+import com.google.android.exoplayer2.upstream.cache.Cache;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor;
+import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 
 import java.io.File;
 
@@ -58,10 +58,10 @@ public final class DiskCache {
         long target = targetBytes(c);
         if (instance != null && currentSize == target) return instance;
         if (instance != null) {
-            try { instance.close(); } catch (Throwable ignored) { }
+            try { instance.release(); } catch (Throwable ignored) { }
         }
         currentSize = target;
-        instance = new LruRandomShiftingCache(new NoopCacheEvictor(), cacheDir(c), target);
+        instance = new SimpleCache(cacheDir(c), new LeastRecentlyUsedCacheEvictor(target));
         return instance;
     }
 
@@ -76,14 +76,19 @@ public final class DiskCache {
                 .setReadTimeoutMs(20000)
                 .setAllowCrossProtocolRedirects(true);
         if (live) return http;
-        // ExoPlayer 2.18 的 CacheDataSourceFactory：upstreamFactory + cache
-        return new CacheDataSourceFactory(http, get(c));
+        final Cache cache = get(c);
+        return new DataSource.Factory() {
+            @Override
+            public DataSource createDataSource() {
+                return new CacheDataSource(cache, http.createDataSource());
+            }
+        };
     }
 
     /** 释放缓存（设置里"清空缓存"按钮用） */
     public static synchronized void clear(Context c) {
         if (instance != null) {
-            try { instance.close(); } catch (Throwable ignored) { }
+            try { instance.release(); } catch (Throwable ignored) { }
             instance = null;
         }
         currentSize = -1;

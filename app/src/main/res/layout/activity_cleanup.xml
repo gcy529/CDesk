@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollCleanup"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_base">
+
+    <LinearLayout
+        android:id="@+id/rootCleanup"
+        style="@style/TVCardStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="26dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cleanup_title"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/tvCleanupFree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="@dimen/text_title"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/tvCleanupCacheUsed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:id="@+id/tvCleanupCacheTarget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
+
+        <TextView
+            android:id="@+id/tvCleanupResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/accent"
+            android:visibility="invisible" />
+
+        <Button android:id="@+id/btnCleanupGo"
+            android:layout_width="match_parent" android:layout_height="56dp"
+            android:layout_marginTop="24dp" android:text="@string/cleanup_go" />
+
+        <Button android:id="@+id/btnCleanupBack"
+            android:layout_width="match_parent" android:layout_height="52dp"
+            android:layout_marginTop="16dp" android:text="@string/transfer_back" />
+    </LinearLayout>
+</ScrollView>

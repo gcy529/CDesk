@@ -42,6 +42,10 @@
             android:layout_width="match_parent" android:layout_height="52dp"
             android:layout_marginTop="10dp" android:text="@string/wallpaper" />
 
+        <Button android:id="@+id/btnSetOrient"
+            android:layout_width="match_parent" android:layout_height="52dp"
+            android:layout_marginTop="10dp" android:text="@string/settings_orient_landscape" />
+
         <Button android:id="@+id/btnSetLang"
             android:layout_width="match_parent" android:layout_height="52dp"
             android:layout_marginTop="10dp" android:text="@string/lang_auto" />
@@ -61,6 +65,10 @@
         <Button android:id="@+id/btnSetLog"
             android:layout_width="match_parent" android:layout_height="52dp"
             android:layout_marginTop="10dp" android:text="@string/settings_log" />
+
+        <Button android:id="@+id/btnSetCleanup"
+            android:layout_width="match_parent" android:layout_height="52dp"
+            android:layout_marginTop="10dp" android:text="@string/cleanup_title" />
 
         <Button android:id="@+id/btnSetBack"
             android:layout_width="match_parent" android:layout_height="52dp"

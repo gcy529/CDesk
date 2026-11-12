@@ -15,7 +15,41 @@ import android.view.WindowManager;
  */
 public final class Screen {
 
+    /** 桌面朝向：默认固定横屏（车机天生横放），用户在设置里可切自动/横/竖 */
+    public static final String PREFS = "cdesk_core";
+    public static final String KEY_ORIENT = "desktop_orient";
+    public static final int ORIENT_AUTO = 0;
+    public static final int ORIENT_LANDSCAPE = 1;
+    public static final int ORIENT_PORTRAIT = 2;
+
     private Screen() { }
+
+    /** 应用桌面朝向：默认锁横屏；设置里改了才变。车机场景避免传感器乱转 */
+    public static void applyOrientation(Activity a) {
+        try {
+            int mode = a.getSharedPreferences(PREFS, android.content.Context.MODE_PRIVATE)
+                    .getInt(KEY_ORIENT, ORIENT_LANDSCAPE);
+            int orient;
+            if (mode == ORIENT_PORTRAIT) {
+                orient = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+            } else if (mode == ORIENT_AUTO) {
+                orient = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+            } else {
+                orient = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            }
+            a.setRequestedOrientation(orient);
+        } catch (Throwable ignored) { }
+    }
+
+    public static void setDesktopOrient(android.content.Context c, int mode) {
+        c.getSharedPreferences(PREFS, android.content.Context.MODE_PRIVATE)
+                .edit().putInt(KEY_ORIENT, mode).commit();
+    }
+
+    public static int desktopOrient(android.content.Context c) {
+        return c.getSharedPreferences(PREFS, android.content.Context.MODE_PRIVATE)
+                .getInt(KEY_ORIENT, ORIENT_LANDSCAPE);
+    }
 
     public static void apply(final Activity a) {
         try {
@@ -30,6 +64,7 @@ public final class Screen {
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             hideBars(a);
             applySafeArea(a);
+            applyOrientation(a);
         } catch (Throwable ignored) { }
     }
 

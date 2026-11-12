@@ -168,6 +168,9 @@
     <string name="player_step_10">快進快退步長：10 秒</string>
     <string name="player_por_on">豎屏模式（短劇）：開</string>
     <string name="player_por_off">豎屏模式（短劇）：關</string>
+    <string name="settings_orient_auto">桌面朝向：自動（跟隨感測器）</string>
+    <string name="settings_orient_landscape">桌面朝向：固定橫屏（車機預設）</string>
+    <string name="settings_orient_portrait">桌面朝向：固定直屏</string>
     <string name="fav_added">已收藏</string>
     <string name="fav_removed">已取消收藏</string>
     <string name="library_title">影音書架</string>
@@ -224,4 +227,21 @@
     <string name="musicpg_testing">正在檢測線路…</string>
     <string name="settings_card">設定</string>
     <string name="update_apk_stale">下載到的包版本比目前還舊，已丟棄（更新線路給錯了包）</string>
+    <string name="cleanup_title">快取清理</string>
+    <string name="cleanup_go">開始清理</string>
+    <string name="cleanup_done">已清理，釋放 %1$d MB</string>
+    <string name="cleanup_free">總記憶體 %1$d MB，可用 %2$d MB（%3$d%%）</string>
+    <string name="cleanup_used">快取已用 %1$d MB</string>
+    <string name="cleanup_target">快取上限 %1$d MB</string>
+    <string name="guardian_service_failed">網速懸浮窗啟動失敗，請到守護頁檢查後台與電池權限</string>
+    <string name="guardian_perf_title">效能體檢</string>
+    <string name="guardian_perf_desc">實測 CPU、記憶體、儲存、啟動等指標，檢測廠商 ROM 是否負優化</string>
+    <string name="guardian_perf_run">開始體檢</string>
+    <string name="guardian_perf_score">健康分：%1$d</string>
+    <string name="guardian_perf_result_title">體檢結果</string>
+    <string name="guardian_perf_ok">正常</string>
+    <string name="guardian_perf_warn">注意</string>
+    <string name="guardian_perf_bad">異常</string>
+    <string name="guardian_perf_unknown">未知</string>
+    <string name="guardian_perf_close">關閉</string>
 </resources>

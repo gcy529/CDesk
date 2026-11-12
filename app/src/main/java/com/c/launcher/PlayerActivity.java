@@ -248,8 +248,8 @@ public class PlayerActivity extends Activity {
         player.seekTo(target);
         if (tvPos != null) tvPos.setText(fmt(target));
         // 快进按钮的标签也按步长显示
-        View rew = findViewById(R.id.btnRew);
-        View fwd = findViewById(R.id.btnFwd);
+        TextView rew = (TextView) findViewById(R.id.btnRew);
+        TextView fwd = (TextView) findViewById(R.id.btnFwd);
         int s = seekStepMs / 1000;
         if (rew != null) rew.setText("-" + s + "s");
         if (fwd != null) fwd.setText("+" + s + "s");
@@ -281,7 +281,7 @@ public class PlayerActivity extends Activity {
     private void toggleLockOrient() {
         orientLocked = !orientLocked;
         if (orientLocked) {
-            // 锁住当前方向：横屏内容锁横，竖屏内容锁竖
+            // 锁住当前方向，音频继续播（车机开车场景：别转了，但声音不停）
             int cur = getRequestedOrientation();
             boolean isLandscape = cur == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                     || cur == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
@@ -289,9 +289,8 @@ public class PlayerActivity extends Activity {
                     ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                     : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             if (btnLockOrient != null) btnLockOrient.setText(LOCK_ICON);
-            CLog.i("player orientation locked");
+            CLog.i("player orientation locked, audio keeps playing");
         } else {
-            // 解锁：跟传感器，按视频宽高比自动转
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             if (btnLockOrient != null) btnLockOrient.setText(UNLOCK_ICON);
             CLog.i("player orientation unlocked");

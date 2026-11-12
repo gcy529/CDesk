@@ -169,6 +169,9 @@
     <string name="player_step_10">Seek step: 10s</string>
     <string name="player_por_on">Portrait mode (short drama): on</string>
     <string name="player_por_off">Portrait mode (short drama): off</string>
+    <string name="settings_orient_auto">Desktop orientation: auto (sensor)</string>
+    <string name="settings_orient_landscape">Desktop orientation: landscape (default)</string>
+    <string name="settings_orient_portrait">Desktop orientation: portrait</string>
     <string name="fav_added">Saved to favorites</string>
     <string name="fav_removed">Removed from favorites</string>
     <string name="library_title">Media library</string>
@@ -225,4 +228,21 @@ multiple lines ok</string>
     <string name="musicpg_testing">Testing…</string>
     <string name="settings_card">Settings</string>
     <string name="update_apk_stale">Downloaded APK is not newer than the installed one; discarded</string>
+    <string name="cleanup_title">Cache Cleanup</string>
+    <string name="cleanup_go">Clean Now</string>
+    <string name="cleanup_done">Cleaned, freed %1$d MB</string>
+    <string name="cleanup_free">Total %1$d MB, available %2$d MB (%3$d%%)</string>
+    <string name="cleanup_used">Cache used %1$d MB</string>
+    <string name="cleanup_target">Cache limit %1$d MB</string>
+    <string name="guardian_service_failed">Speed overlay failed to start. Check background &amp; battery settings in Guardian.</string>
+    <string name="guardian_perf_title">Performance Check</string>
+    <string name="guardian_perf_desc">Measure CPU, memory, storage and startup to detect ROM throttling</string>
+    <string name="guardian_perf_run">Run Check</string>
+    <string name="guardian_perf_score">Health score: %1$d</string>
+    <string name="guardian_perf_result_title">Check Results</string>
+    <string name="guardian_perf_ok">OK</string>
+    <string name="guardian_perf_warn">Warning</string>
+    <string name="guardian_perf_bad">Critical</string>
+    <string name="guardian_perf_unknown">Unknown</string>
+    <string name="guardian_perf_close">Close</string>
 </resources>

@@ -9,7 +9,11 @@
 
 **官网（国内直连）：[https://gcy5.cn.mt](https://gcy5.cn.mt)** —— 功能介绍、安装步骤、常见问题、加群/反馈都在这。
 
-![preview](shots/FINAL_desk_mockup.png)
+<p align="center">
+  <img src="assets/monkeycode-dev-1.webp" width="420" alt="MonkeyCode 云端协作">
+  &nbsp;&nbsp;
+  <img src="assets/monkeycode-dev-2.webp" width="420" alt="讯飞星辰 MaaS 平台">
+</p>
 
 ---
 
@@ -33,10 +37,11 @@
 > 也可以直接进 QQ 群「**C桌面会员群**」（群号 **970805386**）：<https://qm.qq.com/q/aNyk2ZG3ZK> —— 安装求助、功能许愿、新版本先发群里。
 
 <p align="center">
-  <img src="assets/wechat-account.png" width="200" alt="公众号：韭菜超先生"><br>
-  <sub>微信扫码关注「韭菜超先生」</sub>
+  <img src="assets/wechat-account.png" width="200" alt="公众号：韭菜超先生">
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/qq-group-qr.png" width="200" alt="QQ 群：C桌面会员群"><br>
+  <sub>微信扫码关注「韭菜超先生」</sub>
+  &nbsp;&nbsp;&nbsp;&nbsp;
   <sub>QQ 群 970805386 · <a href="https://qm.qq.com/q/aNyk2ZG3ZK">一键加群</a></sub>
 </p>
 
@@ -126,9 +131,9 @@ app/src/main/
 │   ├── AppAdapter.java               已安装应用列表（D-pad 可导航）
 │   ├── MediaAdapter.java             影音页入口卡片（直播 / 点播 / 音乐 / 书库）
 │   ├── BaseShellActivity.java        三个壳的公共链路：导入 → 解析 → 列表 → 点击
-│   ├── LiveShellActivity.java        直播壳（M3U / TXT#genre# / JSON）
-│   ├── VodShellActivity.java         点播壳（苹果CMS 采集接口）
-│   ├── MusicShellActivity.java       音乐壳（M3U / TXT / JSON 歌单）
+│   ├── LiveShellActivity.java        直播播放（M3U / TXT#genre# / JSON）
+│   ├── VodShellActivity.java         点播播放（苹果CMS 采集接口）
+│   ├── MusicShellActivity.java       音乐播放（M3U / TXT / JSON 歌单）
 │   ├── PlayerActivity.java           播放器：倍速 / 进度 / 换 UA / 断流重连
 │   ├── LibraryActivity.java          收藏 + 最近播放
 │   ├── PlaylistParser.java           播放列表解析（不依赖第三方库）
@@ -171,16 +176,16 @@ app/src/main/
 
 ## 路线图
 
-- [x] 桌面骨架 + 三页（最近 / 应用 / 影音）+ 应用网格
-- [x] 网速悬浮窗 + 自动黑白
-- [x] 内置 4K 壁纸 + 日夜自动
-- [x] 局域网传输 + 二维码
-- [x] 简繁英切换（应用内，跟随系统为默认）
-- [x] 直播壳 / 点播壳 / 音乐壳 —— 仅播放器能力，内容自行导入、自行负责
-- [x] 自定义图片壁纸（最多 3 张，存于应用私有目录）
-- [x] 收藏 + 最近播放 + 标题过滤
-- [x] 更新检查（GitHub Releases）+ 崩溃兜底页
-- [ ] 影音页入口与首页重设计 v2 对齐（隔壁负责视觉，代码侧已按 3 列收口）
+- ✓ 桌面骨架 + 三页（最近 / 应用 / 影音）+ 应用网格
+- ✓ 网速悬浮窗 + 自动黑白
+- ✓ 内置 4K 壁纸 + 日夜自动
+- ✓ 局域网传输 + 二维码
+- ✓ 简繁英切换（应用内，跟随系统为默认）
+- ✓ 直播 / 点播 / 音乐播放 —— 提供播放器能力，内容由用户自行安排
+- ✓ 自定义图片壁纸（最多 3 张，存于应用私有目录）
+- ✓ 收藏 + 最近播放 + 标题过滤
+- ✓ 更新检查（GitHub Releases）+ 崩溃兜底页
+- ○ 影音页入口与首页重设计 v2 对齐（隔壁负责视觉，代码侧已按 3 列收口）
 
 ---
 
@@ -208,49 +213,52 @@ app/src/main/
 
 ---
 
-## 开发说明 / How this was built
+## 技术驱动 / How this was built
 
-本项目是个人作品，**代码与设计的实现过程在 DeepSeek 辅助下完成**；
-产品判断、取舍与发布由作者本人负责。它不是深度求索（DeepSeek）官方产品，
-也没有获得其背书或联合署名。
+本项目是个人作品，由大模型与云端平台**技术驱动**，开发分三个阶段协作完成。
+
+**一、起步与经典主题 · DeepSeek**
+
+C桌面 的构建始于 **DeepSeek**：项目骨架、核心架构，以及包括「鲸鱼」在内的一系列经典主题，
+均在 DeepSeek 辅助下完成。这些经典主题作为产品视觉的底色被完整保留，随版本演进持续沿用。
+
+**二、当前界面 · 千问4**
+
+现在这套界面 UI 由 **千问4** 重写，功能与经典主题保持衔接，视觉风格在此阶段完成统一。
+
+**三、后续迭代 · 云端协作**
+
+后续的代码完成与持续开发，由云端的 **MonkeyCode** 与 **讯飞星辰 MaaS 平台** 协同支撑，
+用于代码生成、审查与多轮迭代。
+
+想体验同款开发流程，可用邀请码注册：
+[https://monkeycode-ai.com/?ic=01a05d37-4257-73f8-9552-92b1e62b7f41](https://monkeycode-ai.com/?ic=01a05d37-4257-73f8-9552-92b1e62b7f41)
+
+产品判断、取舍与发布由作者本人负责。上述平台均为开发辅助工具，本应用不是其官方产品，
+也未获得其背书或联合署名。
 
 ### 用到的服务与素材 / Services & assets
 
 | 项 | 说明 |
 |---|---|
-| 大模型 API | [麦块云](https://minekuai.cn/r/MVQ5W8MT)（邀请注册链接，注册双方各得 10 鱼币）。项目内的 AI 插画与壁纸经该平台的图像接口生成 |
-| 插画 / 壁纸 | 全部由 AI 图像模型生成，随仓库提供，可自由使用 |
+| 起步构建 | [DeepSeek](https://deepseek.com)（项目骨架与经典主题，含鲸鱼） |
+| 界面 UI | [千问4](https://qwen.com)（当前界面重写） |
+| 云端协作 | MonkeyCode · 讯飞星辰 MaaS 平台（后续代码完成与迭代） |
+| 壁纸 / UI | 壁纸 UI 全由 AI 生成，4K 可到「韭菜超先生」领取 |
 | 配色参考 | Tailwind CSS v4 官方调色板（MIT），色值经 OKLab 转换为 sRGB |
 | 二维码 | ZXing core（Apache 2.0），纯 Java，无 native 库 |
 
-**关于麦块云（邀请链接 · 国内网络环境）**
-
-项目里的 AI 插画和壁纸，都是通过麦块云的大模型接口生成的。它是一家中转服务，
-**国内网络环境下才能正常打开和注册**；在境外或代理环境下可能打不开。
-如果你在海外，这一段直接跳过就好，对使用 C桌面没有任何影响。
-
-愿意支持的话，用网页或扫码注册，注册双方各得 10 鱼币，作者会拿到少量额度。
-这是**明示的邀请链接**，不改变你实际支付的价格。
-
-[网页注册 minekuai.cn/r/MVQ5W8MT](https://minekuai.cn/r/MVQ5W8MT) · 或扫码：
-
-<img src="shots/minekuai-qr.png" width="176" alt="麦块云注册二维码">
-
-<details>
-<summary><b>About Minekuai (referral link, mainland China networks)</b> — English note, click to expand</summary>
-
-**About Minekuai (referral link, mainland China networks)**
-
-The AI illustrations in this project were generated through Minekuai's model API. It only works
-from mainland China networks — from overseas it may not open at all. If you are outside China,
-skip this part; it has no effect on using CDesk. The link is an explicit referral link: both sides
-get a small credit bonus and the author receives a small quota. It does not change what you pay.
-
-</details>
-
 ---
 
-[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)
+<p align="center">
+  <img src="assets/icon-512.png" width="72" alt="C桌面 logo">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/起步构建-DeepSeek-4D6BFE?style=flat-square&logo=deepseek&logoColor=white">
+  <img src="https://img.shields.io/badge/界面UI-千问4-615aff?style=flat-square">
+  <img src="https://img.shields.io/badge/云端协作-MonkeyCode·讯飞星辰MaaS-2EA8FF?style=flat-square">
+</p>
 
 ## License
 

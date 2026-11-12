@@ -65,9 +65,7 @@ No payment SDK, no "donate to unlock" — just a static image.
 
 ## AI assets
 
-All illustrations and wallpapers are AI-generated and shipped with the repo, free to use.
-Generated through [Minekuai](https://minekuai.cn/r/MVQ5W8MT) (an explicit referral link; both
-sides get a small credit bonus; mainland China networks only).
+Wallpaper UI is fully AI-generated. For 4K wallpapers, visit 「韭菜超先生」 to obtain them.
 
 ## License
 

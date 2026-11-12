@@ -2,11 +2,13 @@ package com.c.launcher;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Undefined;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -111,25 +113,22 @@ public class JsSource {
 
     /** 注入 module + require + exports mock，跑脚本后读 module.exports */
     private Scriptable setupScope(Context ctx) {
-        NativeObject so = new NativeObject();
-        Scriptable scope = ScriptableObject.wrapObject(ctx, so, ScriptableObject.getObjectClass(ctx));
+        Scriptable scope = ctx.initStandardObjects();
         NativeObject module = new NativeObject();
         NativeObject exports = new NativeObject();
         module.put("exports", module, exports);
         scope.put("module", scope, module);
         scope.put("exports", scope, exports);
         // mock require：花音源一般只 export，不 require 第三方
-        scope.put("require", scope, new Function() {
-            @Override public Scriptable call(Context cx, Scriptable thisObj, Scriptable argsObj, Function data) {
-                cx.throwException(new RuntimeException("require not supported in CDesk js source"));
-                return null;
+        scope.put("require", scope, new BaseFunction() {
+            @Override public Object call(Context cx, Scriptable thisObj, Scriptable argsObj, Object[] data) {
+                throw Context.throwAsScriptRuntimeEx(new RuntimeException("require not supported in CDesk js source"));
             }
             @Override public int getLength() { return 1; }
             @Override public int getArity() { return 1; }
             @Override public String toString() { return "function require() { not supported }"; }
-            @Override public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
-                cx.throwException(new RuntimeException("require not supported"));
-                return null;
+            @Override public Scriptable construct(Context cx, Scriptable sc, Object[] args) {
+                throw Context.throwAsScriptRuntimeEx(new RuntimeException("require not supported"));
             }
         });
         return scope;
@@ -137,25 +136,25 @@ public class JsSource {
 
     private List<Song> callSearch(Context ctx, Scriptable scope, String keyword) {
         Scriptable exports = (Scriptable) scope.get("exports", scope);
-        if (exports == null || ScriptableObject.isNullOrUndefined(exports)) {
+        if (exports == null || exports == Undefined.instance) {
             return new ArrayList<Song>();
         }
         Object searchFn = exports.get("search", exports);
-        if (searchFn == null || !Function.hasInstance(searchFn)) {
+        if (searchFn == null || !(searchFn instanceof Function)) {
             return new ArrayList<Song>();
         }
-        Object r = ((Function) searchFn).call(ctx, scope, new Object[] { keyword }, null);
+        Object r = ((Function) searchFn).call(ctx, scope, scope, new Object[] { keyword });
         return parseResults(r);
     }
 
     private List<Song> callList(Context ctx, Scriptable scope) {
         Scriptable exports = (Scriptable) scope.get("exports", scope);
-        if (exports == null || ScriptableObject.isNullOrUndefined(exports)) {
+        if (exports == null || exports == Undefined.instance) {
             return new ArrayList<Song>();
         }
         Object listFn = exports.get("list", exports);
-        if (listFn != null && Function.hasInstance(listFn)) {
-            Object r = ((Function) listFn).call(ctx, scope, new Object[0], null);
+        if (listFn != null && listFn instanceof Function) {
+            Object r = ((Function) listFn).call(ctx, scope, scope, new Object[0]);
             return parseResults(r);
         }
         // 没有 list 就尝试 search("") 拉全量
@@ -164,12 +163,12 @@ public class JsSource {
 
     private List<Song> parseResults(Object r) {
         List<Song> out = new ArrayList<Song>();
-        if (r == null || Context.isPrimitiveOrNull(r)) return out;
+        if (r == null || r == Undefined.instance) return out;
         try {
             // Rhino 数组是 NativeArray，遍历取元素；每个元素可能是 NativeObject(对象)或String
             if (r instanceof org.mozilla.javascript.NativeArray) {
                 org.mozilla.javascript.NativeArray arr = (org.mozilla.javascript.NativeArray) r;
-                int n = arr.getLength();
+                int n = (int) arr.getLength();
                 for (int i = 0; i < n; i++) {
                     Object item = arr.get(i, arr);
                     Song s = songFromJs(item);
@@ -223,7 +222,7 @@ public class JsSource {
     }
 
     private static String str(Object o) {
-        if (o == null || Context.isPrimitiveOrNull(o)) return "";
+        if (o == null || o == Undefined.instance) return "";
         try { return Context.toString(o); } catch (Throwable t) { return ""; }
     }
 

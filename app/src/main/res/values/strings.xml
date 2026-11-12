@@ -173,6 +173,9 @@
     <string name="player_cache_on">磁盘缓存（断网可看已缓存）：开</string>
     <string name="player_cache_off">磁盘缓存（断网可看已缓存）：关</string>
     <string name="player_cache_mb_label">缓存上限：%1$d MB（循环 128/256/512/1024）</string>
+    <string name="settings_orient_auto">桌面朝向：自动（跟传感器）</string>
+    <string name="settings_orient_landscape">桌面朝向：固定横屏（车机默认）</string>
+    <string name="settings_orient_portrait">桌面朝向：固定竖屏</string>
     <string name="fav_added">已收藏</string>
     <string name="fav_removed">已取消收藏</string>
     <string name="library_title">影音书架</string>
@@ -233,4 +236,21 @@
     <string name="musicpg_testing">正在检测线路…</string>
     <string name="settings_card">设置</string>
     <string name="update_apk_stale">下到的包版本比当前还旧，已丢弃（更新线路给错了包）</string>
+    <string name="cleanup_title">缓存清理</string>
+    <string name="cleanup_go">开始清理</string>
+    <string name="cleanup_done">已清理，释放 %1$d MB</string>
+    <string name="cleanup_free">总内存 %1$d MB，可用 %2$d MB（%3$d%%）</string>
+    <string name="cleanup_used">缓存已用 %1$d MB</string>
+    <string name="cleanup_target">缓存上限 %1$d MB</string>
+    <string name="guardian_service_failed">网速悬浮窗启动失败，请到守护页检查后台与电池权限</string>
+    <string name="guardian_perf_title">性能体检</string>
+    <string name="guardian_perf_desc">实测 CPU、内存、存储、启动等指标，检测厂商 ROM 是否负优化</string>
+    <string name="guardian_perf_run">开始体检</string>
+    <string name="guardian_perf_score">健康分：%1$d</string>
+    <string name="guardian_perf_result_title">体检结果</string>
+    <string name="guardian_perf_ok">正常</string>
+    <string name="guardian_perf_warn">注意</string>
+    <string name="guardian_perf_bad">异常</string>
+    <string name="guardian_perf_unknown">未知</string>
+    <string name="guardian_perf_close">关闭</string>
 </resources>

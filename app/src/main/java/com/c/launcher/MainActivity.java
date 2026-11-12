@@ -1,9 +1,11 @@
 package com.c.launcher;
 
 import android.app.Activity;
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.GradientDrawable;
@@ -46,6 +48,7 @@ import java.util.Locale;
 public class MainActivity extends Activity {
 
     private static final int REQ_OVERLAY = 2001;
+    private static final int REQ_NOTIFICATION = 2002;
 
     private ImageView ivWallpaper;
     private ImageView ivStatusDown;
@@ -103,6 +106,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         CLog.init(this);
         CLog.i("onCreate start, sdk=" + android.os.Build.VERSION.SDK_INT);
+        PerfDiag.markStart(this);
         // 崩溃 handler 已移到 App（进程入口），这里不再重复安装
         Screen.apply(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -307,6 +311,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        PerfDiag.recordStartup(this);
         if (adapter != null) {
             adapter.reload();
             applyPage(page);
@@ -318,6 +323,7 @@ public class MainActivity extends Activity {
                 gridApps.requestFocus();
             }
         });
+        ensureNotificationPermission();
         startSpeedService();
         // 角标状态恢复：任何页面写过的状态在这里落回桌面
         android.content.SharedPreferences sp = getSharedPreferences("cdesk_status", 0);
@@ -782,13 +788,36 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void ensureNotificationPermission() {
+        // Android 13+ 通知需运行时授权；前台服务通知本身豁免，此处为面向未来普通通知补全
+        if (Build.VERSION.SDK_INT < 33) return;
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED) return;
+        SharedPreferences sp = getSharedPreferences("cdesk_core", MODE_PRIVATE);
+        if (sp.getBoolean("notif_asked", false)) return;
+        sp.edit().putBoolean("notif_asked", true).commit();
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFICATION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_NOTIFICATION) {
+            // 授权与否都不阻断：前台服务通知豁免，更新弹窗走 AlertDialog/Toast 不受影响
+            startSpeedService();
+        }
+    }
+
     private void startSpeedService() {
         if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(this)) return;
         Intent svc = new Intent(this, SpeedService.class);
         try {
             if (Build.VERSION.SDK_INT >= 26) startForegroundService(svc);
             else startService(svc);
-        } catch (Throwable ignored) { }
+        } catch (Throwable t) {
+            // 厂商 ROM（澎湃/Flyme/ColorOS 等）常限制后台服务启动，静默失败会让用户误以为功能坏了
+            Toast.makeText(this, R.string.guardian_service_failed, Toast.LENGTH_LONG).show();
+        }
     }
 
     private int dp(float v) {
