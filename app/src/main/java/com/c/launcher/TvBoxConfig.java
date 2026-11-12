@@ -65,6 +65,8 @@ public final class TvBoxConfig {
                 String name = o.optString("name", "");
                 int type = o.optInt("type", 1);
                 if (api.length() < 5) continue;
+                // csp_xxx 那类靠蜘蛛 jar 解析的源我们放不了，别列出来让人白点
+                if (!api.startsWith("http")) continue;
                 if (name.length() == 0) name = api;
                 out.add(new Site(name, api, type));
             }

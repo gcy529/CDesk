@@ -205,17 +205,16 @@
     <string name="vodpg_search">搜尋</string>
     <string name="vodpg_search_hint">輸入片名搜尋</string>
     <string name="vodpg_source">換源</string>
-    <string name="vodpg_no_source">還沒有接口地址，點上面的「接口」填一個</string>
-    <string name="livepg_no_source">還沒有接口地址，點上面的「接口」填一個</string>
+    <string name="vodpg_no_source">還沒有介面位址。可以填 CMS 介面，也可以直接貼訂閱位址（.json）</string>
+    <string name="livepg_no_source">還沒有播放清單。可以填 m3u/txt，也可以直接貼訂閱位址（.json）</string>
     <string name="musicpg_empty">沒有找到歌曲，插上 U 盤或把歌放進本機試試</string>
     <string name="vodpg_api_title">影視接口地址</string>
     <string name="vodpg_api_msg">填採集接口地址（蘋果CMS 那種），本應用不內置任何源</string>
-    <string name="vodpg_api_hint">http://你的接口/api.php/provide/vod/</string>
+    <string name="vodpg_api_hint">CMS 介面位址，或 TVBox 訂閱位址（.json 裡有 sites）</string>
     <string name="entry_api">接口</string>
     <string name="livepg_api_title">直播源地址</string>
     <string name="livepg_api_msg">一行一個源，支持 m3u 或「央視,#genre#」那種 txt。本應用不內置任何源</string>
-    <string name="livepg_api_hint">http://...
-可多行</string>
+    <string name="livepg_api_hint">m3u/txt 播放清單位址，或 TVBox 訂閱位址（.json 裡有 lives）</string>
     <string name="musicpg_api_title">音樂接口地址</string>
     <string name="musicpg_api_msg">填播放清單地址（m3u/m3u8，或「名字,地址」的 txt）。TVBox 那種 .js 源這裡用不了</string>
     <string name="musicpg_api_hint">http://.../list.m3u</string>
