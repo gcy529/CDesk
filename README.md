@@ -228,7 +228,7 @@ C桌面 的构建始于 **DeepSeek**：项目骨架、核心架构，以及包�
 
 **三、后续迭代 · 云端协作**
 
-后续的代码完成与持续开发，由云端的 **MonkeyCode** 与 **讯飞星辰 MaaS 平台** 协同支撑，
+后续的代码完成与持续开发，由云端的 **长亭百智云 MonkeyCode** 与 **讯飞星辰 MaaS 平台** 协同支撑，
 用于代码生成、审查与多轮迭代。
 
 产品判断、取舍与发布由作者本人负责。上述平台均为开发辅助工具，本应用不是其官方产品，
@@ -240,7 +240,7 @@ C桌面 的构建始于 **DeepSeek**：项目骨架、核心架构，以及包�
 |---|---|
 | 起步构建 | [DeepSeek](https://deepseek.com)（项目骨架与经典主题，含鲸鱼） |
 | 界面 UI | [千问4](https://qwen.com)（当前界面重写） |
-| 云端协作 | MonkeyCode · 讯飞星辰 MaaS 平台（后续代码完成与迭代） |
+| 云端协作 | 长亭百智云 MonkeyCode · 讯飞星辰 MaaS 平台（后续代码完成与迭代） |
 | 壁纸 / UI | 壁纸 UI 全由 AI 生成，4K 可到「韭菜超先生」领取 |
 | 配色参考 | Tailwind CSS v4 官方调色板（MIT），色值经 OKLab 转换为 sRGB |
 | 二维码 | ZXing core（Apache 2.0），纯 Java，无 native 库 |
@@ -254,7 +254,7 @@ C桌面 的构建始于 **DeepSeek**：项目骨架、核心架构，以及包�
 <p align="center">
   <img src="https://img.shields.io/badge/起步构建-DeepSeek-4D6BFE?style=flat-square&logo=deepseek&logoColor=white">
   <img src="https://img.shields.io/badge/界面UI-千问4-615aff?style=flat-square">
-  <img src="https://img.shields.io/badge/云端协作-MonkeyCode·讯飞星辰MaaS-2EA8FF?style=flat-square">
+  <img src="https://img.shields.io/badge/云端协作-长亭百智云MonkeyCode·讯飞星辰MaaS-2EA8FF?style=flat-square">
 </p>
 
 ## License

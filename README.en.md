@@ -55,8 +55,8 @@ No payment SDK, no "donate to unlock" — just a static image.
 ## AI assets
 
 All illustrations and wallpapers are AI-generated and shipped with the repo, free to use.
-Generated through [Minekuai](https://minekuai.cn/r/MVQ5W8MT) (an explicit referral link; both
-sides get a small credit bonus; mainland China networks only).
+Development is driven by **长亭百智云 MonkeyCode** (cloud collaboration for code generation,
+review, and continuous iteration).
 
 ## License
 
