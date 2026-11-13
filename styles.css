@@ -192,7 +192,8 @@ ul, ol { margin: 0; padding: 0; }
 .check-list li { position: relative; padding-left: 26px; }
 .check-list li::before { content: "✓"; position: absolute; left: 0; color: var(--site-accent); font-weight: 800; }
 
-.download-grid { margin-top: calc(32px * var(--site-space, 1)); display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(24px * var(--site-space, 1)); }
+.download-grid { margin-top: calc(32px * var(--site-space, 1)); display: grid; grid-template-columns: repeat(2, 1fr); gap: calc(24px * var(--site-space, 1)); align-items: stretch; }
+.download-card { display: flex; flex-direction: column; }
 .download-card--stable { border-color: rgba(178, 58, 42, 0.35); box-shadow: var(--site-shadow); }
 .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; margin-bottom: 14px; }
 .badge--stable { background: var(--site-accent-soft); color: var(--site-accent); }
@@ -201,6 +202,7 @@ ul, ol { margin: 0; padding: 0; }
 .version { font-size: 14px; font-weight: 600; color: var(--site-muted); margin-left: 6px; }
 .download-card p { color: var(--site-muted); font-size: 15px; }
 .download-actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; }
+.download-actions .btn { flex: 1 1 auto; min-width: 0; text-align: center; }
 .download-meta { margin-top: 22px; color: var(--site-muted); font-size: 13.5px; }
 .mirror-status { margin-top: 12px; color: var(--site-muted); font-size: 12.5px; min-height: 1.3em; }
 .mirror-badge {
@@ -268,16 +270,25 @@ details p { padding: 0 22px 18px; color: var(--site-muted); font-size: 15px; }
 .legal-card p:last-child { margin-bottom: 0; }
 .legal-card strong { color: var(--site-fg); }
 
+.section--tech { background: var(--site-surface); border-top: 1px solid var(--site-border); }
+.tech-grid { margin-top: calc(32px * var(--site-space, 1)); display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(24px * var(--site-space, 1)); }
+.tech-card { display: flex; flex-direction: column; }
+.tech-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--site-warm-soft); color: #8a5a10; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 12px; align-self: flex-start; }
+.tech-card h3 { font-size: 17px; margin-bottom: 8px; }
+.tech-card p { color: var(--site-muted); font-size: 14px; }
+.tech-cta { margin-top: calc(32px * var(--site-space, 1)); display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; text-align: center; }
+.tech-cta p { color: var(--site-muted); font-size: 15px; }
+
 .site-footer { border-top: 1px solid var(--site-border); padding: 36px 0 48px; background: var(--site-surface); }
 .footer-inner { text-align: center; display: grid; gap: 12px; justify-items: center; }
 .footer-brand { font-weight: 800; letter-spacing: 0.08em; }
 .footer-links { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
 .footer-links a { color: var(--site-muted); font-size: 14px; font-weight: 600; }
 .footer-copy { color: var(--site-muted); font-size: 13px; }
-.footer-tech { color: var(--site-muted); font-size: 13px; font-weight: 600; }
 
 @media (max-width: 960px) {
   .feature-grid { grid-template-columns: repeat(2, 1fr); }
+  .tech-grid { grid-template-columns: repeat(2, 1fr); }
   .support-grid { grid-template-columns: repeat(2, 1fr); }
   .install-layout { grid-template-columns: 1fr; }
 }
@@ -303,7 +314,7 @@ details p { padding: 0 22px 18px; color: var(--site-muted); font-size: 15px; }
   .brand-en { display: none; }
   .hero { padding-top: calc(56px * var(--site-space, 1)); }
   .hero h1 { font-size: calc(32px * var(--site-type, 1)); }
-  .feature-grid, .download-grid, .support-grid { grid-template-columns: 1fr; }
+  .feature-grid, .download-grid, .support-grid, .tech-grid { grid-template-columns: 1fr; }
   .device-bar { grid-template-columns: auto 1fr; }
   .device-tag { display: none; }
   .download-actions .btn { flex: 1 1 auto; }
