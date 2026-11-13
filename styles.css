@@ -274,6 +274,7 @@ details p { padding: 0 22px 18px; color: var(--site-muted); font-size: 15px; }
 .footer-links { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
 .footer-links a { color: var(--site-muted); font-size: 14px; font-weight: 600; }
 .footer-copy { color: var(--site-muted); font-size: 13px; }
+.footer-tech { color: var(--site-muted); font-size: 13px; font-weight: 600; }
 
 @media (max-width: 960px) {
   .feature-grid { grid-template-columns: repeat(2, 1fr); }
