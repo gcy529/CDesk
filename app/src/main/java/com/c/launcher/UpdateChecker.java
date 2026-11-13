@@ -3,6 +3,10 @@ package com.c.launcher;
 import android.app.Activity;
 import android.content.SharedPreferences;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -208,16 +212,21 @@ public final class UpdateChecker {
         if (s.length() == 0) return null;
         // 我们自己维护的 version.json
         if (s.charAt(0) == '{' && s.contains("\"version\"")) {
-            String v = extract(s, "version", 0);
-            if (!looksVer(v)) return null;
-            Res r = new Res();
-            r.ver = v;
-            r.url = extract(s, "url", 0);
-            r.force = "true".equals(extract(s, "force", 0));
-            return r;
+            try {
+                JSONObject obj = new JSONObject(s);
+                String v = stringField(obj, "version");
+                if (!looksVer(v)) return null;
+                Res r = new Res();
+                r.ver = v;
+                r.url = stringField(obj, "url");
+                r.force = "true".equalsIgnoreCase(stringField(obj, "force"));
+                return r;
+            } catch (JSONException e) {
+                return null;
+            }
         }
         // GitHub releases 列表
-        Rel best = bestRelease(s, cur);
+        Rel best = bestReleaseJson(s, cur);
         if (best != null) {
             Res r = new Res();
             r.ver = best.ver;
@@ -229,24 +238,30 @@ public final class UpdateChecker {
         return null;
     }
 
-    static Rel bestRelease(String json, String cur) {
+    /**
+     * 解析 GitHub releases 数组（JSONArray）。逻辑与旧版字符串扫描等价：
+     * 只认 browser_download_url 以 .apk 结尾的下载链接，排除 app-debug 通用名，
+     * 版本按 tag 去 v 前缀；若版本不是数字形式，从 apk 文件名按 CDesk-版本-beta.apk 纠正。
+     */
+    static Rel bestReleaseJson(String json, String cur) {
         if (json == null) return null;
-        Rel best = null;
-        int i = json.indexOf("\"tag_name\"");
-        while (i >= 0) {
-            String tag = extract(json, "tag_name", i);
-            if (tag != null) {
-                int next = json.indexOf("\"tag_name\"", i + 1);
-                if (next < 0) next = json.length();
-                String apk = findApk(json, i, next);
+        try {
+            JSONArray arr = new JSONArray(json);
+            Rel best = null;
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.optJSONObject(i);
+                if (o == null) continue;
+                String tag = stringField(o, "tag_name");
+                String apk = stringField(o, "browser_download_url");
+                // 只认 .apk 且非 app-debug 通用名
+                if (apk != null && apk.endsWith(".apk") && !apk.endsWith("app-debug.apk")) apk = apk;
+                else apk = null;
                 String ver = tag.startsWith("v") ? tag.substring(1) : tag;
                 if (!looksVer(ver) && apk != null) {
                     java.util.regex.Matcher m = java.util.regex.Pattern
                             .compile("CDesk-([0-9.]+?)-beta\\.apk").matcher(apk);
                     if (m.find()) ver = m.group(1);
                 }
-                // app-debug.apk 这种通用名一律不认：文件名跟里面装的版本没有任何关系
-                if (apk != null && apk.endsWith("app-debug.apk")) { apk = null; }
                 if (looksVer(ver) && isNewer(ver, cur) && apk != null) {
                     if (best == null || isNewer(ver, best.ver)) {
                         Rel r2 = new Rel();
@@ -255,37 +270,30 @@ public final class UpdateChecker {
                     }
                 }
             }
-            i = json.indexOf("\"tag_name\"", i + 10);
+            return best;
+        } catch (Throwable t) {
+            return null;
         }
-        return best;
-    }
-
-    private static String findApk(String json, int from, int to) {
-        String probe = "\"browser_download_url\":\"";
-        int i = json.indexOf(probe, from);
-        while (i >= 0 && i < to) {
-            int s = i + probe.length();
-            int e = json.indexOf("\"", s);
-            if (e > s) {
-                String u = json.substring(s, e);
-                if (u.endsWith(".apk")) return u;
-            }
-            i = json.indexOf(probe, i + probe.length());
-        }
-        return null;
     }
 
     private static boolean looksVer(String s) {
         return s != null && s.matches("[0-9]+(\\.[0-9]+)*");
     }
 
-    static String extract(String json, String key, int startAt) {
-        String probe = "\"" + key + "\":\"";
-        int i = json.indexOf(probe, startAt);
-        if (i < 0) return null;
-        int s = i + probe.length();
-        int e = json.indexOf("\"", s);
-        return e > s ? json.substring(s, e) : null;
+    /** 从 JSONObject 取字段值；数组取第一个字符串元素，其余返回空串 */
+    private static String stringField(JSONObject o, String key) {
+        Object v = o.opt(key);
+        if (v == null) return "";
+        if (v instanceof String) return (String) v;
+        if (v instanceof JSONArray) {
+            JSONArray a = (JSONArray) v;
+            try {
+                if (a.length() > 0 && a.get(0) instanceof String) return (String) a.get(0);
+            } catch (JSONException e) {
+                return "";
+            }
+        }
+        return "";
     }
 
     static boolean isNewer(String remote, String current) {

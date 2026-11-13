@@ -414,6 +414,9 @@ public class PlayerActivity extends Activity {
                 if (tvError != null) tvError.setVisibility(View.GONE);
                 if (tvTitle != null && titleBackup.length() > 0) tvTitle.setText(titleBackup);
                 if (playerView != null) playerView.setKeepScreenOn(true);
+                // 播放起来就记一条最近播放（pos=0，进度会在播放停止时由 saveProgress 覆盖），
+                // 这样只浏览影音（没播到结束）时最近播放也不会是空的
+                History.push(PlayerActivity.this, titleBackup, url, live ? "live" : "vod", 0L);
                 long r = resumeAt;
                 resumeAt = -1;
                 if (r > 0 && player != null) player.seekTo(r);

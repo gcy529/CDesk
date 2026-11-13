@@ -195,7 +195,8 @@ public class MainActivity extends Activity {
         mediaAdapter = new MediaAdapter(this);
         mediaAdapter.setOnCardClick(new MediaAdapter.OnCardClick() {
             @Override public void onCardClick(int pos, String type) {
-                Class<?> t = "live".equals(type) ? LiveHomeActivity.class
+                Class<?> t = "settings".equals(type) ? SettingsActivity.class
+                        : "live".equals(type) ? LiveHomeActivity.class
                         : "audio".equals(type) ? MusicHomeActivity.class
                         : "library".equals(type) ? LibraryActivity.class
                         : VodHomeActivity.class;

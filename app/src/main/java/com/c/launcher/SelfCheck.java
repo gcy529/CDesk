@@ -17,8 +17,10 @@ import java.security.MessageDigest;
  */
 public final class SelfCheck {
 
-    private static final String OFFICIAL =
+    private static final String DEFAULT_OFFICIAL =
             "ab21886a9dabaf5084439d0ee6453799b2129f602688cbce500b2b0c698022b7";
+    private static final String CONFIG_PREFS = "cdesk_signcheck";
+    private static final String KEY_OFFICIAL = "official_signature";
 
     private SelfCheck() { }
 
@@ -37,10 +39,22 @@ public final class SelfCheck {
             }
             String got = sb.toString();
             CLog.i("apk signature " + got);
-            return OFFICIAL.equals(got);
+            String sig = configuredOfficial(c);
+            return sig.equals(got);
         } catch (Throwable t) {
             CLog.e("signature check failed: " + t);
             return false;
+        }
+    }
+
+    /** 签名校验值默认用编译期常量，可经 SharedPreferences 下发替换，避免单点硬编码。 */
+    private static String configuredOfficial(Context c) {
+        try {
+            String v = c.getSharedPreferences(CONFIG_PREFS, Context.MODE_PRIVATE)
+                    .getString(KEY_OFFICIAL, null);
+            return v == null ? DEFAULT_OFFICIAL : v;
+        } catch (Throwable t) {
+            return DEFAULT_OFFICIAL;
         }
     }
 }

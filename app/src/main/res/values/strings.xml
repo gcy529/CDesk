@@ -237,10 +237,11 @@
     <string name="update_apk_stale">下到的包版本比当前还旧，已丢弃（更新线路给错了包）</string>
     <string name="cleanup_title">缓存清理</string>
     <string name="cleanup_go">开始清理</string>
-    <string name="cleanup_done">已清理，释放 %1$d MB</string>
-    <string name="cleanup_free">总内存 %1$d MB，可用 %2$d MB（%3$d%%）</string>
-    <string name="cleanup_used">缓存已用 %1$d MB</string>
-    <string name="cleanup_target">缓存上限 %1$d MB</string>
+    <string name="cleanup_done">已清理，释放 %1$.1f GB</string>
+    <string name="cleanup_free">总内存 %1$.1f GB，可用 %2$.1f GB（%3$d%%）</string>
+    <string name="cleanup_remain">剩余内存 %1$.1f GB（%2$.1f GB，%3$d%%）</string>
+    <string name="cleanup_used">缓存已用 %1$.1f GB</string>
+    <string name="cleanup_target">缓存上限 %1$.1f GB</string>
     <string name="guardian_service_failed">网速悬浮窗启动失败，请到守护页检查后台与电池权限</string>
     <string name="guardian_perf_title">性能体检</string>
     <string name="guardian_perf_desc">实测 CPU、内存、存储、启动等指标，检测厂商 ROM 是否负优化</string>

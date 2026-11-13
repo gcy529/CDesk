@@ -22,14 +22,17 @@ import java.io.File;
  */
 public class CleanupActivity extends Activity {
 
-    private TextView tvFree, tvCacheUsed, tvCacheTarget, tvResult;
+    private TextView tvCleanupFreed, tvCleanupRemain, tvCacheUsed, tvCacheTarget, tvResult;
     private Button btnGo, btnBack;
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
+        // 横竖跟桌面一致（默认横屏），不用在清理页单独锁方向
+        Screen.apply(this);
         setContentView(R.layout.activity_cleanup);
 
-        tvFree = (TextView) findViewById(R.id.tvCleanupFree);
+        tvCleanupFreed = (TextView) findViewById(R.id.tvCleanupFreed);
+        tvCleanupRemain = (TextView) findViewById(R.id.tvCleanupRemain);
         tvCacheUsed = (TextView) findViewById(R.id.tvCleanupCacheUsed);
         tvCacheTarget = (TextView) findViewById(R.id.tvCleanupCacheTarget);
         tvResult = (TextView) findViewById(R.id.tvCleanupResult);
@@ -47,9 +50,10 @@ public class CleanupActivity extends Activity {
                 // 2) 整个 cache/ 目录（兜底，含 exo 之外的临时文件）
                 deleteDir(getCacheDir());
                 long freed = Math.max(0, before - DiskCache.usedBytes(CleanupActivity.this));
-                tvResult.setText(getString(R.string.cleanup_done, freed / 1024 / 1024));
+                double freedGb = freed / 1024.0 / 1024.0 / 1024.0;
+                tvResult.setText(getString(R.string.cleanup_done, freedGb));
                 refreshInfo();
-                CLog.i("cleanup freed " + (freed / 1024 / 1024) + " MB");
+                CLog.i("cleanup freed " + freedGb + " GB");
             }
         });
 
@@ -60,7 +64,7 @@ public class CleanupActivity extends Activity {
             }
         });
 
-        final TextView[] info = new TextView[] { tvFree, tvCacheUsed, tvCacheTarget, tvResult };
+        final TextView[] info = new TextView[] { tvCleanupFreed, tvCleanupRemain, tvCacheUsed, tvCacheTarget, tvResult };
         Button[] all = new Button[] { btnGo, btnBack };
         TvNav.dockable(this, btnBack, all, info);
     }
@@ -76,15 +80,16 @@ public class CleanupActivity extends Activity {
         am.getMemoryInfo(mi);
         long total = mi.totalMem;
         long avail = mi.availMem;
-        int totalMb = (int) (total / 1024 / 1024);
-        int availMb = (int) (avail / 1024 / 1024);
+        double totalGb = total / 1024.0 / 1024.0 / 1024.0;
+        double availGb = avail / 1024.0 / 1024.0 / 1024.0;
         int pct = total > 0 ? (int) (avail * 100 / total) : 0;
-        tvFree.setText(getString(R.string.cleanup_free, totalMb, availMb, pct));
+        // 位置挪出来：清理了多少、剩余多少一眼可见
+        tvCleanupRemain.setText(getString(R.string.cleanup_remain, availGb, totalGb, pct));
 
         long used = DiskCache.usedBytes(this);
-        tvCacheUsed.setText(getString(R.string.cleanup_used, (int) (used / 1024 / 1024)));
-        int targetMb = (int) (DiskCache.targetBytes(this) / 1024 / 1024);
-        tvCacheTarget.setText(getString(R.string.cleanup_target, targetMb));
+        tvCacheUsed.setText(getString(R.string.cleanup_used, used / 1024.0 / 1024.0 / 1024.0));
+        double targetGb = DiskCache.targetBytes(this) / 1024.0 / 1024.0 / 1024.0;
+        tvCacheTarget.setText(getString(R.string.cleanup_target, targetGb));
     }
 
     /** 递归删目录下的文件（保留目录本身，只清内容） */

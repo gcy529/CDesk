@@ -46,7 +46,10 @@ public final class History {
         return out;
     }
 
-    /** 播放开始/进行中调用：同 url 去重置顶 */
+    /**
+     * 记录一条播放/浏览：同 url 覆盖（去重），避免重复播放堆积多条。
+     * 覆盖规则：新记录优先于旧记录，所以播放停止时的进度会被进度覆盖回实际值。
+     */
     public static void push(Context c, String name, String url, String kind, long pos) {
         if (url == null || url.length() < 5) return;
         try {

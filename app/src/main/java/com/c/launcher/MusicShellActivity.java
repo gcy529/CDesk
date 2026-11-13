@@ -116,6 +116,10 @@ public class MusicShellActivity extends BaseShellActivity {
                     errStreak++;
                     if (errStreak < 3) { step(1); return true; }
                     Toast.makeText(MusicShellActivity.this, R.string.shell_play_failed, Toast.LENGTH_SHORT).show();
+                    // 无声音/连不上显示站这类问题，和视频壳一样把现场诊断打出来，方便截图定位
+                    NetDiag.diag(it.url, new NetDiag.Sink() {
+                        @Override public void line(final String s) { CLog.i("music diag: " + s); }
+                    });
                     return true;
                 }
             });

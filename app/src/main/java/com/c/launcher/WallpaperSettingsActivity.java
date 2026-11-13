@@ -51,11 +51,10 @@ public class WallpaperSettingsActivity extends Activity {
             }
         });
 
-        // 缩略图卡片：晨光(默认) / 鲸夜 / 傍晚 / 薄荷。自定义平时隐藏，有人传图才显示。
+        // 缩略图卡片：晨光(默认) / 鲸夜 / 傍晚 + 自定义平时隐藏。遥控器只点真正能用的格
         card(R.id.cardWpMorning, WPManager.WP_MORNING);
         card(R.id.cardWpNight, WPManager.WP_NIGHT);
         card(R.id.cardWpDusk, WPManager.WP_DUSK);
-        card(R.id.cardWpMint, WPManager.WP_MINT);
 
         // 默认壁纸缩略图（晨光 = 4K 原图）：绝不能直接当缩略图（OOM）——inSampleSize 降采样后小图设置
         ImageView morningThumb = (ImageView) findViewById(R.id.thumbMorning);
@@ -85,18 +84,13 @@ public class WallpaperSettingsActivity extends Activity {
             } catch (Throwable ignored) { }
         }
 
-        // 自定义图片：选系统相册里的照片；也支持局域网传入的图片
-        // 平时隐藏，只有真的传过/选过一张才显示，遥控器少一格点不动的东西
+        // 自定义图片：平时也占一格（固定 3 个自带 + 1 自定义 = 4 张卡片），有人传图才弹选择器
         View customCard = findViewById(R.id.cardWpCustom);
         if (customCard != null) {
-            boolean hasCustom = WPManager.customPath(this).length() > 0
-                    || CustomWallpapers.list(this).size() > 0;
-            customCard.setVisibility(hasCustom ? View.VISIBLE : View.GONE);
-            if (hasCustom) {
-                customCard.setOnClickListener(new View.OnClickListener() {
-                    @Override public void onClick(View v) { showCustomPicker(); }
-                });
-            }
+            customCard.setVisibility(View.VISIBLE);
+            customCard.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { showCustomPicker(); }
+            });
         }
 
         // 使用须知 + 返回

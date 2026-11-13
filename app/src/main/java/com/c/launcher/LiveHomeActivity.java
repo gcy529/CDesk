@@ -46,16 +46,13 @@ public class LiveHomeActivity extends Activity {
 
     private void load() {
         if (url == null || url.trim().length() == 0) {
-            // 没配源就先把内置频道摆出来，别让直播页是一片空白
-            List<LiveApi.Group> g0 = builtinGroups();
+            // 直播不能内置源：没配源就显示空状态提示，引导用户填源地址
             groups.clear();
             LiveApi.CACHE.clear();
-            groups.addAll(g0);
-            LiveApi.CACHE.addAll(g0);
             adapter.notifyDataSetChanged();
-            tvState.setVisibility(g0.isEmpty() ? View.VISIBLE : View.GONE);
-            if (g0.isEmpty()) { tvState.setText(R.string.livepg_no_source); }
-            CLog.i("live: builtin groups=" + g0.size());
+            tvState.setVisibility(View.VISIBLE);
+            tvState.setText(R.string.livepg_no_source);
+            CLog.i("live: no source configured");
             return;
         }
         tvState.setVisibility(View.VISIBLE);
@@ -166,36 +163,5 @@ public class LiveHomeActivity extends Activity {
                 if (b != null) { b.requestFocus(); b.performClick(); }
             }
         });
-    }
-
-    /**
-     * 内置频道：没配置任何源时的兜底。
-     * 这里每一条都是实测能拉到 m3u8 才写进去的公开频道；国内 IPTV 列表我这侧连不通，不往里放。
-     */
-    private List<LiveApi.Group> builtinGroups() {
-        List<LiveApi.Group> out = new ArrayList<LiveApi.Group>();
-        try {
-            java.io.InputStream in = getAssets().open("live.json");
-            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
-            byte[] buf = new byte[4096];
-            int len;
-            while ((len = in.read(buf)) > 0) { bo.write(buf, 0, len); }
-            in.close();
-            org.json.JSONArray arr = new org.json.JSONArray(new String(bo.toByteArray(), "UTF-8"));
-            java.util.LinkedHashMap<String, LiveApi.Group> byName = new java.util.LinkedHashMap<String, LiveApi.Group>();
-            for (int i = 0; i < arr.length(); i++) {
-                org.json.JSONObject o = arr.getJSONObject(i);
-                String gname = o.optString("g", "Built-in");
-                String name = o.optString("n", "");
-                String u = o.optString("u", "");
-                if (name.length() == 0 || u.length() == 0) { continue; }
-                LiveApi.Group g = byName.get(gname);
-                if (g == null) { g = new LiveApi.Group(gname); byName.put(gname, g); out.add(g); }
-                g.channels.add(new LiveApi.Channel(name, u));
-            }
-        } catch (Throwable t) {
-            CLog.e("live: builtin read failed " + t);
-        }
-        return out;
     }
 }
