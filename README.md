@@ -9,6 +9,8 @@
 
 **官网（国内直连）：[https://gcy5.cn.mt](https://gcy5.cn.mt)** —— 功能介绍、安装步骤、常见问题、加群/反馈都在这。
 
+**技术驱动支持：MonkeyCode × 讯飞**
+
 ![preview](shots/FINAL_desk_mockup.png)
 
 ---
