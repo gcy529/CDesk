@@ -243,20 +243,24 @@ public class TransferActivity extends Activity {
             String path = parts[1];
 
             long contentLength = -1L;
+            String fileName = null;
             String line;
             while ((line = readLine(in)) != null) {
                 if (line.length() == 0) break;
-                if (line.toLowerCase().startsWith("content-length:")) {
+                String lower = line.toLowerCase();
+                if (lower.startsWith("content-length:")) {
                     try {
                         contentLength = Long.parseLong(line.substring(15).trim());
                     } catch (Throwable ignored) {
                         contentLength = -1L;
                     }
+                } else if (lower.startsWith("x-file-name:")) {
+                    fileName = line.substring("x-file-name:".length()).trim();
                 }
             }
 
             if ("POST".equals(method) && path.startsWith("/upload")) {
-                receiveFile(in, out, contentLength);
+                receiveFile(in, out, contentLength, fileName);
             } else {
                 sendLandingPage(out);
             }
@@ -267,8 +271,11 @@ public class TransferActivity extends Activity {
         }
     }
 
-    private void receiveFile(InputStream in, OutputStream out, long len) throws IOException {
-        String name = "upload-" + System.currentTimeMillis() + ".bin";
+    private void receiveFile(InputStream in, OutputStream out, long len, String rawName) throws IOException {
+        String name = sanitizeName(rawName);
+        if (name == null || name.length() == 0) {
+            name = "upload-" + System.currentTimeMillis() + ".bin";
+        }
         File f = new File(saveDir, name);
         long got = 0L;
         FileOutputStream fos = new FileOutputStream(f);
@@ -292,6 +299,21 @@ public class TransferActivity extends Activity {
         writeHeaders(out, 200, "OK", "application/json", body.length);
         out.write(body);
         out.flush();
+    }
+
+    /** 过滤文件名，去掉路径分隔符与非法字符，防止目录穿越 */
+    private static String sanitizeName(String raw) {
+        if (raw == null) return null;
+        String n = raw.trim();
+        if (n.length() == 0) return null;
+        int slash = n.lastIndexOf('/');
+        int bs = n.lastIndexOf('\\');
+        int cut = Math.max(slash, bs);
+        if (cut >= 0) n = n.substring(cut + 1);
+        n = n.replace("..", "").replace(":", "").replace("*", "")
+             .replace("?", "").replace("\"", "").replace("<", "")
+             .replace(">", "").replace("|", "").trim();
+        return n.length() == 0 ? null : n;
     }
 
     private void sendLandingPage(OutputStream out) throws IOException {

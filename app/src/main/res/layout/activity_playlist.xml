@@ -98,6 +98,15 @@
             android:minWidth="150dp"
             android:text="@string/shell_import_clip"
             android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnTransfer"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginLeft="12dp"
+            android:minWidth="150dp"
+            android:text="@string/shell_import_transfer"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView
