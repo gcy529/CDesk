@@ -26,9 +26,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:textSize="30sp"
+            android:textSize="48sp"
             android:textStyle="bold"
-            android:textColor="#F8FAFC"
+            android:includeFontPadding="false"
+            android:textColor="#4D6BFE"
             android:text="@string/live_title" />
     </LinearLayout>
 
