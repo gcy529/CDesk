@@ -22,8 +22,8 @@ import java.net.URL;
  * 缓存 30 分钟；任何一步失败都静默返回 null，桌面上那一行就不显示，
  * 绝不能因为天气挂掉影响桌面。
  *
- * 手动选城市（第二版）：放到局域网传输的网页里做 —— 手机键盘打字，
- * 写回车机。遥控器不适合输入，这是输入方式的问题，不是国家多的问题。
+ * 手动选城市：桌面点天气那一行 → 弹框只填城市名，用 open-meteo
+ * geocoding 自动反查经纬度，无需手填坐标，遥控器也能用。
  */
 public final class WeatherManager {
 
@@ -68,6 +68,50 @@ public final class WeatherManager {
 
     public static String manualCityName(Context c) {
         return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_CITY, null);
+    }
+
+    /** 城市名反查经纬度（open-meteo geocoding，免费无 key，全球覆盖）。查不到返回 null */
+    public static double[] cityToLatLng(String city) {
+        try {
+            String url = "https://geocoding-api.open-meteo.com/v1/search?name="
+                    + java.net.URLEncoder.encode(city, "UTF-8")
+                    + "&count=1&language=zh&format=json";
+            String json = get(url);
+            if (json == null) return null;
+            JsonReader r = new JsonReader(new java.io.StringReader(json));
+            try {
+                r.beginObject();
+                while (r.hasNext()) {
+                    String name = r.nextName();
+                    if ("results".equals(name)) {
+                        r.beginArray();
+                        if (r.hasNext()) {
+                            r.beginObject();
+                            double lat = 0, lon = 0;
+                            while (r.hasNext()) {
+                                String k = r.nextName();
+                                if ("latitude".equals(k)) lat = r.nextDouble();
+                                else if ("longitude".equals(k)) lon = r.nextDouble();
+                                else r.skipValue();
+                            }
+                            r.endObject();
+                            if (lat != 0 && lon != 0) return new double[] { lat, lon };
+                        }
+                        r.endArray();
+                    } else {
+                        r.skipValue();
+                    }
+                }
+                r.endObject();
+                return null;
+            } catch (Throwable t) {
+                return null;
+            } finally {
+                try { r.close(); } catch (Throwable ignored) { }
+            }
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /** 有缓存先用缓存，过期才走网络；回调一定回到调用线程，由 UI 自己 post */

@@ -487,30 +487,18 @@ public class MainActivity extends Activity {
     }
 
     /** 启动被点中的第三方应用；失败就提示，不让桌面卡住 */
-    /** 手动城市：城市名 + 纬度 + 经度，三行输入。留空城市名 = 回到自动 */
+    /** 手动城市：只填城市名，自动反查经纬度。留空 = 回到自动 */
     private void showWeatherCityDialog() {
         final android.widget.EditText etCity = new android.widget.EditText(this);
         etCity.setHint(R.string.weather_hint_city);
         if (WeatherManager.manualCityName(this) != null) etCity.setText(WeatherManager.manualCityName(this));
-        final android.widget.EditText etLat = new android.widget.EditText(this);
-        etLat.setHint("lat (22.55)");
-        final android.widget.EditText etLon = new android.widget.EditText(this);
-        etLon.setHint("lon (114.05)");
-        if (WeatherManager.manualLatLng(this) != null) {
-            double[] ll = WeatherManager.manualLatLng(this);
-            etLat.setText(String.valueOf(ll[0]));
-            etLon.setText(String.valueOf(ll[1]));
-        }
+        etCity.setSingleLine(true);
+
         android.widget.LinearLayout box = new android.widget.LinearLayout(this);
         box.setOrientation(android.widget.LinearLayout.VERTICAL);
         int pad = dp(20);
         box.setPadding(pad, dp(8), pad, 0);
-        etCity.setSingleLine(true);
-        etLat.setSingleLine(true);
-        etLon.setSingleLine(true);
         box.addView(etCity);
-        box.addView(etLat);
-        box.addView(etLon);
 
         new android.app.AlertDialog.Builder(this)
                 .setTitle(R.string.weather_manual)
@@ -523,15 +511,14 @@ public class MainActivity extends Activity {
                             WeatherManager.fetch(MainActivity.this, weatherRefresh());
                             return;
                         }
-                        try {
-                            double lat = Double.parseDouble(etLat.getText().toString().trim());
-                            double lon = Double.parseDouble(etLon.getText().toString().trim());
-                            WeatherManager.setManualCity(MainActivity.this, city, lat, lon);
-                            WeatherManager.fetch(MainActivity.this, weatherRefresh());
-                        } catch (NumberFormatException e) {
+                        double[] ll = WeatherManager.cityToLatLng(city);
+                        if (ll == null) {
                             android.widget.Toast.makeText(MainActivity.this,
-                                    R.string.shell_failed, android.widget.Toast.LENGTH_SHORT).show();
+                                    R.string.weather_city_not_found, android.widget.Toast.LENGTH_SHORT).show();
+                            return;
                         }
+                        WeatherManager.setManualCity(MainActivity.this, city, ll[0], ll[1]);
+                        WeatherManager.fetch(MainActivity.this, weatherRefresh());
                     }
                 })
                 .setNeutralButton(R.string.weather_auto, new android.content.DialogInterface.OnClickListener() {

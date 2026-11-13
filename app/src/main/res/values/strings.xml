@@ -109,6 +109,7 @@
     <string name="weather_manual">手动城市</string>
     <string name="weather_hint_city">城市名（如：深圳）</string>
     <string name="weather_auto">恢复自动</string>
+    <string name="weather_city_not_found">未找到该城市，请换个名字试试</string>
     <string name="shell_hint_title">怎么用</string>
     <string name="shell_hint_body">把播放列表地址粘到下面，点「导入」。地址可以是网址，也可以是本机文件。</string>
     <string name="shell_empty_title">还没有内容</string>
