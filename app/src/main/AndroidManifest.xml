@@ -193,6 +193,8 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".CleanupActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
             android:exported="false"
             android:label="@string/cleanup_title" />
     </application>

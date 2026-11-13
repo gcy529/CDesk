@@ -5,7 +5,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,12 +21,12 @@ import java.io.File;
  */
 public class CleanupActivity extends Activity {
 
-    private TextView tvCleanupFreed, tvCleanupRemain, tvCacheUsed, tvCacheTarget, tvResult;
+    private TextView tvCleanupFreed, tvCleanupRemain, tvCacheUsed, tvCacheTarget;
     private Button btnGo, btnBack;
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
-        // 横竖跟桌面一致（默认横屏），不用在清理页单独锁方向
+        // 方向已在 Manifest 锁横屏，与桌面一致
         Screen.apply(this);
         setContentView(R.layout.activity_cleanup);
 
@@ -35,7 +34,6 @@ public class CleanupActivity extends Activity {
         tvCleanupRemain = (TextView) findViewById(R.id.tvCleanupRemain);
         tvCacheUsed = (TextView) findViewById(R.id.tvCleanupCacheUsed);
         tvCacheTarget = (TextView) findViewById(R.id.tvCleanupCacheTarget);
-        tvResult = (TextView) findViewById(R.id.tvCleanupResult);
         btnGo = (Button) findViewById(R.id.btnCleanupGo);
         btnBack = (Button) findViewById(R.id.btnCleanupBack);
 
@@ -44,14 +42,14 @@ public class CleanupActivity extends Activity {
 
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                long before = DiskCache.usedBytes(CleanupActivity.this);
+                long before = dirSize(getCacheDir());
                 // 1) ExoPlayer 磁盘缓存
                 DiskCache.clear(CleanupActivity.this);
                 // 2) 整个 cache/ 目录（兜底，含 exo 之外的临时文件）
                 deleteDir(getCacheDir());
-                long freed = Math.max(0, before - DiskCache.usedBytes(CleanupActivity.this));
+                long freed = Math.max(0, before - dirSize(getCacheDir()));
                 double freedGb = freed / 1024.0 / 1024.0 / 1024.0;
-                tvResult.setText(getString(R.string.cleanup_done, freedGb));
+                tvCleanupFreed.setText(getString(R.string.cleanup_done, freedGb));
                 refreshInfo();
                 CLog.i("cleanup freed " + freedGb + " GB");
             }
@@ -64,7 +62,7 @@ public class CleanupActivity extends Activity {
             }
         });
 
-        final TextView[] info = new TextView[] { tvCleanupFreed, tvCleanupRemain, tvCacheUsed, tvCacheTarget, tvResult };
+        final TextView[] info = new TextView[] { tvCleanupFreed, tvCleanupRemain, tvCacheUsed, tvCacheTarget };
         Button[] all = new Button[] { btnGo, btnBack };
         TvNav.dockable(this, btnBack, all, info);
     }
@@ -90,6 +88,10 @@ public class CleanupActivity extends Activity {
         tvCacheUsed.setText(getString(R.string.cleanup_used, used / 1024.0 / 1024.0 / 1024.0));
         double targetGb = DiskCache.targetBytes(this) / 1024.0 / 1024.0 / 1024.0;
         tvCacheTarget.setText(getString(R.string.cleanup_target, targetGb));
+        // 还没清理过就提示点按钮，避免大片空白
+        if (tvCleanupFreed.getText() == null || tvCleanupFreed.getText().toString().isEmpty()) {
+            tvCleanupFreed.setText(R.string.cleanup_idle);
+        }
     }
 
     /** 递归删目录下的文件（保留目录本身，只清内容） */
@@ -99,5 +101,16 @@ public class CleanupActivity extends Activity {
         File[] children = d.listFiles();
         if (children == null) return;
         for (File f : children) deleteDir(f);
+    }
+
+    /** 目录总大小（字节），目录不存在或读不到返回 0 */
+    private static long dirSize(File d) {
+        if (d == null || !d.exists()) return 0L;
+        if (d.isFile()) return d.length();
+        long sum = 0L;
+        File[] children = d.listFiles();
+        if (children == null) return 0L;
+        for (File f : children) sum += dirSize(f);
+        return sum;
     }
 }

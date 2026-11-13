@@ -242,6 +242,7 @@
     <string name="cleanup_remain">剩余内存 %1$.1f GB（%2$.1f GB，%3$d%%）</string>
     <string name="cleanup_used">缓存已用 %1$.1f GB</string>
     <string name="cleanup_target">缓存上限 %1$.1f GB</string>
+    <string name="cleanup_idle">尚未清理，点击下方按钮释放空间</string>
     <string name="guardian_service_failed">网速悬浮窗启动失败，请到守护页检查后台与电池权限</string>
     <string name="guardian_perf_title">性能体检</string>
     <string name="guardian_perf_desc">实测 CPU、内存、存储、启动等指标，检测厂商 ROM 是否负优化</string>

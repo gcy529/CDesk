@@ -232,6 +232,7 @@
     <string name="cleanup_free">總記憶體 %1$d MB，可用 %2$d MB（%3$d%%）</string>
     <string name="cleanup_used">快取已用 %1$d MB</string>
     <string name="cleanup_target">快取上限 %1$d MB</string>
+    <string name="cleanup_idle">尚未清理，點擊下方按鈕釋放空間</string>
     <string name="guardian_service_failed">網速懸浮窗啟動失敗，請到守護頁檢查後台與電池權限</string>
     <string name="guardian_perf_title">效能體檢</string>
     <string name="guardian_perf_desc">實測 CPU、記憶體、儲存、啟動等指標，檢測廠商 ROM 是否負優化</string>

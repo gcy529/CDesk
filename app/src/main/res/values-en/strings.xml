@@ -233,6 +233,7 @@
     <string name="cleanup_free">Total %1$d MB, available %2$d MB (%3$d%%)</string>
     <string name="cleanup_used">Cache used %1$d MB</string>
     <string name="cleanup_target">Cache limit %1$d MB</string>
+    <string name="cleanup_idle">Not cleaned yet, tap the button below to free space</string>
     <string name="guardian_service_failed">Speed overlay failed to start. Check background &amp; battery settings in Guardian.</string>
     <string name="guardian_perf_title">Performance Check</string>
     <string name="guardian_perf_desc">Measure CPU, memory, storage and startup to detect ROM throttling</string>

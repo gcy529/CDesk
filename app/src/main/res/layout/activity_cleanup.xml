@@ -54,15 +54,6 @@
             android:textSize="@dimen/text_body"
             android:textColor="@color/text_secondary" />
 
-        <TextView
-            android:id="@+id/tvCleanupResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textSize="@dimen/text_body"
-            android:textColor="@color/accent"
-            android:visibility="invisible" />
-
         <Button android:id="@+id/btnCleanupGo"
             android:layout_width="match_parent" android:layout_height="56dp"
             android:layout_marginTop="24dp" android:text="@string/cleanup_go" />
