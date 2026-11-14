@@ -59,6 +59,7 @@ public class MainActivity extends Activity {
     private Button btnTransfer;
     private Button btnDonate;
     private GridView gridApps;
+    private int appCols = 6;
     private AppAdapter adapter;
     private MediaAdapter mediaAdapter;
     private Button btnPagePrev;
@@ -238,8 +239,8 @@ public class MainActivity extends Activity {
                     if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) { switchPage(page + 1); return true; }
                     return false;
                 }
-                boolean firstCol = (pos2 % 6) == 0;
-                boolean lastCol = (pos2 % 6) == 5 || pos2 == count - 1;
+                boolean firstCol = (pos2 % appCols) == 0;
+                boolean lastCol = (pos2 % appCols) == appCols - 1 || pos2 == count - 1;
                 if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && firstCol) { switchPage(page - 1); return true; }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && lastCol) { switchPage(page + 1); return true; }
                 return false;
@@ -311,8 +312,9 @@ public class MainActivity extends Activity {
     private void applyPage(int p) {
         page = ((p % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT;
         boolean media = page == PAGE_MEDIA;
+        appCols = computeAppColumns();
         gridApps.setAdapter(media ? mediaAdapter : adapter);
-        gridApps.setNumColumns(media ? 3 : 6);
+        gridApps.setNumColumns(media ? 3 : appCols);
         gridApps.setSelection(0);
 
         List<AppAdapter.AppItem> all = adapter.allItems();
@@ -334,6 +336,16 @@ public class MainActivity extends Activity {
         } else {
             tvPageHint.setVisibility(View.GONE);
         }
+    }
+
+    /** 按当前屏宽算应用网格列数：小屏 3 列、大屏 4~6 列，避免小手机上图标被挤没 */
+    private int computeAppColumns() {
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        int usableDp = (int) (dm.widthPixels / dm.density) - 64;
+        int cols = (int) Math.round(usableDp / 104.0);
+        if (cols < 3) cols = 3;
+        if (cols > 6) cols = 6;
+        return cols;
     }
 
     private void updatePageBar() {

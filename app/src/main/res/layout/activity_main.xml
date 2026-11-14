@@ -25,10 +25,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="48dp"
-        android:paddingRight="48dp"
-        android:paddingTop="28dp"
-        android:paddingBottom="24dp">
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp">
 
         <!-- 顶栏 -->
         <LinearLayout
@@ -48,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="12:00"
-                    android:textSize="48sp"
+                    android:textSize="36sp"
                     android:textStyle="bold"
                     android:includeFontPadding="false"
                     android:textColor="#4D6BFE" />
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="2026-11-07  Saturday"
-                    android:textSize="16sp"
+                    android:textSize="13sp"
                     android:textColor="#8E9BAE" />
 
                 <TextView
@@ -71,7 +71,7 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:clickable="true"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:textColor="#8E9BAE" />
             </LinearLayout>
 
