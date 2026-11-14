@@ -14,15 +14,24 @@ import java.security.MessageDigest;
  *
  * 注意：换签名钥匙时必须同步改 OFFICIAL，否则所有人都会被误判成改版。
  * 当前值和 v0.2.5 ~ 0.6.1 逐个比对过，是同一把钥匙。
+ *
+ * 安全：期望签名哈希以反转串形式存储，运行时翻转还原，
+ * 避免明文哈希直接躺在 APK 里被反编译一眼读走。
  */
 public final class SelfCheck {
 
-    private static final String DEFAULT_OFFICIAL =
-            "ab21886a9dabaf5084439d0ee6453799b2129f602688cbce500b2b0c698022b7";
+    /** 期望官方签名的 SHA-256，反转存储（运行时 new StringBuilder(...).reverse() 还原） */
+    private static final String OFFICIAL_REV =
+            "7b220896c0b2b005ecbc886206f9212b9973546ee0d9344805fabad9a68812ba";
     private static final String CONFIG_PREFS = "cdesk_signcheck";
     private static final String KEY_OFFICIAL = "official_signature";
 
     private SelfCheck() { }
+
+    /** 还原出明文哈希（仅运行时使用，不落盘、不输出） */
+    private static String officialHash() {
+        return new StringBuilder(OFFICIAL_REV).reverse().toString();
+    }
 
     public static boolean isOfficial(Context c) {
         try {
@@ -52,9 +61,9 @@ public final class SelfCheck {
         try {
             String v = c.getSharedPreferences(CONFIG_PREFS, Context.MODE_PRIVATE)
                     .getString(KEY_OFFICIAL, null);
-            return v == null ? DEFAULT_OFFICIAL : v;
+            return v == null ? officialHash() : v;
         } catch (Throwable t) {
-            return DEFAULT_OFFICIAL;
+            return officialHash();
         }
     }
 }
