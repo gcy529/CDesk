@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 /**
- * 壁纸管理：晨光(默认) + 鲸夜 + 傍晚(4k) + 纯色 + 薄荷 + 自定义图片 + 日夜自动。
+ * 壁纸管理：晨光(默认) + 鲸夜 + 傍晚(4k) + 纯色 + 自定义图片 + 日夜自动。
  *
  * 为什么用 BitmapFactory.decodeResource 而不是 WallpaperManager：
  * 我们改的是自家布局背景，不是系统壁纸 —— 不申请权限、不碰系统设置，
@@ -27,7 +27,7 @@ import android.widget.ImageView;
 public final class WPManager {
 
     /** 壁纸顺序（换肤循环 & 老存档迁移共用）：
-     *  晨光(默认) -> 纯色 -> 鲸夜 -> 傍晚(4k) -> 薄荷 -> 自定义 -> 晨光
+     *  晨光(默认) -> 纯色 -> 鲸夜 -> 傍晚(4k) -> 自定义 -> 晨光
      *  0.7.9 之前旧枚举 0=纯色 1=鲸夜 2=晨光 3=金色时刻；
      *  0.7.9/0.7.10 中间态 0=少女 1=纯色 2=鲸夜 3=晨光 4=金色 5=自定义 6=薄荷。
      *  这里直接按新顺序做老存档归一，老用户存的值迁到对应新值。 */
@@ -35,7 +35,7 @@ public final class WPManager {
     public static final int WP_NONE = 1;     // 纯色（跟随主题渐变）
     public static final int WP_NIGHT = 2;    // 鲸夜（半写实鲸鱼女，夜晚档，深蓝）
     public static final int WP_DUSK = 3;     // 金色时刻/傍晚（4k 日落，同少女那张但黄昏光）
-    public static final int WP_MINT = 4;     // 薄荷纯色
+    public static final int WP_MINT = 4;     // 已下线（保留枚举值避免老存档错位，迁移时回晨光）
     public static final int WP_CUSTOM = 5;   // 用户自己的图片（局域网传入或本地选择）
 
     private static final String PREFS = "cdesk_wallpaper";
@@ -54,7 +54,7 @@ public final class WPManager {
     public static int which(Context c) {
         SharedPreferences p = prefs(c);
         // 老存档归一：0.7.9 前(0=纯色1=鲸夜2=晨光3=金色)、0.7.9/0.7.10 中间态(0..6)
-        // 都迁到新枚举(0=晨光1=纯色2=鲸夜3=傍晚4=薄荷5=自定义)。未知值落回默认晨光。
+        // 都迁到新枚举(0=晨光1=纯色2=鲸夜3=傍晚5=自定义)。未知值落回默认晨光。
         if (!p.getBoolean(KEY_MIGRATED, false)) {
             int old = p.getInt(KEY_WP, WP_MORNING);
             int now = migrate(old);
@@ -62,6 +62,11 @@ public final class WPManager {
             return now;
         }
         int v = p.getInt(KEY_WP, WP_MORNING);
+        // 薄荷已下线：已迁过档但仍存薄荷值的用户迁回晨光
+        if (v == WP_MINT) {
+            p.edit().putInt(KEY_WP, WP_MORNING).commit();
+            return WP_MORNING;
+        }
         return (v < WP_MORNING || v > WP_CUSTOM) ? WP_MORNING : v;
     }
 
@@ -76,7 +81,7 @@ public final class WPManager {
                 case 3: return WP_MORNING;    // 旧晨光(重编码少女) -> 新晨光（同一张图）
                 case 4: return WP_DUSK;      // 旧金色时刻(4k日落) -> 新傍晚（同一张 4k）
                 case 5: return WP_CUSTOM;
-                case 6: return WP_MINT;
+                case 6: return WP_MORNING;   // 旧薄荷已下线，回晨光
             }
         }
         // 0.7.9 前老存档（无少女，0=纯色 1=鲸夜 2=晨光 3=金色）
@@ -132,7 +137,7 @@ public final class WPManager {
         // 自定义图片不参与日夜自动（用户的照片没有日夜之分）
         if (which(c) == WP_CUSTOM) return WP_CUSTOM;
         int h = new java.util.Date().getHours();
-        // 白天用晨光(明亮)，夜晚用鲸夜(深蓝)；傍晚/纯色/薄荷不参与自动档
+        // 白天用晨光(明亮)，夜晚用鲸夜(深蓝)；傍晚/纯色/自定义不参与自动档
         return (h >= 6 && h < 18) ? WP_MORNING : WP_NIGHT;
     }
 
@@ -191,7 +196,6 @@ public final class WPManager {
         if (b == null) {
             try {
                 int res = wp == WP_NIGHT ? R.drawable.wall_night
-                        : wp == WP_MINT ? R.drawable.wall_mint
                         : wp == WP_DUSK ? R.drawable.final_wallpaper_4k
                         : R.drawable.wall_morning;   // 晨光默认，4K 降采样吃全
                 int w = a.getResources().getDisplayMetrics().widthPixels;

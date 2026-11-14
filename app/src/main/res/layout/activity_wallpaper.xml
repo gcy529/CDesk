@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_marginTop="18dp" android:text="@string/wp_pick" />
 
-            <!-- 3 张自带（晨光/鲸夜/傍晚）+ 1 张自定义，固定 4 张卡片 -->
+            <!-- 3 张自带（晨光/鲸夜/傍晚），自定义卡片仅在有自定义图片时显示 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
 
                 <LinearLayout android:id="@+id/cardWpCustom"
                     style="@style/WpCard"
-                    android:visibility="visible">
+                    android:visibility="gone">
                     <TextView android:id="@+id/thumbCustom"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"

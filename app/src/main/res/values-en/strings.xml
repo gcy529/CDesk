@@ -229,7 +229,6 @@
     <string name="musicpg_js_hint">Search songs (Flower source)</string>
     <string name="musicpg_js_title">Flower source URL</string>
     <string name="musicpg_js_msg">Paste a lx-music .js audio source URL, e.g. flower/latest.js. Required for song search.</string>
-    <string name="wp_mint">Mint</string>
     <string name="musicpg_test">Test</string>
     <string name="musicpg_testing">Testing…</string>
     <string name="settings_card">Settings</string>

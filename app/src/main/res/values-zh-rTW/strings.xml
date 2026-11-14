@@ -228,7 +228,6 @@
     <string name="musicpg_js_hint">搜尋歌曲（花音源）</string>
     <string name="musicpg_js_title">花音源地址</string>
     <string name="musicpg_js_msg">填 lx-music 格式 .js 音源直鏈，如 flower/latest.js。填了才能在搜尋框裡搜歌。</string>
-    <string name="wp_mint">薄荷</string>
     <string name="musicpg_test">檢測線路</string>
     <string name="musicpg_testing">正在檢測線路…</string>
     <string name="settings_card">設定</string>

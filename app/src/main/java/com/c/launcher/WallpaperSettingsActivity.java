@@ -84,10 +84,10 @@ public class WallpaperSettingsActivity extends Activity {
             } catch (Throwable ignored) { }
         }
 
-        // 自定义图片：平时也占一格（固定 3 个自带 + 1 自定义 = 4 张卡片），有人传图才弹选择器
+        // 自定义图片：有图才显示卡片，没图则隐藏，设置页只留 3 张自带
         View customCard = findViewById(R.id.cardWpCustom);
         if (customCard != null) {
-            customCard.setVisibility(View.VISIBLE);
+            customCard.setVisibility(CustomWallpapers.count(this) > 0 ? View.VISIBLE : View.GONE);
             customCard.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) { showCustomPicker(); }
             });
