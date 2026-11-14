@@ -5,8 +5,7 @@ import static com.google.common.truth.Truth.assertThat;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import com.c.launcher.BuildConfig;
@@ -25,7 +24,7 @@ import org.robolectric.annotation.Config;
  * endpoint and is covered by the manual integration checklist in
  * {@code tasklist.md} Phase 4.
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class UpdateCheckerTest {
 
