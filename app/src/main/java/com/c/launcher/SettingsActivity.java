@@ -273,6 +273,7 @@ public class SettingsActivity extends Activity {
         Button b = new Button(this);
         b.setText(label);
         b.setAllCaps(false);
+        ThemeManager.styleButton(b, ThemeManager.current(this));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = 12;
@@ -283,6 +284,7 @@ public class SettingsActivity extends Activity {
         Button b = new Button(this);
         b.setText(label);
         b.setAllCaps(false);
+        ThemeManager.styleButton(b, ThemeManager.current(this));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = 12;

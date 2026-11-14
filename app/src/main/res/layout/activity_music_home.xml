@@ -23,60 +23,60 @@
         <Button
             android:id="@+id/btnMusicApi"
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="@string/entry_api" />
 
         <Button
             android:id="@+id/btnRadioTest"
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:layout_marginLeft="12dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="@string/musicpg_test" />
 
         <Button
             android:id="@+id/btnRadioCn"
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:layout_marginLeft="12dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="@string/musicpg_radio_cn" />
 
         <Button
             android:id="@+id/btnRadioIntl"
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:layout_marginLeft="12dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="@string/musicpg_radio_intl" />
 
         <Button
             android:id="@+id/btnMusicLocal"
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:layout_marginLeft="12dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="@string/musicpg_local" />
 
         <Button
             android:id="@+id/btnJsSearch"
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:layout_marginLeft="12dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="@string/musicpg_js"
             android:visibility="gone" />
     </LinearLayout>
