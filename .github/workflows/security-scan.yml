@@ -52,13 +52,13 @@ jobs:
           /tmp/narvy-venv/bin/pip install narvy-cli
           echo "/tmp/narvy-venv/bin" >> $GITHUB_PATH
           export PATH="/tmp/narvy-venv/bin:$PATH"
-          narvy-cli --version
+          narvy --version
 
       - name: Run SAST scan
         run: |
           APK=$(ls app/build/outputs/apk/release/*.apk | head -n 1)
           echo "Scanning: $APK"
-          narvy-cli scan "$APK" --output sarif --file narvy-results.sarif
+          narvy scan "$APK" --output sarif --file narvy-results.sarif
           echo "SARIF size: $(wc -c < narvy-results.sarif) bytes"
 
       - name: Upload SARIF report
