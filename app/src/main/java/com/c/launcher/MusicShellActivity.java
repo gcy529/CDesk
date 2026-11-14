@@ -30,6 +30,8 @@ public class MusicShellActivity extends BaseShellActivity {
 
     @Override protected int titleRes() { return R.string.music_title; }
 
+    @Override protected int emptyTitleRes() { return R.string.music_empty_title; }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,7 +1,5 @@
 package com.c.launcher;
 
-import android.app.Activity;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,9 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,8 +25,12 @@ import java.util.List;
  *  3. 普通播放列表（M3U / TXT / JSON）—— 直接列成可播条目。
  *
  * 接口与内容全部由使用者自行提供，本应用不内置、不推荐、不分发。
+ *
+ * 继承 BaseShellActivity 复用视觉外壳（背景/标题色/按钮样式），
+ * 覆盖 onShellReady 实现多级导航（源→分类→影片→剧集），
+ * 覆盖 loadPending 实现推送源的多级加载。
  */
-public class VodShellActivity extends Activity {
+public class VodShellActivity extends BaseShellActivity {
 
     private static final int LEVEL_SITES = 0;
     private static final int LEVEL_CATS = 1;
@@ -39,12 +38,7 @@ public class VodShellActivity extends Activity {
     private static final int LEVEL_EPS = 3;
 
     private final Handler ui = new Handler();
-    private EditText etSource;
-    private TextView tvStatus;
     private TextView tvTitle;
-    private ListView lvItems;
-    private Button btnBack;
-    private View boxEmpty;
 
     private String base = "";
     private String apiBase = "";
@@ -62,7 +56,7 @@ public class VodShellActivity extends Activity {
     private String videoName = "";
 
     private final List<String> rows = new ArrayList<String>();
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> rowAdapter;
 
     @Override
     protected void attachBaseContext(Context b) {
@@ -73,44 +67,39 @@ public class VodShellActivity extends Activity {
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
         CLog.i("VodShellActivity onCreate");
-        Screen.apply(this);
-        setContentView(R.layout.activity_playlist);
+    }
 
-        ThemeManager.Palette p = ThemeManager.current(this);
-        findViewById(android.R.id.content).setBackgroundColor(p.bgTop);
-        View root = findViewById(R.id.rootShell);
-        if (root != null) root.setBackgroundColor(p.bgTop);
+    @Override protected String prefKey() { return "vod_api"; }
 
+    @Override protected int titleRes() { return R.string.vod_title; }
+
+    @Override protected int emptyTitleRes() { return R.string.vod_empty_title; }
+
+    @Override protected String targetKind() { return "vod"; }
+
+    @Override
+    protected void onItemSelected(PlaylistParser.Item it) {
+        // 影视壳用多级导航，点击由 onShellReady 自绑，不走此回调
+    }
+
+    @Override
+    protected void onShellReady(ThemeManager.Palette p) {
         tvTitle = (TextView) findViewById(R.id.tvShellTitle);
-        etSource = (EditText) findViewById(R.id.etSource);
-        tvStatus = (TextView) findViewById(R.id.tvStatus);
-        lvItems = (ListView) findViewById(R.id.lvItems);
-        boxEmpty = findViewById(R.id.boxEmpty);
-        btnBack = (Button) findViewById(R.id.btnBack);
-        Button btnLoad = (Button) findViewById(R.id.btnLoad);
-        Button btnPaste = (Button) findViewById(R.id.btnPaste);
 
-        tvTitle.setTextColor(p.isLight ? p.fg : p.accent);
-        etSource.setTextColor(p.fg);
-        tvStatus.setTextColor(p.dim);
-        ThemeManager.styleButton(btnLoad, p);
-        ThemeManager.styleButton(btnBack, p);
-        if (btnPaste != null) ThemeManager.styleButton(btnPaste, p);
-
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, rows) {
+        rowAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, rows) {
             @Override public View getView(int pos, View cv, ViewGroup parent) {
                 TextView tv = new TextView(VodShellActivity.this);
                 tv.setText(rows.get(pos));
                 tv.setTextSize(17f);
                 tv.setTextColor(ThemeManager.current(VodShellActivity.this).fg);
                 tv.setGravity(Gravity.CENTER_VERTICAL);
-                tv.setPadding(dp(20), dp(15), dp(20), dp(15));
+                tv.setPadding(dp(20), dp(16), dp(20), dp(16));
                 tv.setBackgroundResource(R.drawable.bg_row);
                 tv.setFocusable(true);
                 return tv;
             }
         };
-        lvItems.setAdapter(adapter);
+        lvItems.setAdapter(rowAdapter);
         lvItems.setItemsCanFocus(true);
         lvItems.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -145,10 +134,13 @@ public class VodShellActivity extends Activity {
         btnLoad.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { startFromInput(); }
         });
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { up(); }
+        });
         if (btnPaste != null) {
             btnPaste.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    String c = clip();
+                    String c = readClipboard();
                     if (c == null || c.length() == 0) {
                         Toast.makeText(VodShellActivity.this, R.string.shell_empty, Toast.LENGTH_SHORT).show();
                         return;
@@ -158,55 +150,27 @@ public class VodShellActivity extends Activity {
                 }
             });
         }
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { up(); }
-        });
+
+        refresh();
 
         String savedBase = prefs().getString("vod_api", "");
         if (savedBase != null && savedBase.length() > 0) {
             base = savedBase;
             etSource.setText(base);
             loadRoot();
-        } else {
-            refresh();
         }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        String want = prefs().getString("pending_target", "");
-        if (want.length() > 0 && !"vod".equals(want)) return;
-        String pending = prefs().getString("pending_src", null);
-        if (pending == null || pending.length() == 0) return;
-        long at = prefs().getLong("pending_at", 0L);
-        prefs().edit().remove("pending_src").remove("pending_at").commit();
-        if (System.currentTimeMillis() - at > 10L * 60L * 1000L) return;
-        etSource.setText(pending);
+    protected void loadPending(String src) {
+        base = src;
         startFromInput();
-        Toast.makeText(this, R.string.shell_recv_from_phone, Toast.LENGTH_SHORT).show();
-    }
-
-    private SharedPreferences prefs() {
-        return getSharedPreferences("cdesk_shell", Context.MODE_PRIVATE);
-    }
-
-    private int dp(float v) {
-        return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
-    }
-
-    private String clip() {
-        try {
-            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            if (cm != null && cm.hasText()) return cm.getText().toString().trim();
-        } catch (Throwable ignored) { }
-        return null;
     }
 
     private void startFromInput() {
         String s = etSource.getText() == null ? "" : etSource.getText().toString().trim();
         if (s.length() == 0) {
-            String c = clip();
+            String c = readClipboard();
             if (c == null || c.length() == 0) {
                 Toast.makeText(this, R.string.shell_empty, Toast.LENGTH_SHORT).show();
                 return;
@@ -477,7 +441,7 @@ public class VodShellActivity extends Activity {
         } else {
             for (int i = 0; i < eps.size(); i++) rows.add(eps.get(i).name);
         }
-        adapter.notifyDataSetChanged();
+        rowAdapter.notifyDataSetChanged();
 
         boolean empty = rows.isEmpty();
         if (boxEmpty != null) {

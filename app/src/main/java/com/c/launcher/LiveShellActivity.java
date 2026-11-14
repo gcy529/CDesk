@@ -18,6 +18,8 @@ public class LiveShellActivity extends BaseShellActivity {
 
     @Override protected int titleRes() { return R.string.live_title; }
 
+    @Override protected int emptyTitleRes() { return R.string.live_empty_title; }
+
     @Override
     protected void onItemSelected(PlaylistParser.Item it) {
         Intent i = new Intent(this, PlayerActivity.class);

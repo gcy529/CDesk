@@ -38,6 +38,8 @@ public abstract class BaseShellActivity extends Activity {
     protected ListView lvItems;
     protected View boxEmpty;
     protected Button btnPaste;
+    protected Button btnLoad;
+    protected Button btnBack;
 
     protected final List<PlaylistParser.Item> items = new ArrayList<PlaylistParser.Item>();
     protected ShellAdapter adapter;
@@ -49,6 +51,9 @@ public abstract class BaseShellActivity extends Activity {
 
     /** 标题文案 */
     protected abstract int titleRes();
+
+    /** 空态标题文案 */
+    protected abstract int emptyTitleRes();
 
     /** 点击某一条 */
     protected abstract void onItemSelected(PlaylistParser.Item it);
@@ -67,8 +72,13 @@ public abstract class BaseShellActivity extends Activity {
         CLog.i("BaseShellActivity onCreate");
         Screen.apply(this);
         setContentView(R.layout.activity_playlist);
-
         ThemeManager.Palette p = ThemeManager.current(this);
+        applyShellTheme(p);
+        onShellReady(p);
+    }
+
+    /** 视觉外壳：背景、标题色、输入框色、按钮样式。三个壳共用，只做纯视觉，不含行为。 */
+    protected void applyShellTheme(ThemeManager.Palette p) {
         findViewById(android.R.id.content).setBackgroundColor(p.bgTop);
         View rootShell = findViewById(R.id.rootShell);
         if (rootShell != null) rootShell.setBackgroundColor(p.bgTop);
@@ -79,17 +89,22 @@ public abstract class BaseShellActivity extends Activity {
 
         etSource = (EditText) findViewById(R.id.etSource);
         tvStatus = (TextView) findViewById(R.id.tvStatus);
+        tvStatus.setTextColor(p.dim);
         lvItems = (ListView) findViewById(R.id.lvItems);
 
-        Button btnLoad = (Button) findViewById(R.id.btnLoad);
-        Button btnBack = (Button) findViewById(R.id.btnBack);
+        btnLoad = (Button) findViewById(R.id.btnLoad);
+        btnBack = (Button) findViewById(R.id.btnBack);
         btnPaste = (Button) findViewById(R.id.btnPaste);
         boxEmpty = findViewById(R.id.boxEmpty);
         ThemeManager.styleButton(btnLoad, p);
         ThemeManager.styleButton(btnBack, p);
         if (btnPaste != null) ThemeManager.styleButton(btnPaste, p);
         etSource.setTextColor(p.fg);
+    }
 
+    /** 壳层就绪后的行为绑定：列表、点击、加载、返回、空态、恢复上次源。
+     *  直播/音乐壳用默认实现；影视壳覆盖此方法实现多级导航。 */
+    protected void onShellReady(ThemeManager.Palette p) {
         adapter = new ShellAdapter();
         lvItems.setAdapter(adapter);
         lvItems.setItemsCanFocus(true);
@@ -139,7 +154,7 @@ public abstract class BaseShellActivity extends Activity {
         }
     }
 
-    private String readClipboard() {
+    protected String readClipboard() {
         try {
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             if (cm != null && cm.hasText()) return cm.getText().toString().trim();
@@ -157,8 +172,7 @@ public abstract class BaseShellActivity extends Activity {
             Favorites.remove(this, it.url);
             Toast.makeText(this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
         } else {
-            String kind = "live_src".equals(prefKey()) ? "live" : "music";
-            Favorites.add(this, it.name, it.url, kind);
+            Favorites.add(this, it.name, it.url, targetKind());
             Toast.makeText(this, R.string.fav_added, Toast.LENGTH_SHORT).show();
         }
         return true;
@@ -172,8 +186,7 @@ public abstract class BaseShellActivity extends Activity {
         lvItems.setVisibility(empty ? View.GONE : View.VISIBLE);
         if (empty) {
             TextView et = (TextView) boxEmpty.findViewWithTag("emptyTitle");
-            if (et != null) et.setText("live_src".equals(prefKey())
-                    ? R.string.live_empty_title : R.string.music_empty_title);
+            if (et != null) et.setText(emptyTitleRes());
         }
     }
 
@@ -197,10 +210,13 @@ public abstract class BaseShellActivity extends Activity {
 
             etSource.setText(pending);
             prefs().edit().putString(prefKey(), pending).commit();
-            load(pending);
+            loadPending(pending);
             Toast.makeText(this, R.string.shell_recv_from_phone, Toast.LENGTH_SHORT).show();
         } catch (Throwable ignored) { }
     }
+
+    /** 消费手机推送的源地址后的加载入口，默认用通用 load；影视壳覆盖为多级加载 */
+    protected void loadPending(String src) { load(src); }
 
     protected SharedPreferences prefs() {
         return getSharedPreferences("cdesk_shell", Context.MODE_PRIVATE);
