@@ -83,6 +83,8 @@ public class MainActivity extends Activity {
     private static final int RECENT_MAX = 12;
     /** 应用网格列数：DPAD 边界判断和 setNumColumns 必须用同一个值，否则右键翻页位置会错 */
     private static final int APP_COLS = 6;
+    /** 实际生效的应用列数：fitContentLayout() 按屏宽算，小屏 3 列 / 车机大屏 4~6 列 */
+    private int appCols = APP_COLS;
     private int page = PAGE_RECENT;
     private int lastLang = -99;
 
@@ -112,6 +114,8 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        // 按屏宽自适应：右侧留白 + 应用列数，小屏不再把应用挤没
+        fitContentLayout();
         // 切语言会把 Activity 重建一遍，之前每次都掉回「最近」那一页。
         // 记住上次停在哪一页，重建后回到原处。
         page = getSharedPreferences("cdesk_core", MODE_PRIVATE).getInt("page_last", PAGE_RECENT);
@@ -281,7 +285,7 @@ public class MainActivity extends Activity {
             @Override public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 boolean media = page == PAGE_MEDIA;
-                int cols = media ? mediaAdapter.columns() : APP_COLS;
+                int cols = media ? mediaAdapter.columns() : appCols;
                 int count = media ? mediaAdapter.getCount() : adapter.getCount();
                 int pos = gridApps.getSelectedItemPosition();
                 if (pos < 0) pos = 0;
@@ -313,6 +317,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         PerfDiag.recordStartup(this);
+        fitContentLayout();
         if (adapter != null) {
             adapter.reload();
             applyPage(page);
@@ -400,12 +405,33 @@ public class MainActivity extends Activity {
         gridApps.requestFocus();
     }
 
+    /** 按当前屏宽自适应布局：
+     *  - 右侧壁纸人物留白从固定 300dp 改为屏宽的 26%（小屏不再把应用挤没）；
+     *  - 应用网格列数随剩余宽度算 3~6 列。车机/电视屏宽够大，自动回到 5~6 列。 */
+    private void fitContentLayout() {
+        try {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int wPx = dm.widthPixels;
+            int reservePx = (int) (wPx * 0.26f);
+            View cm = findViewById(R.id.contentMain);
+            if (cm != null) {
+                cm.setPadding(cm.getPaddingLeft(), cm.getPaddingTop(), reservePx, cm.getPaddingBottom());
+            }
+            int usablePx = wPx - (cm != null ? cm.getPaddingLeft() : 0) - reservePx;
+            int usableDp = (int) (usablePx / dm.density);
+            int cols = (int) Math.round(usableDp / 104.0);
+            if (cols < 3) cols = 3;
+            if (cols > 6) cols = 6;
+            appCols = cols;
+        } catch (Throwable ignored) { }
+    }
+
     /** 按当前页号切数据源（应用页/最近页共用 adapter，影音页用大卡片） */
     private void applyPage(int p) {
         page = ((p % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT;
         boolean media = page == PAGE_MEDIA;
         gridApps.setAdapter(media ? mediaAdapter : adapter);
-        gridApps.setNumColumns(media ? mediaAdapter.columns() : APP_COLS);
+        gridApps.setNumColumns(media ? mediaAdapter.columns() : appCols);
         // 影音页右侧留给壁纸人物：4 张卡片只占左边四分之三
         int gapRight = media ? (int) (getResources().getDisplayMetrics().widthPixels * 0.26f) : 0;
         gridApps.setPadding(0, gridApps.getPaddingTop(), gapRight, gridApps.getPaddingBottom());

@@ -27,8 +27,8 @@
         android:orientation="vertical"
         android:paddingLeft="48dp"
         android:paddingRight="300dp"
-        android:paddingTop="28dp"
-        android:paddingBottom="24dp">
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp">
 
         <!-- 顶部滚动条 + 版本号：同一根深色条，版本号不再压在壁纸上 -->
         <LinearLayout
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="12:00"
-                    android:textSize="48sp"
+                    android:textSize="36sp"
                     android:textStyle="bold"
                     android:includeFontPadding="false"
                     android:textColor="#4D6BFE" />
@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="2026-11-07  Saturday"
-                    android:textSize="16sp"
+                    android:textSize="13sp"
                     android:textColor="#F2F6FC" />
 
                 <TextView
@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:singleLine="true"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:textColor="#F2F6FC" />
             </LinearLayout>
 
