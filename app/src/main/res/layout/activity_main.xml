@@ -150,12 +150,12 @@
 
             <Button
                 android:id="@+id/btnPagePrev"
-                android:layout_width="64dp"
-                android:layout_height="52dp"
+                android:layout_width="76dp"
+                android:layout_height="56dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/page_prev"
-                android:textSize="22sp"
+                android:textSize="24sp"
                 android:padding="0dp"
                 android:minWidth="0dp"
                 android:focusable="true" />
@@ -190,12 +190,12 @@
 
             <Button
                 android:id="@+id/btnPageNext"
-                android:layout_width="64dp"
-                android:layout_height="52dp"
+                android:layout_width="76dp"
+                android:layout_height="56dp"
                 android:background="@drawable/bg_dock_item"
                 android:textColor="@color/text_primary"
                 android:text="@string/page_next"
-                android:textSize="22sp"
+                android:textSize="24sp"
                 android:padding="0dp"
                 android:minWidth="0dp"
                 android:focusable="true" />

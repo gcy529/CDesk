@@ -367,8 +367,11 @@ public class MainActivity extends Activity {
         boolean handled = super.dispatchTouchEvent(ev);
         if (ev.getActionMasked() == MotionEvent.ACTION_UP
                 || ev.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-            // 只在主桌面（非弹窗/子页）时收焦点；网格已在焦中则不动
-            if (gridApps != null && page == PAGE_APPS && !gridApps.hasFocus()) {
+            // 触摸结束回收焦点到网格：但若当前焦点在翻页/Dock 按钮上，
+            // 保留按钮焦点——按钮需要连续点击翻页，抢焦点会打断触摸反馈
+            View focus = getCurrentFocus();
+            boolean focusOnButton = focus instanceof Button;
+            if (gridApps != null && page == PAGE_APPS && !gridApps.hasFocus() && !focusOnButton) {
                 gridApps.post(new Runnable() {
                     @Override public void run() {
                         if (gridApps != null && !gridApps.hasFocus()) {
@@ -401,8 +404,12 @@ public class MainActivity extends Activity {
         page = next;
         CLog.i("switchPage -> " + page);
         applyPage(page);
-        gridApps.setSelection(0);
-        gridApps.requestFocus();
+        // 遥控器 DPAD 边缘翻页时网格已在焦中，保持焦点以便连续导航；
+        // 按钮点击翻页时不抢焦点，让按钮的触摸反馈不被立即打断
+        if (gridApps.hasFocus()) {
+            gridApps.setSelection(0);
+            gridApps.requestFocus();
+        }
     }
 
     /** 按当前屏宽自适应布局：
