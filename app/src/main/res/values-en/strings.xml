@@ -212,6 +212,11 @@
     <string name="vodpg_no_source">No source yet. Paste a CMS API or a TVBox subscription (.json)</string>
     <string name="livepg_no_source">No playlist yet. Paste an m3u/txt URL or a TVBox subscription (.json)</string>
     <string name="musicpg_empty">No songs found. Plug in a USB drive or copy songs to this device</string>
+    <string name="livepg_loading">Loading...</string>
+    <string name="livepg_empty">No live channels here</string>
+    <string name="livepg_failed">Failed: %1$s</string>
+    <string name="musicpg_loading">Loading...</string>
+    <string name="musicpg_failed">Failed: %1$s</string>
     <string name="vodpg_api_title">Video API address</string>
     <string name="vodpg_api_msg">Paste your MacCMS-style API address. This app ships no sources</string>
     <string name="vodpg_api_hint">CMS API URL, or a TVBox subscription (.json with sites)</string>

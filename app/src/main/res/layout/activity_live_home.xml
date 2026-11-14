@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/bg_base"
     android:padding="28dp">
 
     <TextView
@@ -29,7 +28,7 @@
         android:layout_marginTop="12dp"
         android:textColor="@color/text_secondary"
         android:textSize="15sp"
-        android:text="@string/vodpg_loading" />
+        android:text="@string/livepg_loading" />
 
     <GridView
         android:id="@+id/gridLive"

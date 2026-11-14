@@ -28,6 +28,7 @@ public class LiveHomeActivity extends Activity {
         setContentView(R.layout.activity_live_home);
         wireApiButton();
         Screen.apply(this);
+        findViewById(android.R.id.content).setBackgroundColor(ThemeManager.current(this).bgTop);
         url = getSharedPreferences("cdesk_core", MODE_PRIVATE).getString("live_api", "");
         grid = (GridView) findViewById(R.id.gridLive);
         tvState = (TextView) findViewById(R.id.tvLiveState);
@@ -56,7 +57,7 @@ public class LiveHomeActivity extends Activity {
             return;
         }
         tvState.setVisibility(View.VISIBLE);
-        tvState.setText(R.string.vodpg_loading);
+        tvState.setText(R.string.livepg_loading);
         VodAsync.go(this, new VodAsync.Job<List<LiveApi.Group>>() {
             @Override public List<LiveApi.Group> run() throws Exception {
                 // 一个框里可以填多个源地址（换行或 | 分隔），全部抓下来合并
@@ -88,7 +89,7 @@ public class LiveHomeActivity extends Activity {
                 adapter.notifyDataSetChanged();
                 if (groups.isEmpty()) {
                     tvState.setVisibility(View.VISIBLE);
-                    tvState.setText(R.string.vodpg_empty);
+                    tvState.setText(R.string.livepg_empty);
                 } else {
                     tvState.setVisibility(View.GONE);
                 }
@@ -98,7 +99,7 @@ public class LiveHomeActivity extends Activity {
             }
             @Override public void fail(String reason) {
                 tvState.setVisibility(View.VISIBLE);
-                tvState.setText(getString(R.string.vodpg_failed, reason));
+                tvState.setText(getString(R.string.livepg_failed, reason));
                 CLog.e("live: load failed " + reason);
             }
         });

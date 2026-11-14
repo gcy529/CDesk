@@ -213,6 +213,11 @@
     <string name="vodpg_no_source">还没有接口地址。可以填 CMS 接口，也可以直接粘订阅地址（.json）</string>
     <string name="livepg_no_source">还没有播放列表。可以填 m3u/txt，也可以直接粘订阅地址（.json）</string>
     <string name="musicpg_empty">没有找到歌曲，插上 U 盘或把歌放进本机试试</string>
+    <string name="livepg_loading">正在加载…</string>
+    <string name="livepg_empty">这里没有直播频道</string>
+    <string name="livepg_failed">加载失败：%1$s</string>
+    <string name="musicpg_loading">正在加载…</string>
+    <string name="musicpg_failed">加载失败：%1$s</string>
     <string name="vodpg_api_title">影视接口地址</string>
     <string name="vodpg_api_msg">填采集接口地址（苹果CMS 那种），本应用不内置任何源</string>
     <string name="vodpg_api_hint">CMS 接口地址，或 TVBox 订阅地址（.json 里有 sites）</string>

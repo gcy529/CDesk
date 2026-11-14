@@ -35,6 +35,7 @@ public class VodHomeActivity extends Activity {
         super.onCreate(b);
         setContentView(R.layout.activity_vod_home);
         Screen.apply(this);
+        findViewById(android.R.id.content).setBackgroundColor(ThemeManager.current(this).bgTop);
         base = getSharedPreferences("cdesk_core", MODE_PRIVATE).getString("vod_api", "");
         grid = (GridView) findViewById(R.id.gridCats);
         tvState = (TextView) findViewById(R.id.tvVodState);
@@ -43,10 +44,14 @@ public class VodHomeActivity extends Activity {
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override public void onItemClick(AdapterView<?> p, View v, int pos, long id) { open(pos); }
         });
-        findViewById(R.id.btnVodSource).setOnClickListener(new View.OnClickListener() {
+        android.widget.Button btnSource = (android.widget.Button) findViewById(R.id.btnVodSource);
+        try { ThemeManager.styleButton(btnSource, ThemeManager.current(this)); } catch (Throwable ignored) { }
+        btnSource.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { openSourceSettings(); }
         });
-        findViewById(R.id.btnVodSearch).setOnClickListener(new View.OnClickListener() {
+        android.widget.Button btnSearch = (android.widget.Button) findViewById(R.id.btnVodSearch);
+        try { ThemeManager.styleButton(btnSearch, ThemeManager.current(this)); } catch (Throwable ignored) { }
+        btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { openSearch(); }
         });
         load();

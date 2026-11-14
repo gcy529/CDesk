@@ -107,16 +107,16 @@ public class LibraryActivity extends Activity {
         rows.clear();
         data.clear();
         if (tab == 0) {
-            tvTabFav.setTextColor(0xFF4D6BFE);
-            tvTabHis.setTextColor(0xFF8E9BAE);
+            tvTabFav.setTextColor(ThemeManager.PRIMARY);
+            tvTabHis.setTextColor(ThemeManager.TEXT_SUB);
             for (Favorites.Item it : Favorites.all(this)) {
                 String tag = kindTag(it.kind);
                 rows.add(tag + it.name);
                 data.add(it);
             }
         } else {
-            tvTabFav.setTextColor(0xFF8E9BAE);
-            tvTabHis.setTextColor(0xFF4D6BFE);
+            tvTabFav.setTextColor(ThemeManager.TEXT_SUB);
+            tvTabHis.setTextColor(ThemeManager.PRIMARY);
             List<History.Entry> hs = History.all(this);
             SimpleDateFormat f = new SimpleDateFormat("MM-dd HH:mm", Locale.US);
             for (History.Entry e : hs) {

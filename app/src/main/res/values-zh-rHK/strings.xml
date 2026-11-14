@@ -211,6 +211,11 @@
     <string name="vodpg_no_source">還沒有介面位址。可以填 CMS 介面，也可以直接貼訂閱位址（.json）</string>
     <string name="livepg_no_source">還沒有播放清單。可以填 m3u/txt，也可以直接貼訂閱位址（.json）</string>
     <string name="musicpg_empty">沒有找到歌曲，插上 U 盤或把歌放進本機試試</string>
+    <string name="livepg_loading">正在載入…</string>
+    <string name="livepg_empty">這裡沒有直播頻道</string>
+    <string name="livepg_failed">載入失敗：%1$s</string>
+    <string name="musicpg_loading">正在載入…</string>
+    <string name="musicpg_failed">載入失敗：%1$s</string>
     <string name="vodpg_api_title">影視接口地址</string>
     <string name="vodpg_api_msg">填採集接口地址（蘋果CMS 那種），本應用不內置任何源</string>
     <string name="vodpg_api_hint">CMS 介面位址，或 TVBox 訂閱位址（.json 裡有 sites）</string>

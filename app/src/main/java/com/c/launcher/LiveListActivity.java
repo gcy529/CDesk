@@ -49,7 +49,7 @@ public class LiveListActivity extends Activity {
         }
         if (channels.isEmpty()) {
             tvState.setVisibility(View.VISIBLE);
-            tvState.setText(R.string.vodpg_empty);
+            tvState.setText(R.string.livepg_empty);
         }
         list.setAdapter(new ChannelAdapter());
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {

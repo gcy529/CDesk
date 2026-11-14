@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/bg_base"
     android:padding="28dp">
 
     <LinearLayout
@@ -26,7 +25,6 @@
             android:id="@+id/btnVodSearch"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:background="@drawable/bg_dock_item"
             android:textColor="@color/text_primary"
             android:text="@string/vodpg_search"
             android:textSize="14sp" />
@@ -36,7 +34,6 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginLeft="10dp"
-            android:background="@drawable/bg_dock_item"
             android:textColor="@color/text_primary"
             android:text="@string/vodpg_source"
             android:textSize="14sp" />

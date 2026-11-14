@@ -64,6 +64,7 @@ public class MusicHomeActivity extends Activity {
         super.onCreate(b);
         setContentView(R.layout.activity_music_home);
         Screen.apply(this);
+        findViewById(android.R.id.content).setBackgroundColor(ThemeManager.current(this).bgTop);
         tvState = (TextView) findViewById(R.id.tvMusicState);
         ListView list = (ListView) findViewById(R.id.lvMusic);
         adapter = new SongAdapter();
@@ -164,7 +165,7 @@ public class MusicHomeActivity extends Activity {
     /** 播放列表：m3u/m3u8（#EXTINF 后跟地址）或 txt（名字,地址） */
     private void loadRemote(final String api) {
         tvState.setVisibility(View.VISIBLE);
-        tvState.setText(R.string.vodpg_loading);
+        tvState.setText(R.string.musicpg_loading);
         VodAsync.go(this, new VodAsync.Job<PlaylistResult>() {
             @Override public PlaylistResult run() throws Exception {
                 String txt = fetch(api);
@@ -185,7 +186,7 @@ public class MusicHomeActivity extends Activity {
             @Override public void fail(String e) {
                 reset();
                 afterLoad();
-                tvState.setText(R.string.vodpg_failed);
+                tvState.setText(R.string.musicpg_failed);
                 CLog.e("music: remote load failed " + e);
             }
         });
@@ -321,7 +322,7 @@ public class MusicHomeActivity extends Activity {
 
     private void loadJsSource(final String url) {
         tvState.setVisibility(View.VISIBLE);
-        tvState.setText(R.string.vodpg_loading);
+        tvState.setText(R.string.musicpg_loading);
         VodAsync.go(this, new VodAsync.Job<JsSource>() {
             @Override public JsSource run() throws Exception {
                 JsSource s = new JsSource();
@@ -340,7 +341,7 @@ public class MusicHomeActivity extends Activity {
             }
             @Override public void fail(String e) {
                 CLog.e("music: js source load failed " + e);
-                tvState.setText(R.string.vodpg_failed);
+                tvState.setText(R.string.musicpg_failed);
             }
         });
     }
@@ -349,7 +350,7 @@ public class MusicHomeActivity extends Activity {
     private void loadJsList() {
         if (!jsLoaded || jsSource == null) return;
         tvState.setVisibility(View.VISIBLE);
-        tvState.setText(R.string.vodpg_loading);
+        tvState.setText(R.string.musicpg_loading);
         VodAsync.go(this, new VodAsync.Job<List<JsSource.Song>>() {
             @Override public List<JsSource.Song> run() throws Exception {
                 return jsSource.list();
@@ -368,7 +369,7 @@ public class MusicHomeActivity extends Activity {
             @Override public void fail(String e) {
                 reset();
                 afterLoad();
-                tvState.setText(R.string.vodpg_failed);
+                tvState.setText(R.string.musicpg_failed);
                 CLog.e("music: js list failed " + e);
             }
         });
@@ -378,7 +379,7 @@ public class MusicHomeActivity extends Activity {
     private void doJsSearch(final String kw) {
         if (!jsLoaded || jsSource == null || kw.length() == 0) return;
         tvState.setVisibility(View.VISIBLE);
-        tvState.setText(R.string.vodpg_loading);
+        tvState.setText(R.string.musicpg_loading);
         VodAsync.go(this, new VodAsync.Job<List<JsSource.Song>>() {
             @Override public List<JsSource.Song> run() throws Exception {
                 return jsSource.search(kw);
@@ -397,7 +398,7 @@ public class MusicHomeActivity extends Activity {
             @Override public void fail(String e) {
                 reset();
                 afterLoad();
-                tvState.setText(R.string.vodpg_failed);
+                tvState.setText(R.string.musicpg_failed);
                 CLog.e("music: js search failed " + e);
             }
         });
@@ -419,7 +420,7 @@ public class MusicHomeActivity extends Activity {
      */
     private void loadRadio(final boolean cn) {
         tvState.setVisibility(View.VISIBLE);
-        tvState.setText(R.string.vodpg_loading);
+        tvState.setText(R.string.musicpg_loading);
         VodAsync.go(this, new VodAsync.Job<RadioResult>() {
             @Override public RadioResult run() throws Exception {
                 List<String> n = new ArrayList<String>();
@@ -468,12 +469,12 @@ public class MusicHomeActivity extends Activity {
                 subs.addAll(r.subs);
                 CLog.i("music: radio cn=" + cn + " got=" + r.names.size() + (r.err == null ? "" : (" err=" + r.err)));
                 afterLoad();
-                if (r.err != null && r.names.isEmpty()) { tvState.setText(R.string.vodpg_failed); }
+                if (r.err != null && r.names.isEmpty()) { tvState.setText(R.string.musicpg_failed); }
             }
             @Override public void fail(String e) {
                 reset();
                 afterLoad();
-                tvState.setText(R.string.vodpg_failed);
+                tvState.setText(R.string.musicpg_failed);
                 CLog.e("music: radio load failed " + e);
             }
         });
