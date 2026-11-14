@@ -5,14 +5,13 @@ import static com.google.common.truth.Truth.assertThat;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.c.launcher.BuildConfig;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 /**
@@ -31,13 +30,13 @@ public class UpdateCheckerTest {
 
     @Test
     public void isDismissed_returnsFalseWhenNothingStored() {
-        Context ctx = Robolectric.buildApplication().get();
+        Context ctx = ApplicationProvider.getApplicationContext();
         assertThat(UpdateChecker.isDismissed(ctx, 100)).isFalse();
     }
 
     @Test
     public void markDismissed_persistsToSharedPreference() {
-        Context ctx = Robolectric.buildApplication().get();
+        Context ctx = ApplicationProvider.getApplicationContext();
         UpdateChecker.markDismissed(ctx, 100);
 
         SharedPreferences prefs = ctx.getSharedPreferences(
@@ -47,7 +46,7 @@ public class UpdateCheckerTest {
 
     @Test
     public void isDismissed_trueWhenRemoteCodeIsAtOrBelowDismissedCode() {
-        Context ctx = Robolectric.buildApplication().get();
+        Context ctx = ApplicationProvider.getApplicationContext();
         UpdateChecker.markDismissed(ctx, 100);
 
         // Same code: previously dismissed -> still dismissed.
@@ -60,7 +59,7 @@ public class UpdateCheckerTest {
 
     @Test
     public void markDismissed_overwritesWithHigherCode() {
-        Context ctx = Robolectric.buildApplication().get();
+        Context ctx = ApplicationProvider.getApplicationContext();
         UpdateChecker.markDismissed(ctx, 90);
         UpdateChecker.markDismissed(ctx, 110);
 
@@ -73,7 +72,7 @@ public class UpdateCheckerTest {
     public void markDismissed_ignoresLowerCodeThanStored() {
         // Once dismissed at code 110, a stale "mark 90" call must not
         // downgrade the dismissal (would re-open the dialog for v110).
-        Context ctx = Robolectric.buildApplication().get();
+        Context ctx = ApplicationProvider.getApplicationContext();
         UpdateChecker.markDismissed(ctx, 110);
         UpdateChecker.markDismissed(ctx, 90);
 
