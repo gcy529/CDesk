@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
 
 /**
  * 常驻播放内核：把 ExoPlayer 从 PlayerActivity 解耦，让主页迷你播放条也能驱动。
@@ -38,6 +39,25 @@ public final class MusicKernel {
     private final Handler ui = new Handler(Looper.getMainLooper());
     private final java.util.List<Listener> listeners = new java.util.ArrayList<Listener>();
 
+    private Runnable onCompletedCb;
+    private Runnable onErrorCb;
+    private final ExoPlayer.Listener playerListener = new ExoPlayer.Listener() {
+        @Override public void onPlaybackStateChanged(int state) {
+            if (state == ExoPlayer.STATE_ENDED) {
+                final Runnable cb = onCompletedCb;
+                if (cb != null) ui.post(new Runnable() {
+                    @Override public void run() { cb.run(); }
+                });
+            }
+        }
+        @Override public void onPlayerError(PlaybackException e) {
+            final Runnable cb = onErrorCb;
+            if (cb != null) ui.post(new Runnable() {
+                @Override public void run() { cb.run(); }
+            });
+        }
+    };
+
     private MusicKernel(Context c) {
         this.ctx = c.getApplicationContext();
     }
@@ -50,11 +70,18 @@ public final class MusicKernel {
     public void addListener(Listener l) { listeners.add(l); }
     public void removeListener(Listener l) { listeners.remove(l); }
 
+    /** 播放完成回调（主线程），音乐壳用它实现自动跳下一首 */
+    public void setOnCompleted(Runnable r) { onCompletedCb = r; }
+
+    /** 播放出错回调（主线程），音乐壳用它实现失败跳下一首 */
+    public void setOnError(Runnable r) { onErrorCb = r; }
+
     /** 让 PlayerActivity 把现成 ExoPlayer 转交给内核 */
     public synchronized void handoff(ExoPlayer p, String u, String t, boolean isLive) {
         if (player == p) return;
         releaseInternal();
         player = p;
+        player.addListener(playerListener);
         url = u == null ? "" : u;
         title = t == null ? "" : t;
         live = isLive;
@@ -79,6 +106,7 @@ public final class MusicKernel {
                     player = new ExoPlayer.Builder(ctx, new com.google.android.exoplayer2.DefaultRenderersFactory(ctx))
                             .setMediaSourceFactory(f)
                             .build();
+                    player.addListener(playerListener);
                 } catch (Throwable e) {
                     CLog.e("kernel build failed " + e);
                     player = null;
@@ -143,6 +171,7 @@ public final class MusicKernel {
     private void releaseInternal() {
         if (player != null) {
             try {
+                player.removeListener(playerListener);
                 player.setPlayWhenReady(false);
                 player.release();
             } catch (Throwable ignored) { }
