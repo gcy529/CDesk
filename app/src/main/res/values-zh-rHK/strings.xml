@@ -168,6 +168,9 @@
     <string name="player_step_10">快進快退步長：10 秒</string>
     <string name="player_por_on">豎屏模式（短劇）：開</string>
     <string name="player_por_off">豎屏模式（短劇）：關</string>
+    <string name="player_cache_on">磁碟快取（斷網可睇已快取）：開</string>
+    <string name="player_cache_off">磁碟快取（斷網可睇已快取）：關</string>
+    <string name="player_cache_mb_label">快取上限：%1$d MB（循環 128/256/512/1024）</string>
     <string name="settings_orient_auto">桌面朝向：自動（跟隨感測器）</string>
     <string name="settings_orient_landscape">桌面朝向：固定橫屏（車機預設）</string>
     <string name="settings_orient_portrait">桌面朝向：固定直屏</string>
@@ -221,6 +224,10 @@
     <string name="musicpg_local">本機音樂</string>
     <string name="musicpg_radio_cn">國內電台</string>
     <string name="musicpg_radio_intl">國際電台</string>
+    <string name="musicpg_js">花音源</string>
+    <string name="musicpg_js_hint">搜尋歌曲（花音源）</string>
+    <string name="musicpg_js_title">花音源地址</string>
+    <string name="musicpg_js_msg">填 lx-music 格式 .js 音源直鏈，如 flower/latest.js。填咗才能喺搜尋框度搜歌。</string>
     <string name="wp_mint">薄荷</string>
     <string name="musicpg_test">檢測線路</string>
     <string name="musicpg_testing">正在檢測線路…</string>
@@ -228,10 +235,11 @@
     <string name="update_apk_stale">下載到的包版本比目前還舊，已丟棄（更新線路給錯了包）</string>
     <string name="cleanup_title">快取清理</string>
     <string name="cleanup_go">開始清理</string>
-    <string name="cleanup_done">已清理，釋放 %1$d MB</string>
-    <string name="cleanup_free">總記憶體 %1$d MB，可用 %2$d MB（%3$d%%）</string>
-    <string name="cleanup_used">快取已用 %1$d MB</string>
-    <string name="cleanup_target">快取上限 %1$d MB</string>
+    <string name="cleanup_done">已清理，釋放 %1$.1f GB</string>
+    <string name="cleanup_free">總記憶體 %1$.1f GB，可用 %2$.1f GB（%3$d%%）</string>
+    <string name="cleanup_remain">剩餘記憶體 %1$.1f GB（%2$.1f GB，%3$d%%）</string>
+    <string name="cleanup_used">快取已用 %1$.1f GB</string>
+    <string name="cleanup_target">快取上限 %1$.1f GB</string>
     <string name="cleanup_idle">尚未清理，點擊下方按鈕釋放空間</string>
     <string name="guardian_service_failed">網速懸浮窗啟動失敗，請到守護頁檢查後台與電池權限</string>
     <string name="guardian_perf_title">效能體檢</string>

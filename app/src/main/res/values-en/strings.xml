@@ -169,6 +169,9 @@
     <string name="player_step_10">Seek step: 10s</string>
     <string name="player_por_on">Portrait mode (short drama): on</string>
     <string name="player_por_off">Portrait mode (short drama): off</string>
+    <string name="player_cache_on">Disk cache (watch offline): on</string>
+    <string name="player_cache_off">Disk cache (watch offline): off</string>
+    <string name="player_cache_mb_label">Cache limit: %1$d MB (cycle 128/256/512/1024)</string>
     <string name="settings_orient_auto">Desktop orientation: auto (sensor)</string>
     <string name="settings_orient_landscape">Desktop orientation: landscape (default)</string>
     <string name="settings_orient_portrait">Desktop orientation: portrait</string>
@@ -222,6 +225,10 @@
     <string name="musicpg_local">Local music</string>
     <string name="musicpg_radio_cn">CN radio</string>
     <string name="musicpg_radio_intl">World radio</string>
+    <string name="musicpg_js">Flower source</string>
+    <string name="musicpg_js_hint">Search songs (Flower source)</string>
+    <string name="musicpg_js_title">Flower source URL</string>
+    <string name="musicpg_js_msg">Paste a lx-music .js audio source URL, e.g. flower/latest.js. Required for song search.</string>
     <string name="wp_mint">Mint</string>
     <string name="musicpg_test">Test</string>
     <string name="musicpg_testing">Testing…</string>
@@ -229,10 +236,11 @@
     <string name="update_apk_stale">Downloaded APK is not newer than the installed one; discarded</string>
     <string name="cleanup_title">Cache Cleanup</string>
     <string name="cleanup_go">Clean Now</string>
-    <string name="cleanup_done">Cleaned, freed %1$d MB</string>
-    <string name="cleanup_free">Total %1$d MB, available %2$d MB (%3$d%%)</string>
-    <string name="cleanup_used">Cache used %1$d MB</string>
-    <string name="cleanup_target">Cache limit %1$d MB</string>
+    <string name="cleanup_done">Cleaned, freed %1$.1f GB</string>
+    <string name="cleanup_free">Total %1$.1f GB, available %2$.1f GB (%3$d%%)</string>
+    <string name="cleanup_remain">Remaining %1$.1f GB (%2$.1f GB, %3$d%%)</string>
+    <string name="cleanup_used">Cache used %1$.1f GB</string>
+    <string name="cleanup_target">Cache limit %1$.1f GB</string>
     <string name="cleanup_idle">Not cleaned yet, tap the button below to free space</string>
     <string name="guardian_service_failed">Speed overlay failed to start. Check background &amp; battery settings in Guardian.</string>
     <string name="guardian_perf_title">Performance Check</string>

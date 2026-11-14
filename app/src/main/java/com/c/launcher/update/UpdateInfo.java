@@ -5,9 +5,9 @@ package com.c.launcher.update;
  */
 public class UpdateInfo {
     public int versionCode;
-    public String versionName;
-    public String url;
+    public String versionName = "";
+    public String url = "";
     public boolean mandatory;
-    public String releaseNotes;
+    public String releaseNotes = "";
     public int minSupportedCode;
 }

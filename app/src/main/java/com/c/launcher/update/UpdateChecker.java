@@ -27,9 +27,12 @@ public final class UpdateChecker {
         return p.getInt(KEY_DISMISSED, -1) >= versionCode;
     }
 
-    /** Records the dismissal of a specific versionCode. */
+    /** Records the dismissal of a specific versionCode. Never downgrades an existing dismissal. */
     public static void markDismissed(Context ctx, int versionCode) {
-        prefs(ctx).edit().putInt(KEY_DISMISSED, versionCode).apply();
+        SharedPreferences p = prefs(ctx);
+        if (versionCode > p.getInt(KEY_DISMISSED, -1)) {
+            p.edit().putInt(KEY_DISMISSED, versionCode).apply();
+        }
     }
 
     private static SharedPreferences prefs(Context ctx) {

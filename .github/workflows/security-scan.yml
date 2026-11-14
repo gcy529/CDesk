@@ -48,10 +48,10 @@ jobs:
 
       - name: Install narvy-cli
         run: |
-          pip install narvy-cli
-          SCRIPTS_DIR=$(python3 -c "import sysconfig; print(sysconfig.get_path('scripts'))")
-          echo "$SCRIPTS_DIR" >> $GITHUB_PATH
-          export PATH="$SCRIPTS_DIR:$PATH"
+          python3 -m venv /tmp/narvy-venv
+          /tmp/narvy-venv/bin/pip install narvy-cli
+          echo "/tmp/narvy-venv/bin" >> $GITHUB_PATH
+          export PATH="/tmp/narvy-venv/bin:$PATH"
           narvy-cli --version
 
       - name: Run SAST scan

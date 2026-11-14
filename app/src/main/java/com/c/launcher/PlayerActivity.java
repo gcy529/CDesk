@@ -209,7 +209,7 @@ public class PlayerActivity extends Activity {
                 if (tvBuf != null) {
                     long buffered = player.getBufferedPosition();
                     int pct = dur > 0 ? (int) (buffered * 100 / dur) : 0;
-                    tvBuf.setText("缓 " + Math.max(0, pct) + "%");
+                    tvBuf.setText("Buf " + Math.max(0, pct) + "%");
                 }
                 if (!live) saveProgress(pos);
             }
