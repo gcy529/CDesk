@@ -33,17 +33,11 @@
     <div class="header-actions">
       <a class="link-quiet" href="https://github.com/gcy529/CDesk" target="_blank" rel="noopener">GitHub</a>
       <a class="btn btn--red btn--small" href="#support">支持反馈</a>
-      </div>
-      <div class="tech-cta">
-        <p>想体验同款 AI 驱动的开发流程？</p>
-        <div class="tech-cta-links">
-          <a class="btn btn--primary" href="https://monkeycode-ai.com/?ic=01a05d37-4257-73f8-9552-92b1e62b7f41" target="_blank" rel="noopener">长亭百智云 MonkeyCode 邀请注册</a>
-          <!-- 预留邀请位 2：后续在此添加 -->
-          <!-- 预留邀请位 3：后续在此添加 -->
-        </div>
-      </div>
     </div>
-  </section>
+  </div>
+</header>
+
+<main id="main">
 
   <section class="preview" id="preview" aria-label="产品界面预览">
     <div class="wrap">
@@ -203,27 +197,22 @@
   <section class="section" id="download">
     <div class="wrap">
       <p class="eyebrow">下载</p>
-      <h2>求稳用正式版，想抢先用尝鲜版</h2>
+      <h2>稳定版暂时不上架，先走测试版</h2>
       <p class="section-lead">APK 不收费，不接入任何支付 SDK。完整版本列表见 Releases。</p>
       <div class="download-grid">
-        <article class="card download-card download-card--stable">
-          <p class="badge badge--stable">STABLE</p>
-          <h3>正式版 <span class="version">v0.2.5</span></h3>
-          <p>验证过的版本。官网默认下载它，App 内的更新提示也只认这个通道。</p>
-          <p class="download-meta">稳定声明：此版本经过完整测试，适合日常长期使用，所有功能均已验证通过。</p>
-          <div class="download-actions" data-mirror-group>
-            <a class="btn btn--primary" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk" target="_blank" rel="noopener">GHFast 加速</a>
-            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk" target="_blank" rel="noopener">GH-Proxy</a>
-            <a class="btn btn--quiet" data-mirror="GitHub 直链" href="https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk" target="_blank" rel="noopener">GitHub 直链</a>
-          </div>
-        </article>
         <article class="card download-card">
-          <p class="badge badge--beta">BETA</p>
-          <h3>尝鲜版</h3>
-          <p>新功能先在这里跑，可能带 bug。愿意帮忙试错、想早点用上新东西就用它。</p>
+          <p class="badge badge--paused">稳定版 · 暂不上架</p>
+          <h3>目前请走测试版</h3>
+          <p>稳定版暂时不上架，目前只能走测试版；只需下载一次，之后由应用内置更新自动跟进，不用反复重新下载。</p>
+          <p class="download-meta">稳定版恢复上架后，此处会改回默认下载。</p>
+        </article>
+        <article class="card download-card download-card--primary">
+          <p class="badge badge--beta">BETA · 测试版</p>
+          <h3>测试版</h3>
+          <p>新功能先在这里跑，可能带 bug。只需下载一次，应用内置更新会自动跟进，不用反复重新下载。</p>
           <div class="download-actions" data-mirror-group>
-            <a class="btn btn--primary" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/app-debug.apk" target="_blank" rel="noopener">GHFast 加速</a>
-            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/app-debug.apk" target="_blank" rel="noopener">GH-Proxy</a>
+            <a class="btn btn--primary" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.12-beta.apk" target="_blank" rel="noopener">GHFast 加速</a>
+            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.12-beta.apk" target="_blank" rel="noopener">GH-Proxy</a>
             <a class="btn btn--quiet" href="https://github.com/gcy529/CDesk/releases/tag/beta" target="_blank" rel="noopener">更新记录</a>
           </div>
         </article>
@@ -247,11 +236,17 @@
           <h3>千问4</h3>
           <p>当前这套界面 UI 由千问4 重写，功能与经典主题保持衔接，视觉风格在此阶段统一。</p>
         </article>
-        <article class="card tech-card">
+        <article class="card tech-card tech-card--cloud">
           <span class="tech-badge">云端</span>
           <h3>长亭百智云 MonkeyCode · 讯飞星辰 MaaS</h3>
           <p>后续代码完成与多轮迭代由云端平台协同支撑，用于代码生成、审查与持续开发。</p>
         </article>
+      </div>
+      <div class="tech-cta">
+        <p class="tech-cta-line">想体验同款 AI 驱动的开发流程？</p>
+        <div class="tech-cta-links">
+          <a class="btn btn--primary" href="https://monkeycode-ai.com/?ic=01a05d37-4257-73f8-9552-92b1e62b7f41" target="_blank" rel="noopener">长亭百智云 MonkeyCode 邀请注册</a>
+        </div>
       </div>
     </div>
   </section>
