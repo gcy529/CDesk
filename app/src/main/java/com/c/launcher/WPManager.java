@@ -220,7 +220,7 @@ public final class WPManager {
         }
         BitmapDrawable bd = new BitmapDrawable(a.getResources(), b);
         bd.setGravity(Gravity.FILL);
-        Drawable[] layers = new Drawable[] { new ColorDrawable(0xC40B0F19), bd };
+        Drawable[] layers = new Drawable[] { new ColorDrawable(0x660B0F19), bd };
         try {
             root.setBackgroundDrawable(new LayerDrawable(layers));
         } catch (Throwable t) {
