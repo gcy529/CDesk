@@ -1,6 +1,7 @@
 {
-  "version": "0.7.12",
-  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.12-beta.apk",
+  "version": "0.7.13",
+  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.13-beta.apk",
   "channel": "beta",
-  "force": false
+  "force": false,
+  "releaseNotes": "0.7.13 更新内容：\n- 老设备兼容：低版本 Android 自动回退 MediaPlayer 软解，音乐播放不中断\n- 翻页修复：选集列表翻页后焦点定位更准确\n- 按钮统一：各页面操作按钮风格统一\n- 签名校验加强：官方签名校验逻辑升级\n- 正版授权：新增服务端授权令牌校验，保障正版使用\n- 网络修复：修复多处网络连接未释放问题，长时间运行更稳定"
 }

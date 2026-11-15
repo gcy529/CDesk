@@ -28,12 +28,14 @@ public final class UpdatePrompt {
 
     private UpdatePrompt() { }
 
-    public static void show(final Activity a, String version, String url, final boolean force) {
+    public static void show(final Activity a, String version, String url, String notes, final boolean force) {
         final String[] urls = UpdateChecker.mirrorUrls(url);
         if (urls.length == 0) { return; }
         AlertDialog.Builder b = new AlertDialog.Builder(a);
         b.setTitle(a.getString(force ? R.string.update_force_title : R.string.update_found, version));
-        b.setMessage(a.getString(force ? R.string.update_force_msg : R.string.update_soft_msg));
+        String msg = a.getString(force ? R.string.update_force_msg : R.string.update_soft_msg);
+        if (notes != null && notes.length() > 0) { msg = msg + "\n\n" + notes; }
+        b.setMessage(msg);
         // 强制更新时返回键和点外面都关不掉：只能更新，或者换线路重试
         b.setCancelable(!force);
         b.setPositiveButton(R.string.update_now, new DialogInterface.OnClickListener() {

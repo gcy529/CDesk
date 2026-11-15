@@ -158,7 +158,7 @@ public class MainActivity extends Activity {
         // 更新提醒：每天最多查一次，静默失败
         UpdateChecker.checkIfNeeded(this, new UpdateChecker.Callback() {
             @Override public void onLatest(String v) { }
-            @Override public void onUpdate(String ver, String url) {
+            @Override public void onUpdate(String ver, String url, String notes) {
                 if (tvBadge != null) {
                     tvBadge.setText(getString(R.string.update_found, ver));
                     tvBadge.setTextColor(ThemeManager.ACCENT2);
@@ -172,14 +172,14 @@ public class MainActivity extends Activity {
                 }
             }
 
-            @Override public void onForceUpdate(String ver, String url) {
+            @Override public void onForceUpdate(String ver, String url, String notes) {
                 // 服务端 version.json 标了 "force":true：这次必须更新，对话框关不掉
                 if (tvBadge != null) {
                     tvBadge.setText(getString(R.string.update_found, ver));
                     tvBadge.setTextColor(ThemeManager.ACCENT2);
                 }
                 CLog.i("force update required: " + ver);
-                UpdatePrompt.show(MainActivity.this, ver, url, true);
+                UpdatePrompt.show(MainActivity.this, ver, url, notes, true);
             }
         });
 

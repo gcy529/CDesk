@@ -28,7 +28,7 @@ import java.net.URL;
 public final class UpdateChecker {
 
     public interface Callback {
-        void onUpdate(String remoteVersion, String downloadUrl);
+        void onUpdate(String remoteVersion, String downloadUrl, String notes);
         void onLatest(String remoteVersion);
         /** 全部源都拿不到时回调；默认静默，避免每日自动检查打扰 */
         default void onError(String reason) { }
@@ -37,8 +37,8 @@ public final class UpdateChecker {
          * 开关放服务器而不是写死在代码里 —— 万一哪天下载线路全挂了，
          * 改一下 json 就能把人放出来，不用等用户卸载重装。
          */
-        default void onForceUpdate(String remoteVersion, String downloadUrl) {
-            onUpdate(remoteVersion, downloadUrl);
+        default void onForceUpdate(String remoteVersion, String downloadUrl, String notes) {
+            onUpdate(remoteVersion, downloadUrl, notes);
         }
     }
 
@@ -96,6 +96,8 @@ public final class UpdateChecker {
         String url;
         /** 命中的加速镜像前缀，用于给下载链接加速 */
         String mirror;
+        /** 更新说明，来自 version.json 的 releaseNotes */
+        String notes;
     }
 
     private static class Rel {
@@ -136,8 +138,8 @@ public final class UpdateChecker {
                         if (res.failed) {
                             cb.onError(res.err == null ? "network" : res.err);
                         } else if (res.ver != null && res.url != null && isNewer(res.ver, cur)) {
-                            if (res.force) { cb.onForceUpdate(res.ver, downloadUrl(res.url, res.mirror)); }
-                            else { cb.onUpdate(res.ver, downloadUrl(res.url, res.mirror)); }
+                            if (res.force) { cb.onForceUpdate(res.ver, downloadUrl(res.url, res.mirror), res.notes); }
+                            else { cb.onUpdate(res.ver, downloadUrl(res.url, res.mirror), res.notes); }
                         } else {
                             cb.onLatest(res.ver);
                         }
@@ -220,6 +222,7 @@ public final class UpdateChecker {
                 r.ver = v;
                 r.url = stringField(obj, "url");
                 r.force = "true".equalsIgnoreCase(stringField(obj, "force"));
+                r.notes = stringField(obj, "releaseNotes");
                 return r;
             } catch (JSONException e) {
                 return null;

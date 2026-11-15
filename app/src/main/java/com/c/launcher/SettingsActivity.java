@@ -104,11 +104,11 @@ public class SettingsActivity extends Activity {
             @Override public void onClick(View v) {
                 Toast.makeText(SettingsActivity.this, R.string.update_checking, Toast.LENGTH_SHORT).show();
                 UpdateChecker.checkNow(SettingsActivity.this, new UpdateChecker.Callback() {
-                    @Override public void onUpdate(String verName, String url) {
+                    @Override public void onUpdate(String verName, String url, String notes) {
                         Toast.makeText(SettingsActivity.this,
                                 getString(R.string.update_found, verName), Toast.LENGTH_LONG).show();
                         // 车机上没有浏览器，跳浏览器等于更新不了：改成应用内下载 + 调安装器
-                        UpdatePrompt.show(SettingsActivity.this, verName, url, false);
+                        UpdatePrompt.show(SettingsActivity.this, verName, url, notes, false);
                     }
                     @Override public void onLatest(String remoteVer) {
                         // 带上远端版本号：能弹出版本号 = 真的连上服务器了，不是网络失败被当成最新
