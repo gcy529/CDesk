@@ -63,7 +63,7 @@ jobs:
             echo "::warning::没有 secret 也没有仓库 keystore，回退随机调试签名（升级需卸载重装）"
           fi
 
-       - name: Build debug APK
+      - name: Build debug APK
         env:
           KS: ${{ env.KS }}
         run: |
