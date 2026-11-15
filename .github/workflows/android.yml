@@ -70,16 +70,11 @@ jobs:
           chmod +x gradlew || true
           # 不再用裸 gradle 生成 wrapper：runner 预装 Gradle 版本漂移（Ubuntu 26 镜像 Gradle 9）
           # 会在评估期撞 DependencyHandler.module() 移除错误。仓库自带 gradle-wrapper.jar，直接用。
-          # 签名口令优先读 secrets（CDESK_KS_PASS / CDESK_KEY_PASS），未配置时回退到
-          # 仓库 keystore 的已知口令 cdesk2026，避免未设 secret 时构建直接失败。
-          # 后续在 GitHub 仓库 Settings→Secrets 配好两个 secret 即可彻底移除硬编码口令。
-          KS_PASS="${{ secrets.CDESK_KS_PASS }}"
-          KEY_PASS="${{ secrets.CDESK_KEY_PASS }}"
-          [ -z "$KS_PASS" ] && KS_PASS="cdesk2026"
-          [ -z "$KEY_PASS" ] && KEY_PASS="cdesk2026"
+          # 签名口令暂用仓库 keystore 已知口令（与 0.7.13 成功构建一致）；
+          # 后续在 Settings→Secrets 配好 CDESK_KS_PASS/CDESK_KEY_PASS 后再切回 secrets，避免硬编码。
           if [ -n "$KS" ]; then
             ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} \
-              -PksFile=$KS -PksPass="$KS_PASS" -PkeyAlias=cdesk -PkeyPass="$KEY_PASS" --stacktrace
+              -PksFile=$KS -PksPass=cdesk2026 -PkeyAlias=cdesk -PkeyPass=cdesk2026 --stacktrace
           else
             ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} --stacktrace
           fi
