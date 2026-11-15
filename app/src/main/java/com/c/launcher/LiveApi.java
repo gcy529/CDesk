@@ -33,18 +33,22 @@ public final class LiveApi {
     private LiveApi() { }
 
     public static String fetch(String url) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url.trim()).openConnection();
-        c.setConnectTimeout(12000);
-        c.setReadTimeout(20000);
-        c.setRequestProperty("User-Agent", "CDesk/1.0");
-        InputStream in = c.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) { sb.append(line).append('\n'); }
-        r.close();
-        c.disconnect();
-        return sb.toString();
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url.trim()).openConnection();
+            c.setConnectTimeout(12000);
+            c.setReadTimeout(20000);
+            c.setRequestProperty("User-Agent", "CDesk/1.0");
+            InputStream in = c.getInputStream();
+            BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) { sb.append(line).append('\n'); }
+            r.close();
+            return sb.toString();
+        } finally {
+            if (c != null) c.disconnect();
+        }
     }
 
     public static List<Group> parse(String txt) {

@@ -61,20 +61,23 @@ public final class UpdatePrompt {
         new Thread(new Runnable() {
             @Override public void run() {
                 File out = null;
+                HttpURLConnection c = null;
+                InputStream in = null;
+                FileOutputStream fo = null;
                 try {
                     File dir = a.getExternalFilesDir(null);
                     if (dir == null) { dir = a.getCacheDir(); }
                     out = new File(dir, "CDesk-update.apk");
                     if (out.exists()) { out.delete(); }
-                    HttpURLConnection c = (HttpURLConnection) new URL(urls[idx]).openConnection();
+                    c = (HttpURLConnection) new URL(urls[idx]).openConnection();
                     c.setConnectTimeout(8000);
                     c.setReadTimeout(15000);
                     c.setInstanceFollowRedirects(true);
                     c.setRequestProperty("User-Agent", "CDesk-updater");
                     int code = c.getResponseCode();
                     if (code != 200) { throw new Exception("http " + code); }
-                    InputStream in = c.getInputStream();
-                    FileOutputStream fo = new FileOutputStream(out);
+                    in = c.getInputStream();
+                    fo = new FileOutputStream(out);
                     byte[] buf = new byte[8192];
                     int n;
                     long total = 0;
@@ -83,15 +86,16 @@ public final class UpdatePrompt {
                         total += n;
                         if (total > 80L * 1024L * 1024L) { break; }
                     }
-                    fo.close();
-                    in.close();
-                    c.disconnect();
                     // 小于 100KB 基本是错误页或空文件，按失败处理
                     if (total < 100L * 1024L) { throw new Exception("too small " + total); }
                     CLog.i("update downloaded " + total + "B via mirror " + (idx + 1));
                 } catch (Throwable t) {
                     CLog.e("update download failed (mirror " + (idx + 1) + "): " + t);
                     out = null;
+                } finally {
+                    if (fo != null) { try { fo.close(); } catch (Throwable ignored) { } }
+                    if (in != null) { try { in.close(); } catch (Throwable ignored) { } }
+                    if (c != null) { try { c.disconnect(); } catch (Throwable ignored) { } }
                 }
                 final File apk = out;
                 a.runOnUiThread(new Runnable() {

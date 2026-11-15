@@ -319,33 +319,41 @@ public abstract class BaseShellActivity extends Activity {
 
     /** 拉订阅里那些直播列表用的快通道：连不通就赶紧跳过，不要拖住整页 */
     private String fetchQuick(String url, int connMs) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-        c.setConnectTimeout(connMs);
-        c.setReadTimeout(connMs + 4000);
-        c.setRequestProperty("User-Agent", "CDesk/1.0");
-        InputStream in = c.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) sb.append(line).append('\n');
-        r.close();
-        c.disconnect();
-        return sb.toString();
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(connMs);
+            c.setReadTimeout(connMs + 4000);
+            c.setRequestProperty("User-Agent", "CDesk/1.0");
+            InputStream in = c.getInputStream();
+            BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line).append('\n');
+            r.close();
+            return sb.toString();
+        } finally {
+            if (c != null) c.disconnect();
+        }
     }
 
     private String fetch(String url) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-        c.setConnectTimeout(15000);
-        c.setReadTimeout(20000);
-        c.setRequestProperty("User-Agent", "CDesk/1.0");
-        InputStream in = c.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) sb.append(line).append('\n');
-        r.close();
-        c.disconnect();
-        return sb.toString();
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(15000);
+            c.setReadTimeout(20000);
+            c.setRequestProperty("User-Agent", "CDesk/1.0");
+            InputStream in = c.getInputStream();
+            BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line).append('\n');
+            r.close();
+            return sb.toString();
+        } finally {
+            if (c != null) c.disconnect();
+        }
     }
 
     /** 列表：分组标题 + 条目，两种行样式 */

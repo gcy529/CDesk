@@ -60,19 +60,23 @@ public final class SourceApi {
     }
 
     static String get(String url) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-        c.setConnectTimeout(12000);
-        c.setReadTimeout(20000);
-        c.setRequestProperty("User-Agent", "CDesk/1.0");
-        c.setRequestProperty("Accept", "application/json,text/plain,*/*");
-        InputStream in = c.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) sb.append(line).append('\n');
-        r.close();
-        c.disconnect();
-        return sb.toString();
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(12000);
+            c.setReadTimeout(20000);
+            c.setRequestProperty("User-Agent", "CDesk/1.0");
+            c.setRequestProperty("Accept", "application/json,text/plain,*/*");
+            InputStream in = c.getInputStream();
+            BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line).append('\n');
+            r.close();
+            return sb.toString();
+        } finally {
+            if (c != null) c.disconnect();
+        }
     }
 
     /** 分类列表 */

@@ -154,17 +154,19 @@ public class VodDetailActivity extends Activity {
         new Thread(new Runnable() {
             @Override public void run() {
                 Bitmap bmp = null;
+                HttpURLConnection c = null;
                 try {
-                    HttpURLConnection c = (HttpURLConnection) new URL(pic).openConnection();
+                    c = (HttpURLConnection) new URL(pic).openConnection();
                     c.setConnectTimeout(8000);
                     c.setReadTimeout(10000);
                     c.setRequestProperty("User-Agent", "CDesk/1.0");
                     InputStream in = c.getInputStream();
                     bmp = BitmapFactory.decodeStream(in);
                     in.close();
-                    c.disconnect();
                 } catch (Throwable t) {
                     CLog.e("cover failed: " + t);
+                } finally {
+                    if (c != null) c.disconnect();
                 }
                 final Bitmap b2 = bmp;
                 if (b2 == null) { return; }

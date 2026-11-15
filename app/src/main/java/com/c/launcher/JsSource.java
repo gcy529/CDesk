@@ -227,16 +227,21 @@ public class JsSource {
     }
 
     private String fetch(String url) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-        c.setConnectTimeout(8000);
-        c.setReadTimeout(15000);
-        c.setRequestProperty("User-Agent", "CDesk");
-        c.setInstanceFollowRedirects(true);
-        BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream(), "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) { sb.append(line).append('\n'); }
-        br.close();
-        return sb.toString();
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(8000);
+            c.setReadTimeout(15000);
+            c.setRequestProperty("User-Agent", "CDesk");
+            c.setInstanceFollowRedirects(true);
+            BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream(), "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) { sb.append(line).append('\n'); }
+            br.close();
+            return sb.toString();
+        } finally {
+            if (c != null) c.disconnect();
+        }
     }
 }
