@@ -1,7 +1,7 @@
 {
   "version": "0.7.14",
   "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.14-beta.apk",
-  "sha256": "",
+  "sha256": "5cc1661115858f8b31be9382e7c2f5ae8419f09ed203d05b80f8044c47deef6f",
   "channel": "beta",
   "force": false,
   "releaseNotes": "0.7.14 更新内容：\n- 授权容错：授权服务端不可达时放行，避免新用户被锁死\n- 脚本沙箱：音源脚本全屏蔽 Java 调用并加超时保护，杜绝远程代码执行\n- 安全加固：CI 签名口令改用密钥管理，消除硬编码风险\n- 测速修复：镜像测速排序修复，非镜像节点不被顶到首位\n- 性能优化：QQ 群二维码压缩至 9.5KB，页面加载更快\n- SEO 完善：补充 og:url/canonical/favicon，搜索收录更友好"
