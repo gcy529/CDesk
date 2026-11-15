@@ -201,6 +201,9 @@
     <string name="update_switch">換條線路</string>
     <string name="update_downloading">正在下載（線路 %1$s）</string>
     <string name="update_download_failed">下載失敗，換條線路再試</string>
+    <string name="license_denied_title">未授權</string>
+    <string name="license_denied_msg">當前套件未通過正版授權驗證（%1$s）。請使用官方或已授權的定製版本。</string>
+    <string name="license_exit">離開</string>
     <string name="ep_line_fallback">線路 %1$d</string>
     <string name="vodpg_loading">正在載入…</string>
     <string name="vodpg_empty">這裡什麼都沒有</string>

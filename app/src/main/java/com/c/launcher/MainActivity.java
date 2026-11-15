@@ -183,11 +183,31 @@ public class MainActivity extends Activity {
             }
         });
 
-        // 启动时确认这个包是不是我们发的：别人重签过的话签名对不上
-        if (!SelfCheck.isOfficial(this)) {
-            // 日志会显示在日志页上，一律用英文：中文会被「英文界面不许出现中文」的测试抓出来
-            CLog.e("unofficial signature: package was modified or re-signed");
-        }
+        // 启动时校验正版授权：令牌通过放行，未授权弹窗提示并退出。
+        // SelfCheck 降级为辅助记录，不再作为唯一判定依据——定制版签名不同，
+        // 由令牌的签名指纹绑定来确认授权身份。
+        LicenseCheck.ensure(this, new LicenseCheck.Callback() {
+            @Override public void onLicensed(String cid, String scope) {
+                CLog.i("license ok: cid=" + cid + " scope=" + scope);
+                // 日志页显示用：英文，避免被「英文界面不许出现中文」的测试抓出来
+                if (!SelfCheck.isOfficial(MainActivity.this)) {
+                    CLog.e("unofficial signature: package was modified or re-signed");
+                }
+            }
+            @Override public void onDenied(String reason) {
+                CLog.e("license denied: " + reason);
+                new android.app.AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.license_denied_title)
+                        .setMessage(getString(R.string.license_denied_msg, reason))
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.license_exit, new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface d, int which) {
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .show();
+            }
+        });
 
         btnPagePrev = (Button) findViewById(R.id.btnPagePrev);
         btnPageNext = (Button) findViewById(R.id.btnPageNext);

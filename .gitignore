@@ -18,6 +18,8 @@ captures/
 *.jks
 *.keystore
 keystore.properties
+# 授权服务端私钥（绝对不要提交，公钥才内置客户端）
+server.key
 
 # 本地临时产物，不进仓库（shots/ 要保留，README 引用它）
 tmp/

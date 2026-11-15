@@ -203,6 +203,9 @@
     <string name="update_switch">换条线路</string>
     <string name="update_downloading">正在下载（线路 %1$s）</string>
     <string name="update_download_failed">下载失败，换条线路再试</string>
+    <string name="license_denied_title">未授权</string>
+    <string name="license_denied_msg">当前包未通过正版授权校验（%1$s）。请使用官方或已授权的定制版本。</string>
+    <string name="license_exit">退出</string>
     <string name="ep_line_fallback">线路 %1$d</string>
     <string name="vodpg_loading">正在加载…</string>
     <string name="vodpg_empty">这里什么都没有</string>
