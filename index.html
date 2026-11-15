@@ -7,9 +7,12 @@
 <meta name="description" content="C桌面（CDesk）是给车机、平板、盒子、电视等安卓设备用的一块纯净桌面：无广告、无推荐流、内置 4K 壁纸、网速悬浮窗、局域网传文件。">
 <meta property="og:title" content="C桌面 CDesk — 车机、平板、盒子、电视的纯净桌面">
 <meta property="og:description" content="无广告、无推荐流。三页桌面 + 4K 壁纸 + 网速悬浮窗 + 局域网传文件。">
-<meta property="og:image" content="assets/icon-512.png">
+<meta property="og:image" content="https://gcy5.cn.mt/assets/icon-512.png">
+<meta property="og:url" content="https://gcy5.cn.mt/">
+<link rel="canonical" href="https://gcy5.cn.mt/">
 <meta name="theme-color" content="#faf6ef">
-<link rel="icon" href="assets/icon-512.png">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -62,7 +65,7 @@
           <span class="device-tag">可点演示</span>
         </div>
         <div class="device-embed">
-          <iframe src="demo/?embed=1" title="C桌面新版首页可交互演示：分页切换、壁纸循环、方向键导航"></iframe>
+          <iframe src="demo/?embed=1" title="C桌面新版首页可交互演示：分页切换、壁纸循环、方向键导航" loading="lazy" decoding="async"></iframe>
         </div>
         <figcaption>新版首页 · 可点演示：切分页 / 循环壁纸 / 方向键导航 · 内置鲸鱼壁纸</figcaption>
       </figure>
@@ -154,7 +157,7 @@
         </details>
         <details>
           <summary>会收集我的数据吗？</summary>
-          <p>不会。除了天气需要按 IP 判断城市外，应用不向任何服务器上传数据；局域网传文件也只在你自己的网络内进行。</p>
+          <p>不会。除了天气按 IP 判断城市、正版授权校验会向授权服务器发送设备签名指纹外，应用不向任何服务器上传其他数据；局域网传文件也只在你自己的网络内进行。</p>
         </details>
         <details>
           <summary>收费吗？有内购吗？</summary>
@@ -242,7 +245,7 @@
       <div class="security-grid">
         <article class="card security-card">
           <h3>零数据上传</h3>
-          <p>除天气需按 IP 判断城市外，应用不向任何服务器上传数据。局域网传文件仅在你自己的网络内进行，不经第三方中转。</p>
+          <p>除天气按 IP 判断城市、正版授权校验发送设备签名指纹外，应用不向任何服务器上传其他数据。局域网传文件仅在你自己的网络内进行，不经第三方中转。</p>
         </article>
         <article class="card security-card">
           <h3>无支付 SDK</h3>
@@ -263,19 +266,21 @@
   <section class="section" id="download">
     <div class="wrap">
       <p class="eyebrow">下载</p>
-      <h2>当前版本 v0.7.12 · 稳定版筹备中</h2>
+      <h2>当前版本 v0.7.14 · 稳定版筹备中</h2>
       <p class="section-lead">APK 不收费，不接入任何支付 SDK。完整版本列表见 Releases。</p>
       <div class="download-grid">
         <article class="card download-card download-card--stable">
           <p class="badge badge--stable">当前版本 · 推荐</p>
-          <h3>v0.7.12</h3>
+          <h3>v0.7.14</h3>
           <p>滚动更新版本，新功能在此验证后逐步稳定。适合日常使用，App 内更新提示即此通道。</p>
           <p class="download-meta">稳定声明：此版本经过完整测试，核心功能均已验证通过，适合日常长期使用。</p>
           <div class="download-actions" data-mirror-group>
-            <a class="btn btn--primary btn--default" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.13-beta.apk" target="_blank" rel="noopener">GHFast 加速 · 默认</a>
-            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.13-beta.apk" target="_blank" rel="noopener">GH-Proxy</a>
-            <a class="btn btn--quiet" data-mirror="GitHub 直链" href="https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.13-beta.apk" target="_blank" rel="noopener">GitHub 直链</a>
+            <a class="btn btn--primary btn--default" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.14-beta.apk" target="_blank" rel="noopener">GHFast 加速 · 默认</a>
+            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.14-beta.apk" target="_blank" rel="noopener">GH-Proxy</a>
+            <a class="btn btn--quiet" data-mirror="GitHub 直链" href="https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.14-beta.apk" target="_blank" rel="noopener">GitHub 直链</a>
           </div>
+          <p class="mirror-status" data-mirror-status role="status" aria-live="polite"></p>
+          <p class="download-meta">SHA-256：<code class="verify-val">__SHA256__</code></p>
         </article>
         <article class="card download-card">
           <p class="badge badge--beta">更新日志</p>

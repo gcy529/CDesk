@@ -132,11 +132,17 @@ document.querySelectorAll('[data-copy-target]').forEach((button) => {
     const status = group.parentElement.querySelector('[data-mirror-status]');
 
     Promise.all(links.map(probe)).then((list) => {
-      const ok = list.filter((item) => item.ms !== null).sort((a, b) => a.ms - b.ms);
-      const bad = list.filter((item) => item.ms === null);
+        const ok = list.filter((item) => item.ms !== null).sort((a, b) => a.ms - b.ms);
+        const bad = list.filter((item) => item.ms === null);
 
-      ok.forEach((item) => group.appendChild(item.link));
-      bad.forEach((item) => group.appendChild(item.link));
+        // 只重排镜像链接，不动组内其他子节点（如「更新记录」按钮）：
+        // 以第一个非镜像子节点为锚点，把排序后的链接插到它前面，避免它被顶到首位
+        let anchor = null;
+        for (const child of group.children) {
+          if (!child.matches('a[data-mirror]')) { anchor = child; break; }
+        }
+        ok.forEach((item) => group.insertBefore(item.link, anchor));
+        bad.forEach((item) => group.insertBefore(item.link, anchor));
 
       if (!ok.length) {
         if (status) status.textContent = '测速没有结果，任选一条线路都能下载。';

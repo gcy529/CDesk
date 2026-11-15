@@ -131,12 +131,26 @@ public final class LicenseCheck {
     private static void fetchAsync(final Context c, final String fp, final Callback cb) {
         new Thread(new Runnable() {
             @Override public void run() {
-                final Token t = fetch(c, fp);
+                final FetchResult r = fetch(c, fp);
                 MAIN.post(new Runnable() {
                     @Override public void run() {
+                        // 无签名指纹的安装无法绑定令牌，直接判为篡改
+                        if (fp.length() == 0) {
+                            cb.onDenied("tamper");
+                            return;
+                        }
+                        // 服务端不可达（断网 / 端点未部署 / 404 / 国内直连 raw 不通）：
+                        // fail-open 放行。否则端点未就绪会把新用户锁死在不可关闭的授权
+                        // 弹窗里；端点可用后，服务端明确拒绝仍会正常限制。
+                        if (!r.reachable) {
+                            CLog.w("license endpoint unreachable, fail-open allowing launch");
+                            cb.onLicensed("offline", "full");
+                            return;
+                        }
+                        Token t = r.token;
                         if (t == null || !verifySig(t)) {
-                            cb.onDenied(t == null ? "network" : "tamper");
-                        } else if (fp.length() == 0 || !fp.equals(t.fp)) {
+                            cb.onDenied(t == null ? "denied" : "tamper");
+                        } else if (!fp.equals(t.fp)) {
                             cb.onDenied("tamper");
                         } else if (System.currentTimeMillis() >= t.expMs + GRACE_MS) {
                             cb.onDenied("expired");
@@ -150,11 +164,20 @@ public final class LicenseCheck {
         }).start();
     }
 
-    private static Token fetch(Context c, String fp) {
-        if (fp.length() == 0) return null;
+    /** 区分「网络不可达」与「服务端可达但拒绝/格式非法」，前者 fail-open，后者拒绝 */
+    private static final class FetchResult {
+        final boolean reachable;
+        final Token token;
+        FetchResult(boolean reachable, Token token) {
+            this.reachable = reachable;
+            this.token = token;
+        }
+    }
+
+    private static FetchResult fetch(Context c, String fp) {
         String body = httpGet(LICENSE_ENDPOINT + "?fp=" + fp);
-        if (body == null) return null;
-        return parse(body, fp);
+        if (body == null) return new FetchResult(false, null);
+        return new FetchResult(true, parse(body, fp));
     }
 
     /** 解析服务端返回的令牌 JSON；字段不全或格式非法返回 null */

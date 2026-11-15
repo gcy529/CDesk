@@ -189,7 +189,8 @@
       walls: { day: 'Whale Day', sunset: 'Whale Sunset', night: 'Whale Night' },
       toast: { wall: 'Wallpaper: ', lang: 'Language: ', send: 'Demo: LAN transfer QR code', tip: 'Demo: tip code', open: 'Demo: open ' },
       date: function (d) {
-        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()] + ', Nov ' + d.getDate();
+        var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()] + ', ' + m[d.getMonth()] + ' ' + d.getDate();
       }
     }
   };
@@ -244,7 +245,7 @@
   var wallBase = document.getElementById('lz-wall-base');
   var wallFade = document.getElementById('lz-wall-fade');
   var wallTimer;
-  walls.forEach(function (n) { var img = new Image(); img.src = 'assets/wallpaper-' + n + '.jpg'; });
+  // 不预载全部壁纸：日间已由基础 <img> 加载，其余切换时按需加载，首屏省约 2.5MB
   function applyWall(name, animate) {
     var url = 'assets/wallpaper-' + name + '.jpg';
     clearTimeout(wallTimer);

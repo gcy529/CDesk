@@ -72,7 +72,7 @@ jobs:
           # 会在评估期撞 DependencyHandler.module() 移除错误。仓库自带 gradle-wrapper.jar，直接用。
           if [ -n "$KS" ]; then
             ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} \
-              -PksFile=$KS -PksPass=cdesk2026 -PkeyAlias=cdesk -PkeyPass=cdesk2026 --stacktrace
+              -PksFile=$KS -PksPass=${{ secrets.CDESK_KS_PASS }} -PkeyAlias=cdesk -PkeyPass=${{ secrets.CDESK_KEY_PASS }} --stacktrace
           else
             ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} --stacktrace
           fi
@@ -161,9 +161,12 @@ jobs:
           done
       - name: Write version.json (update checker)
         run: |
+          VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo '')
           if [ -z "$VER" ]; then echo "VER empty, skip"; exit 0; fi
+          APK="app/build/outputs/apk/debug/CDesk-${VER}-beta.apk"
+          SUM=$(sha256sum "$APK" | awk '{print $1}')
           cat > version.json <<EOF
-          {"version":"$VER","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-$VER-beta.apk","channel":"beta","force":false}
+          {"version":"$VER","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-$VER-beta.apk","sha256":"$SUM","channel":"beta","force":false}
           EOF
           cat version.json
           # 不再由 CI 提交 version.json 回 beta：那会把发版提交顶掉，线上版本号永远落后

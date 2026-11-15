@@ -3,7 +3,9 @@ package com.c.launcher;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mozilla.javascript.BaseFunction;
+import org.mozilla.javascript.ClassShutter;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -42,6 +44,30 @@ public class JsSource {
     private static final String PREFS = "cdesk_core";
     private static final String KEY_SRC = "music_js_source";
 
+    /** 音源脚本执行超时：防止死循环脚本卡死界面线程 */
+    private static final long SCRIPT_TIMEOUT_MS = 5000L;
+
+    /**
+     * 屏蔽所有 Java 类访问。脚本只能跑在纯 JS 沙箱里，
+     * 杜绝通过 LiveConnect 调 java.lang.Runtime 等能力（RCE 入口）。
+     */
+    private static final ClassShutter DENY_ALL = new ClassShutter() {
+        @Override public boolean visibleToScripts(String fullClassName) {
+            return false;
+        }
+    };
+
+    /** 带指令计数超时的上下文工厂：超过 deadline 后抛异常中断脚本执行 */
+    private static final class GuardedContextFactory extends ContextFactory {
+        private final long deadline;
+        GuardedContextFactory(long deadline) { this.deadline = deadline; }
+        @Override protected void observeInstructionCount(Context cx, int count) {
+            if (System.currentTimeMillis() >= deadline) {
+                throw new RuntimeException("script execution timed out");
+            }
+        }
+    }
+
     private String scriptPath;
     private String scriptContent;
 
@@ -73,9 +99,8 @@ public class JsSource {
     /** 拉全列表（无关键词） */
     public List<Song> list() {
         try {
-            Context ctx = Context.enter();
+            Context ctx = newContext();
             try {
-                ctx.setLanguageVersion(Context.VERSION_ES6);
                 Scriptable scope = setupScope(ctx);
                 ctx.evaluateString(scope, scriptContent, "source.js", 1, null);
                 List<Song> out = callList(ctx, scope);
@@ -94,9 +119,8 @@ public class JsSource {
     public List<Song> search(String keyword) {
         if (keyword == null || keyword.length() == 0) return list();
         try {
-            Context ctx = Context.enter();
+            Context ctx = newContext();
             try {
-                ctx.setLanguageVersion(Context.VERSION_ES6);
                 Scriptable scope = setupScope(ctx);
                 ctx.evaluateString(scope, scriptContent, "source.js", 1, null);
                 List<Song> out = callSearch(ctx, scope, keyword);
@@ -111,9 +135,20 @@ public class JsSource {
         }
     }
 
+    /** 创建受沙箱保护的上下文：纯 JS 安全对象、屏蔽 Java 类、带执行超时 */
+    private static Context newContext() {
+        Context ctx = new GuardedContextFactory(System.currentTimeMillis() + SCRIPT_TIMEOUT_MS)
+                .enterContext();
+        ctx.setLanguageVersion(Context.VERSION_ES6);
+        ctx.setOptimizationLevel(-1);
+        ctx.setClassShutter(DENY_ALL);
+        ctx.setInstructionObserverThreshold(10000);
+        return ctx;
+    }
+
     /** 注入 module + require + exports mock，跑脚本后读 module.exports */
     private Scriptable setupScope(Context ctx) {
-        Scriptable scope = ctx.initStandardObjects();
+        Scriptable scope = ctx.initSafeStandardObjects();
         NativeObject module = new NativeObject();
         NativeObject exports = new NativeObject();
         module.put("exports", module, exports);
