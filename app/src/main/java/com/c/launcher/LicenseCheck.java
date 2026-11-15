@@ -143,7 +143,7 @@ public final class LicenseCheck {
                         // fail-open 放行。否则端点未就绪会把新用户锁死在不可关闭的授权
                         // 弹窗里；端点可用后，服务端明确拒绝仍会正常限制。
                         if (!r.reachable) {
-                            CLog.w("license endpoint unreachable, fail-open allowing launch");
+                            CLog.i("license endpoint unreachable, fail-open allowing launch");
                             cb.onLicensed("offline", "full");
                             return;
                         }
