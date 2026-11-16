@@ -91,13 +91,6 @@
         <activity
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
             android:screenOrientation="landscape"
-            android:name=".LibraryActivity"
-            android:exported="false"
-            android:label="@string/library_title" />
-
-        <activity
-            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
-            android:screenOrientation="landscape"
             android:name=".GuardianActivity"
             android:exported="false"
             android:label="@string/guardian_title" />
@@ -123,28 +116,6 @@
             android:exported="false"
             android:label="@string/transfer_title" />
 
-        <!-- 影音壳：播放器 + 直播 / 点播 / 音乐 三个导入页（不含任何内容源） -->
-        <activity
-            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
-            android:screenOrientation="landscape"
-            android:name=".PlayerActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
-            android:screenOrientation="landscape"
-            android:name=".LiveShellActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
-            android:screenOrientation="landscape"
-            android:name=".VodShellActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
-            android:screenOrientation="landscape"
-            android:name=".MusicShellActivity"
-            android:theme="@style/AppTheme" />
-
         <!-- 更新包用 content:// 交给安装器：Android 7 起 file:// 会直接抛 FileUriExposedException -->
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -166,30 +137,6 @@
                 android:value="Realtime network speed overlay for desktop replacement" />
         </service>
 
-        <activity
-            android:name=".VodHomeActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" />
-        <activity
-            android:name=".VodListActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" />
-        <activity
-            android:name=".VodDetailActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" />
-        <activity
-            android:name=".LiveHomeActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" />
-        <activity
-            android:name=".LiveListActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" />
-        <activity
-            android:name=".MusicHomeActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" />
         <activity
             android:name=".CleanupActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"

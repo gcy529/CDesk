@@ -53,10 +53,6 @@
             <Button android:id="@+id/btnSetOrient"
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:layout_marginTop="8dp" android:text="@string/settings_orient_landscape" />
-
-            <Button android:id="@+id/btnSetFilter"
-                android:layout_width="match_parent" android:layout_height="52dp"
-                android:layout_marginTop="8dp" android:text="@string/settings_filter_on" />
         </LinearLayout>
 
         <!-- 卡片：系统 -->

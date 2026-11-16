@@ -40,7 +40,6 @@ public class SettingsActivity extends Activity {
         ver.setText("v" + getString(R.string.app_version));
         ver.setTextColor(p.dim);
 
-        final Button btnFilter = (Button) findViewById(R.id.btnSetFilter);
         Button btnWall = (Button) findViewById(R.id.btnSetWallpaper);
         final Button btnOrient = (Button) findViewById(R.id.btnSetOrient);
         Button btnLang = (Button) findViewById(R.id.btnSetLang);
@@ -53,21 +52,10 @@ public class SettingsActivity extends Activity {
         final Button btnCleanup = (Button) findViewById(R.id.btnSetCleanup);
         final Button btnBack = (Button) findViewById(R.id.btnSetBack);
 
-        Button[] all = new Button[] { btnFilter, btnCore, btnWall, btnOrient, btnLang, btnDevice, btnTransfer, btnUpdate, btnDisclaimer, btnLog, btnCleanup, btnBack };
+        Button[] all = new Button[] { btnCore, btnWall, btnOrient, btnLang, btnDevice, btnTransfer, btnUpdate, btnDisclaimer, btnLog, btnCleanup, btnBack };
         for (int i = 0; i < all.length; i++) {
             if (all[i] != null) ThemeManager.styleButton(all[i], p);
         }
-
-        btnFilter.setText(ContentFilter.enabled(this)
-                ? R.string.settings_filter_on : R.string.settings_filter_off);
-        btnFilter.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                boolean next = !ContentFilter.enabled(SettingsActivity.this);
-                ContentFilter.setEnabled(SettingsActivity.this, next);
-                btnFilter.setText(next
-                        ? R.string.settings_filter_on : R.string.settings_filter_off);
-            }
-        });
 
         btnWall.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {

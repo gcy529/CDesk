@@ -67,10 +67,7 @@ public class EnglishLocaleTextTest {
             ActivityController<? extends Activity> controller = null;
             try {
                 Intent intent = new Intent(RuntimeEnvironment.getApplication(), cls);
-                if (cls == PlayerActivity.class) {
-                    intent.putExtra(PlayerActivity.EXTRA_URL, "http://127.0.0.1:1/none.m3u8");
-                    intent.putExtra(PlayerActivity.EXTRA_NAME, "Smoke");
-                } else if (cls == CrashActivity.class) {
+                if (cls == CrashActivity.class) {
                     intent.putExtra(CrashActivity.EXTRA_MSG, "smoke");
                 }
                 controller = Robolectric.buildActivity(cls, intent);

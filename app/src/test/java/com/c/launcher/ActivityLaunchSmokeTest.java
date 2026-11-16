@@ -105,11 +105,7 @@ public class ActivityLaunchSmokeTest {
 
     private static Intent intentFor(Class<? extends Activity> cls) {
         Intent i = new Intent(RuntimeEnvironment.getApplication(), cls);
-        if (cls == PlayerActivity.class) {
-            i.putExtra(PlayerActivity.EXTRA_URL, "http://127.0.0.1:1/none.m3u8");
-            i.putExtra(PlayerActivity.EXTRA_NAME, "冒烟测试");
-            i.putExtra(PlayerActivity.EXTRA_LIVE, true);
-        } else if (cls == CrashActivity.class) {
+        if (cls == CrashActivity.class) {
             i.putExtra(CrashActivity.EXTRA_MSG, "smoke test");
         }
         return i;
