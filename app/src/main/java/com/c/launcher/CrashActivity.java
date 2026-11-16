@@ -29,13 +29,13 @@ public class CrashActivity extends Activity {
         TextView title = new TextView(this);
         title.setText(R.string.crash_title);
         title.setTextSize(24);
-        title.setTextColor(0xFFF8FAFC);
+        title.setTextColor(ThemeManager.TEXT_MAIN);
         root.addView(title);
 
         TextView hint = new TextView(this);
         hint.setText(R.string.crash_hint);
         hint.setTextSize(14);
-        hint.setTextColor(0xFF8E9BAE);
+        hint.setTextColor(ThemeManager.TEXT_SUB);
         hint.setPadding(0, 12, 0, 12);
         root.addView(hint);
 
@@ -45,7 +45,7 @@ public class CrashActivity extends Activity {
         body.setTextSize(13);
         body.setTextColor(0xFFCBD5E1);
         body.setPadding(16, 16, 16, 16);
-        body.setBackgroundColor(0xFF0B0F19);
+        body.setBackgroundColor(ThemeManager.BG_DEEP);
         sv.addView(body);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
@@ -56,7 +56,7 @@ public class CrashActivity extends Activity {
         copy.setTextSize(18);
         copy.setGravity(Gravity.CENTER);
         copy.setPadding(20, 20, 20, 20);
-        copy.setBackgroundColor(0xFF4D6BFE);
+        copy.setBackgroundColor(ThemeManager.PRIMARY);
         copy.setTextColor(0xFFFFFFFF);
         copy.setFocusable(true);
         copy.setClickable(true);
@@ -76,5 +76,14 @@ public class CrashActivity extends Activity {
         });
 
         setContentView(root);
+
+        // 崩溃页只停留 6 秒：够看清、够截图，又不至于一直占着屏幕。
+        // 到点先 finish 再结束进程，避免把这个坏掉的进程留在后台。
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override public void run() {
+                try { finish(); } catch (Throwable ignored) { }
+                try { android.os.Process.killProcess(android.os.Process.myPid()); } catch (Throwable ignored) { }
+            }
+        }, 6000L);
     }
 }

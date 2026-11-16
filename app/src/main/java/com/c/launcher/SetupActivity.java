@@ -34,6 +34,8 @@ public class SetupActivity extends Activity {
     private TextView tvHint;
     private TextView tvOverlayState;
     private Button btnOverlay;
+    private TextView tvDevice;
+    private Button btnDevice;
 
     @Override
     protected void attachBaseContext(android.content.Context base) {
@@ -50,6 +52,8 @@ public class SetupActivity extends Activity {
         tvHint = (TextView) findViewById(R.id.tvHint);
         tvOverlayState = (TextView) findViewById(R.id.tvOverlayState);
         btnOverlay = (Button) findViewById(R.id.btnOverlay);
+        tvDevice = (TextView) findViewById(R.id.tvDevice);
+        btnDevice = (Button) findViewById(R.id.btnDevice);
 
         TextView title = (TextView) findViewById(R.id.tvSetupTitle);
         if (title != null) title.setTextColor(ThemeManager.current(this).accent);
@@ -72,6 +76,19 @@ public class SetupActivity extends Activity {
         btnOverlay.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { openOverlaySettings(); }
         });
+
+        if (btnDevice != null) {
+            btnDevice.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { cycleDevice(); }
+            });
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // 返回键也算"知道了"，别每次开机都轰炸
+        ThemeManager.markSetupDone(SetupActivity.this);
+        finish();
     }
 
     @Override
@@ -109,6 +126,7 @@ public class SetupActivity extends Activity {
             }
         }
         refreshOverlay();
+        refreshDevice();
     }
 
     private boolean canOpenHomeSettings() {
@@ -138,6 +156,26 @@ public class SetupActivity extends Activity {
         tvOverlayState.setText(granted ? R.string.setup_overlay_on : R.string.setup_overlay_off);
         tvOverlayState.setTextColor(granted ? 0xFF4ADE80 : 0xFFF87171);
         if (btnOverlay != null) btnOverlay.setVisibility(granted ? View.GONE : View.VISIBLE);
+    }
+
+    /** 设备类型：自动 / TV / 车机 / Pad / 手机 循环，手动覆盖优先生效 */
+    private void cycleDevice() {
+        int cur = DeviceType.getManual(this);
+        int next;
+        if (cur == DeviceType.AUTO) next = DeviceType.TV;
+        else if (cur == DeviceType.TV) next = DeviceType.CAR;
+        else if (cur == DeviceType.CAR) next = DeviceType.PAD;
+        else if (cur == DeviceType.PAD) next = DeviceType.PHONE;
+        else next = DeviceType.AUTO;
+        DeviceType.setManual(this, next);
+        CLog.i("device type manual -> " + next);
+        refreshDevice();
+    }
+
+    private void refreshDevice() {
+        if (tvDevice == null) return;
+        tvDevice.setText(DeviceType.label(this, DeviceType.effective(this)));
+        tvDevice.setTextColor(0xFF94A3B8);
     }
 
     private void openHomeSettings() {

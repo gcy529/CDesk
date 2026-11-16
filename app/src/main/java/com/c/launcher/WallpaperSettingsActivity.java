@@ -51,26 +51,49 @@ public class WallpaperSettingsActivity extends Activity {
             }
         });
 
-        // 缩略图卡片：点击选壁纸
-        card(R.id.cardWpNone, WPManager.WP_NONE);
+        // 缩略图卡片：晨光(默认) / 鲸夜 / 傍晚 + 自定义平时隐藏。遥控器只点真正能用的格
+        card(R.id.cardWpMorning, WPManager.WP_MORNING);
         card(R.id.cardWpNight, WPManager.WP_NIGHT);
-        card(R.id.cardWpDay, WPManager.WP_DAY);
-        card(R.id.cardWpSunset, WPManager.WP_SUNSET);
+        card(R.id.cardWpDusk, WPManager.WP_DUSK);
 
-        // 自定义图片：选系统相册里的照片；也支持局域网传入的图片
+        // 默认壁纸缩略图（晨光 = 4K 原图）：绝不能直接当缩略图（OOM）——inSampleSize 降采样后小图设置
+        ImageView morningThumb = (ImageView) findViewById(R.id.thumbMorning);
+        if (morningThumb != null) {
+            try {
+                BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeResource(getResources(), R.drawable.wall_morning, o);
+                BitmapFactory.Options o2 = new BitmapFactory.Options();
+                o2.inSampleSize = 24;   // 3845x2157 -> 约160x90，正好缩略图大小
+                morningThumb.setImageBitmap(BitmapFactory.decodeResource(
+                        getResources(), R.drawable.wall_morning, o2));
+            } catch (Throwable ignored) { }
+        }
+
+        // 傍晚缩略图用 4K 原图降采样
+        ImageView duskThumb = (ImageView) findViewById(R.id.thumbDusk);
+        if (duskThumb != null) {
+            try {
+                BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeResource(getResources(), R.drawable.final_wallpaper_4k, o);
+                BitmapFactory.Options o2 = new BitmapFactory.Options();
+                o2.inSampleSize = 24;
+                duskThumb.setImageBitmap(BitmapFactory.decodeResource(
+                        getResources(), R.drawable.final_wallpaper_4k, o2));
+            } catch (Throwable ignored) { }
+        }
+
+        // 自定义图片：有图才显示卡片，没图则隐藏，设置页只留 3 张自带
         View customCard = findViewById(R.id.cardWpCustom);
         if (customCard != null) {
+            customCard.setVisibility(CustomWallpapers.count(this) > 0 ? View.VISIBLE : View.GONE);
             customCard.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) { showCustomPicker(); }
             });
         }
 
         // 使用须知 + 返回
-        findViewById(R.id.btnDisclaimer).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                startActivity(new Intent(WallpaperSettingsActivity.this, DisclaimerActivity.class));
-            }
-        });
         findViewById(R.id.btnWpBack).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }
         });

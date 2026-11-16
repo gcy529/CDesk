@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollSettings"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_base">
+
+    <LinearLayout
+        android:id="@+id/rootSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="26dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvSetTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_title"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/tvSetVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="@dimen/text_body"
+            android:textColor="@color/text_secondary" />
+
+        <!-- 卡片：桌面 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_desktop"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_secondary" />
+
+            <Button android:id="@+id/btnSetWallpaper"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="12dp" android:text="@string/wallpaper" />
+
+            <Button android:id="@+id/btnSetOrient"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/settings_orient_landscape" />
+
+            <Button android:id="@+id/btnSetFilter"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/settings_filter_on" />
+        </LinearLayout>
+
+        <!-- 卡片：系统 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_system"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_secondary" />
+
+            <Button android:id="@+id/btnSetLang"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="12dp" android:text="@string/lang_auto" />
+
+            <Button android:id="@+id/btnSetCore"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/settings_core" />
+
+            <Button android:id="@+id/btnSetDevice"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/device_auto" />
+        </LinearLayout>
+
+        <!-- 卡片：关于 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_about"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_secondary" />
+
+            <Button android:id="@+id/btnSetUpdate"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="12dp" android:text="@string/settings_check_update" />
+
+            <Button android:id="@+id/btnSetDisclaimer"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/disclaimer_title" />
+
+            <Button android:id="@+id/btnSetLog"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/settings_log" />
+
+            <Button android:id="@+id/btnSetCleanup"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/cleanup_title" />
+
+            <Button android:id="@+id/btnSetTransfer"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/transfer" />
+        </LinearLayout>
+
+        <Button android:id="@+id/btnSetBack"
+            android:layout_width="match_parent" android:layout_height="52dp"
+            android:layout_marginTop="20dp" android:text="@string/transfer_back" />
+    </LinearLayout>
+</ScrollView>

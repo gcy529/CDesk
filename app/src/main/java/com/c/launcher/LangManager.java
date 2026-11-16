@@ -36,13 +36,14 @@ public final class LangManager {
             .edit().putInt(KEY, i).commit();
     }
 
-    /** 循环切换：跟随系统 -> 简 -> 繁 -> EN -> 跟随系统 */
+    /** 循环切换：简 -> 繁 -> EN -> 简（只有三档，点三下回到原点）。
+     *  跟随系统只是"没设过"的初始状态，不再参与循环。 */
     public static void cycle(Activity a) {
         int i = index(a);
         if (i == FOLLOW) i = SIMP;
         else if (i == SIMP) i = TRAD;
         else if (i == TRAD) i = ENG;
-        else i = FOLLOW;
+        else i = SIMP;
         setIndex(a, i);
         a.recreate();
     }
@@ -73,8 +74,10 @@ public final class LangManager {
         else return base;
 
         if (Build.VERSION.SDK_INT >= 17) {
-            Configuration cfg = new Configuration();
-            cfg.locale = loc;
+            // 必须拷贝原配置：空 Configuration 会把 fontScale 等已设字段一起覆盖掉，
+            // 切一次语言就抹掉用户的大字体设置。下面的 API 16 分支本来就是拷贝的。
+            Configuration cfg = new Configuration(base.getResources().getConfiguration());
+            cfg.setLocale(loc);
             return base.createConfigurationContext(cfg);
         }
         Configuration cfg16 = new Configuration(base.getResources().getConfiguration());

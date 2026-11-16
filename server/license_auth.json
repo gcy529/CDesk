@@ -1,0 +1,8 @@
+{
+  "_comment": "按签名指纹 fp 登记授权。fp 是客户端签名证书的 SHA-256 十六进制(64位)。官方签名和每个定制客户的签名都要登记。exp 是到期时间戳(秒)，scope 可选 full/basic。",
+  "ab21886a9dabaf5084439d0ee6453799b2129f602688cbce500b2b0c698022b7": {
+    "cid": "official",
+    "scope": "full",
+    "exp": 4102444800
+  }
+}

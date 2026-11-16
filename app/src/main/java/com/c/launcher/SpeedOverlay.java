@@ -183,7 +183,7 @@ public class SpeedOverlay {
 
         GradientDrawable bg = new GradientDrawable();
         bg.setCornerRadius(dp(999));
-        bg.setColor(0xB3161C2C);
+        bg.setColor(ThemeManager.SURFACE);
         bg.setStroke(dp(1), active ? ThemeManager.ACCENT2 : 0x26FFFFFF);
         p.text.setBackgroundDrawable(bg);
     }

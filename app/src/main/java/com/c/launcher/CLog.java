@@ -1,12 +1,10 @@
 package com.c.launcher;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
@@ -15,23 +13,19 @@ import java.util.Locale;
 
 /**
  * 轻量日志：同时写 logcat 和 app 私有文件，出问题时用户可一键复制发给我。
- * 只记关键节点（启动 / 崩溃），不刷屏。
+ * 只记关键节点（启动 / 崩溃 / 页面切换 / 加载失败），不刷屏。
  */
 public final class CLog {
 
     private static final String TAG = "CDesk";
     private static final int MAX = 8000;   // 最多保留字节数
     private static File dir;
-    private static String ver = "?";
 
     private CLog() { }
 
     public static void init(Context c) {
-        try {
-            dir = new File(c.getFilesDir(), "log");
-            dir.mkdirs();
-            ver = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
-        } catch (Throwable ignored) { }
+        try { dir = new File(c.getFilesDir(), "log"); dir.mkdirs(); }
+        catch (Throwable ignored) { }
     }
 
     public static void i(String msg) {
@@ -65,9 +59,10 @@ public final class CLog {
             String ts = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.US).format(new Date());
             w.write(ts + " " + lvl + " " + msg + "\n");
             w.close();
+            // 超长截断：保留尾部
             if (f.length() > MAX) {
                 byte[] all = new byte[(int) f.length()];
-                FileInputStream in = new FileInputStream(f);
+                java.io.FileInputStream in = new java.io.FileInputStream(f);
                 int got = in.read(all); in.close();
                 int cut = Math.max(0, got - MAX / 2);
                 FileOutputStream fo = new FileOutputStream(f, false);
@@ -76,28 +71,48 @@ public final class CLog {
         } catch (Throwable ignored) { }
     }
 
-    /** 读日志文本 */
+    /** 读日志文本（设置页「复制日志」用） */
     public static String read() {
         if (dir == null) return "";
         try {
             File f = new File(dir, "cdesk.log");
             if (!f.exists()) return "";
             byte[] all = new byte[(int) f.length()];
-            FileInputStream in = new FileInputStream(f);
+            java.io.FileInputStream in = new java.io.FileInputStream(f);
             int got = in.read(all); in.close();
             return new String(all, 0, Math.max(0, got), "UTF-8");
         } catch (Throwable t) { return ""; }
     }
 
+    /** 读日志并倒序：最新的在最后。截图/复制发给开发者时，最关键的报错在底部，不用翻。 */
+    public static String readReversed() {
+        String raw = read();
+        if (raw.length() == 0) return raw;
+        String[] lines = raw.split("\n");
+        StringBuilder sb = new StringBuilder(raw.length() + 16);
+        for (int i = lines.length - 1; i >= 0; i--) {
+            if (i < lines.length - 1) sb.append('\n');
+            sb.append(lines[i]);
+        }
+        return sb.toString();
+    }
+
     /** 设备信息 + 日志，方便发给我定位 */
     public static String report() {
         StringBuilder sb = new StringBuilder();
-        sb.append("CDesk 诊断报告\n");
-        sb.append("App: ").append(ver).append("\n");
+        sb.append("CDesk report\n");
+        sb.append("App: ").append(appVer()).append("\n");
         sb.append("Android: ").append(Build.VERSION.RELEASE).append(" (API ").append(Build.VERSION.SDK_INT).append(")\n");
-        sb.append("机型: ").append(Build.MODEL).append(" / ").append(Build.MANUFACTURER).append("\n");
-        sb.append("--- 日志 ---\n");
-        sb.append(read());
+        sb.append("Model: ").append(Build.MODEL).append(" / ").append(Build.MANUFACTURER).append("\n");
+        sb.append("--- log (newest last) ---\n");
+        sb.append(readReversed());
         return sb.toString();
+    }
+
+    /** 真实版本号：取自编译期生成的 BuildConfig，不再写死（之前写死 0.5.0 导致报告永远显示 0.5.0） */
+    private static String appVer() {
+        try {
+            return BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")";
+        } catch (Throwable t) { return "?"; }
     }
 }

@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:visibility="gone"
         android:contentDescription="@string/wallpaper" />
 
     <View
@@ -22,15 +21,55 @@
         android:alpha="0.55" />
 
     <LinearLayout
+        android:id="@+id/contentMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
+        android:paddingLeft="48dp"
+        android:paddingRight="48dp"
         android:paddingTop="16dp"
         android:paddingBottom="20dp">
 
-        <!-- 顶栏 -->
+        <!-- 顶部滚动条 + 版本号：同一根深色条，版本号不再压在壁纸上 -->
+        <LinearLayout
+            android:id="@+id/barTop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_dock"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp">
+
+            <TextView
+                android:id="@+id/tvTicker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:textSize="13sp"
+                android:textColor="#C7D2E3"
+                android:text="@string/ticker_text" />
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:singleLine="true"
+                android:text="@string/app_version"
+                android:textSize="12sp"
+                android:textColor="#E8EEF7" />
+        </LinearLayout>
+
+        <!-- 顶栏：时间/日期/天气固定在左上角深色面板；徽章在右上角，不挡壁纸人物 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,14 +80,19 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/bg_dock"
+                android:paddingLeft="16dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="12dp">
 
                 <TextView
                     android:id="@+id/tvClock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="12:00"
-                    android:textSize="36sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
                     android:includeFontPadding="false"
                     android:textColor="#4D6BFE" />
@@ -60,7 +104,7 @@
                     android:layout_marginTop="2dp"
                     android:text="2026-11-07  Saturday"
                     android:textSize="13sp"
-                    android:textColor="#8E9BAE" />
+                    android:textColor="#F2F6FC" />
 
                 <TextView
                     android:id="@+id/tvWeather"
@@ -68,11 +112,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:singleLine="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:clickable="true"
                     android:textSize="12sp"
-                    android:textColor="#8E9BAE" />
+                    android:textColor="#F2F6FC" />
             </LinearLayout>
 
             <LinearLayout
@@ -85,7 +126,7 @@
                     android:id="@+id/tvBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="深海 · 微光"
+                    android:text="@string/theme_dark"
                     android:textSize="13sp"
                     android:textColor="#4D6BFE" />
 
@@ -99,63 +140,31 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 翻页条 -->
+        <!-- 翻页指示：标题 + 圆点（左右翻页靠滑动/方向键） -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:gravity="center">
 
-            <Button
-                android:id="@+id/btnPagePrev"
-                android:layout_width="46dp"
-                android:layout_height="38dp"
-                android:background="@drawable/bg_dock_item"
-                android:text="@string/page_prev"
-                android:textSize="18sp"
-                android:padding="0dp"
-                android:minWidth="0dp"
-                android:focusable="true" />
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvPageTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:text="@string/page_apps"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#F8FAFC" />
 
-                <TextView
-                    android:id="@+id/tvPageTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/page_apps"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#F8FAFC" />
-
-                <TextView
-                    android:id="@+id/tvPageDots"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:text="● ○ ○"
-                    android:textSize="9sp"
-                    android:textColor="#4D6BFE" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnPageNext"
-                android:layout_width="46dp"
-                android:layout_height="38dp"
-                android:background="@drawable/bg_dock_item"
-                android:text="@string/page_next"
-                android:textSize="18sp"
-                android:padding="0dp"
-                android:minWidth="0dp"
-                android:focusable="true" />
+            <TextView
+                android:id="@+id/tvPageDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="● ○"
+                android:textSize="9sp"
+                android:textColor="#4D6BFE" />
         </LinearLayout>
 
         <!-- 空页提示 -->
@@ -175,66 +184,39 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginTop="12dp"
-            android:numColumns="6"
             android:horizontalSpacing="10dp"
             android:verticalSpacing="10dp"
             android:stretchMode="columnWidth"
             android:clipToPadding="false"
             android:listSelector="@android:color/transparent" />
-
-        <!-- 底部按钮：玻璃 Dock（半透明圆角，深浅主题运行时染色） -->
-        <LinearLayout
-            android:id="@+id/dock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:padding="8dp"
-            android:background="@drawable/bg_dock"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <Button
-                android:id="@+id/btnPalette"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginRight="6dp"
-                android:background="@drawable/bg_dock_item"
-                android:text="@string/wallpaper"
-                android:textSize="14sp"
-                android:focusable="true" />
-
-            <Button
-                android:id="@+id/btnLang"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1.6"
-                android:layout_marginRight="6dp"
-                android:background="@drawable/bg_dock_item"
-                android:text="@string/lang_auto"
-                android:textSize="13sp"
-                android:focusable="true" />
-
-            <Button
-                android:id="@+id/btnDonate"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginRight="6dp"
-                android:background="@drawable/bg_dock_item"
-                android:text="@string/donate"
-                android:textSize="14sp"
-                android:focusable="true" />
-
-            <Button
-                android:id="@+id/btnTransfer"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_dock_item"
-                android:text="@string/transfer"
-                android:textSize="14sp"
-                android:focusable="true" />
-        </LinearLayout>
     </LinearLayout>
+
+    <!-- 左下：版本号 + 下载角标；右下：上传角标（传输进行时显示，低调半透明） -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginLeft="48dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/ivStatusDown"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/stat_sys_download"
+            android:alpha="0.6"
+            android:contentDescription="@string/status_downloading" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivStatusUp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="48dp"
+        android:layout_marginBottom="24dp"
+        android:src="@android:drawable/stat_sys_upload"
+        android:alpha="0.6"
+        android:contentDescription="@string/status_uploading" />
 </FrameLayout>

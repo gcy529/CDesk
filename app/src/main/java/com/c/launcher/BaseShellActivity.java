@@ -12,21 +12,17 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -42,7 +38,8 @@ public abstract class BaseShellActivity extends Activity {
     protected ListView lvItems;
     protected View boxEmpty;
     protected Button btnPaste;
-    protected Button btnTransfer;
+    protected Button btnLoad;
+    protected Button btnBack;
 
     protected final List<PlaylistParser.Item> items = new ArrayList<PlaylistParser.Item>();
     protected ShellAdapter adapter;
@@ -55,8 +52,14 @@ public abstract class BaseShellActivity extends Activity {
     /** 标题文案 */
     protected abstract int titleRes();
 
+    /** 空态标题文案 */
+    protected abstract int emptyTitleRes();
+
     /** 点击某一条 */
     protected abstract void onItemSelected(PlaylistParser.Item it);
+
+    /** 手机推送的目标类别：live / music（影视壳自己处理，是 vod） */
+    protected abstract String targetKind();
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -66,10 +69,16 @@ public abstract class BaseShellActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CLog.i("BaseShellActivity onCreate");
         Screen.apply(this);
         setContentView(R.layout.activity_playlist);
-
         ThemeManager.Palette p = ThemeManager.current(this);
+        applyShellTheme(p);
+        onShellReady(p);
+    }
+
+    /** 视觉外壳：背景、标题色、输入框色、按钮样式。三个壳共用，只做纯视觉，不含行为。 */
+    protected void applyShellTheme(ThemeManager.Palette p) {
         findViewById(android.R.id.content).setBackgroundColor(p.bgTop);
         View rootShell = findViewById(R.id.rootShell);
         if (rootShell != null) rootShell.setBackgroundColor(p.bgTop);
@@ -80,19 +89,22 @@ public abstract class BaseShellActivity extends Activity {
 
         etSource = (EditText) findViewById(R.id.etSource);
         tvStatus = (TextView) findViewById(R.id.tvStatus);
+        tvStatus.setTextColor(p.dim);
         lvItems = (ListView) findViewById(R.id.lvItems);
 
-        Button btnLoad = (Button) findViewById(R.id.btnLoad);
-        Button btnBack = (Button) findViewById(R.id.btnBack);
+        btnLoad = (Button) findViewById(R.id.btnLoad);
+        btnBack = (Button) findViewById(R.id.btnBack);
         btnPaste = (Button) findViewById(R.id.btnPaste);
-        btnTransfer = (Button) findViewById(R.id.btnTransfer);
         boxEmpty = findViewById(R.id.boxEmpty);
         ThemeManager.styleButton(btnLoad, p);
         ThemeManager.styleButton(btnBack, p);
         if (btnPaste != null) ThemeManager.styleButton(btnPaste, p);
-        if (btnTransfer != null) ThemeManager.styleButton(btnTransfer, p);
         etSource.setTextColor(p.fg);
+    }
 
+    /** 壳层就绪后的行为绑定：列表、点击、加载、返回、空态、恢复上次源。
+     *  直播/音乐壳用默认实现；影视壳覆盖此方法实现多级导航。 */
+    protected void onShellReady(ThemeManager.Palette p) {
         adapter = new ShellAdapter();
         lvItems.setAdapter(adapter);
         lvItems.setItemsCanFocus(true);
@@ -103,21 +115,11 @@ public abstract class BaseShellActivity extends Activity {
                 if (o instanceof PlaylistParser.Item) onItemSelected((PlaylistParser.Item) o);
             }
         });
-        lvItems.setOnKeyListener(new View.OnKeyListener() {
-            @Override public boolean onKey(View v, int keyCode, android.view.KeyEvent event) {
-                if (keyCode != android.view.KeyEvent.KEYCODE_DPAD_UP
-                        && keyCode != android.view.KeyEvent.KEYCODE_DPAD_DOWN) {
-                    return false;
-                }
-                if (event.getAction() != android.view.KeyEvent.ACTION_DOWN) return false;
-                int cur = lvItems.getSelectedItemPosition();
-                int dir = keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN ? 1 : -1;
-                int next = findNextSelectable(cur, dir);
-                if (next != cur) {
-                    lvItems.setSelection(next);
-                    return true;
-                }
-                return false;
+
+        lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override public boolean onItemLongClick(AdapterView<?> a, View v, int pos, long id) {
+                if (pos < 0 || pos >= items.size()) return false;
+                return toggleFavorite(items.get(pos));
             }
         });
 
@@ -142,13 +144,6 @@ public abstract class BaseShellActivity extends Activity {
                 }
             });
         }
-        if (btnTransfer != null) {
-            btnTransfer.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    importFromTransfer();
-                }
-            });
-        }
 
         refreshEmpty();
 
@@ -159,7 +154,7 @@ public abstract class BaseShellActivity extends Activity {
         }
     }
 
-    private String readClipboard() {
+    protected String readClipboard() {
         try {
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             if (cm != null && cm.hasText()) return cm.getText().toString().trim();
@@ -167,12 +162,61 @@ public abstract class BaseShellActivity extends Activity {
         return null;
     }
 
-    /** 有内容就藏起空状态，没内容就显示 */
+    /**
+     * 长按收藏 / 取消收藏。
+     * 行自己接住点击之后，ListView 的长按回调不再触发，所以两处共用这份逻辑。
+     */
+    private boolean toggleFavorite(PlaylistParser.Item it) {
+        if (it == null || it.url == null) return false;   // 分组头不收藏
+        if (Favorites.has(this, it.url)) {
+            Favorites.remove(this, it.url);
+            Toast.makeText(this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
+        } else {
+            Favorites.add(this, it.name, it.url, targetKind());
+            Toast.makeText(this, R.string.fav_added, Toast.LENGTH_SHORT).show();
+        }
+        return true;
+    }
+
+    /** 有内容就藏起空状态，没内容就显示（文案按壳区分：直播/音乐共用通用导入说明） */
     private void refreshEmpty() {
         if (boxEmpty == null) return;
-        boxEmpty.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
-        lvItems.setVisibility(items.isEmpty() ? View.GONE : View.VISIBLE);
+        boolean empty = items.isEmpty();
+        boxEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
+        lvItems.setVisibility(empty ? View.GONE : View.VISIBLE);
+        if (empty) {
+            TextView et = (TextView) boxEmpty.findViewWithTag("emptyTitle");
+            if (et != null) et.setText(emptyTitleRes());
+        }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        consumePendingSource();
+    }
+
+    /** 手机在传输页粘的地址：回到本页自动填入并加载，省得用遥控器打字 */
+    private void consumePendingSource() {
+        try {
+            SharedPreferences sp = prefs();
+            String pending = sp.getString("pending_src", null);
+            if (pending == null || pending.length() == 0) return;
+            String want = sp.getString("pending_target", "");
+            if (want.length() > 0 && !want.equals(targetKind())) return;
+            long at = sp.getLong("pending_at", 0L);
+            sp.edit().remove("pending_src").remove("pending_at").commit();
+            if (System.currentTimeMillis() - at > 10L * 60L * 1000L) return;
+
+            etSource.setText(pending);
+            prefs().edit().putString(prefKey(), pending).commit();
+            loadPending(pending);
+            Toast.makeText(this, R.string.shell_recv_from_phone, Toast.LENGTH_SHORT).show();
+        } catch (Throwable ignored) { }
+    }
+
+    /** 消费手机推送的源地址后的加载入口，默认用通用 load；影视壳覆盖为多级加载 */
+    protected void loadPending(String src) { load(src); }
 
     protected SharedPreferences prefs() {
         return getSharedPreferences("cdesk_shell", Context.MODE_PRIVATE);
@@ -196,55 +240,6 @@ public abstract class BaseShellActivity extends Activity {
         load(src);
     }
 
-    /** 扫描局域网传输目录，让用户挑一个列表文件直接导入 */
-    private void importFromTransfer() {
-        File dir = transferDir();
-        if (!dir.exists() || !dir.isDirectory()) {
-            Toast.makeText(this, R.string.shell_transfer_empty, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        File[] files = dir.listFiles();
-        if (files == null || files.length == 0) {
-            Toast.makeText(this, R.string.shell_transfer_empty, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        final List<File> candidates = new ArrayList<File>();
-        for (File f : files) {
-            if (f.isFile() && f.length() > 0) candidates.add(f);
-        }
-        if (candidates.isEmpty()) {
-            Toast.makeText(this, R.string.shell_transfer_empty, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Collections.sort(candidates, new Comparator<File>() {
-            @Override public int compare(File a, File b) {
-                return Long.compare(b.lastModified(), a.lastModified());
-            }
-        });
-        final String[] names = new String[candidates.size()];
-        for (int i = 0; i < candidates.size(); i++) {
-            names[i] = candidates.get(i).getName();
-        }
-        final List<File> picked = new ArrayList<File>(candidates);
-        android.app.AlertDialog.Builder b = new android.app.AlertDialog.Builder(this);
-        b.setTitle(R.string.shell_transfer_pick);
-        b.setItems(names, new android.content.DialogInterface.OnClickListener() {
-            @Override public void onClick(android.content.DialogInterface dlg, int which) {
-                File f = picked.get(which);
-                etSource.setText(f.getAbsolutePath());
-                prefs().edit().putString(prefKey(), f.getAbsolutePath()).commit();
-                load(f.getAbsolutePath());
-            }
-        });
-        b.show();
-    }
-
-    private File transferDir() {
-        File ext = getExternalFilesDir(null);
-        String root = ext != null ? ext.getAbsolutePath() : getFilesDir().getAbsolutePath();
-        return new File(root, "CDeskTransfer");
-    }
-
     private void load(final String src) {
         tvStatus.setText(R.string.shell_loading);
         new Thread(new Runnable() {
@@ -266,8 +261,28 @@ public abstract class BaseShellActivity extends Activity {
                 } catch (Exception e) {
                     err = e.getClass().getSimpleName();
                 }
+                List<PlaylistParser.Item> expanded = null;
+                if (text != null && TvBoxConfig.looks(text)) {
+                    expanded = new ArrayList<PlaylistParser.Item>();
+                    List<TvBoxConfig.Live> lives = TvBoxConfig.lives(text, BaseShellActivity.this);
+                    // 一份订阅里常挂十几个直播列表，里面还有纯 IPv6、根本连不通的；
+                    // 一条条串行拉会让人对着"加载中"等好几分钟，这里给整体 25 秒预算，超了就带着已有结果先显示。
+                    long deadline = System.currentTimeMillis() + 25000L;
+                    for (int i = 0; i < lives.size(); i++) {
+                        if (System.currentTimeMillis() > deadline) { break; }
+                        TvBoxConfig.Live lv = lives.get(i);
+                        try {
+                            List<PlaylistParser.Item> one = PlaylistParser.parse(fetchQuick(lv.url, 6000));
+                            for (int j = 0; j < one.size(); j++) {
+                                PlaylistParser.Item it = one.get(j);
+                                expanded.add(new PlaylistParser.Item(it.name, lv.name, it.url));
+                            }
+                        } catch (Throwable ignored) { }
+                    }
+                }
                 final String fText = text;
                 final String fErr = err;
+                final List<PlaylistParser.Item> fExpanded = expanded;
                 ui.post(new Runnable() {
                     @Override public void run() {
                         if (isFinishing()) return;
@@ -278,7 +293,16 @@ public abstract class BaseShellActivity extends Activity {
                             refreshEmpty();
                             return;
                         }
-                        List<PlaylistParser.Item> parsed = PlaylistParser.parse(fText);
+                        List<PlaylistParser.Item> raw = fExpanded;
+                        if (raw == null) {
+                            raw = PlaylistParser.parseMusicJson(fText);
+                            if (raw.isEmpty()) raw = PlaylistParser.parse(fText);
+                        }
+                        List<PlaylistParser.Item> parsed = new ArrayList<PlaylistParser.Item>();
+                        for (int i = 0; i < raw.size(); i++) {
+                            if (ContentFilter.blocked(BaseShellActivity.this, raw.get(i).name)) continue;
+                            parsed.add(raw.get(i));
+                        }
                         items.clear();
                         withGroups(parsed, items);
                         adapter.notifyDataSetChanged();
@@ -286,30 +310,50 @@ public abstract class BaseShellActivity extends Activity {
                                 ? getString(R.string.shell_empty)
                                 : getString(R.string.shell_loaded) + " " + parsed.size());
                         refreshEmpty();
-                        if (!parsed.isEmpty()) {
-                            int first = findNextSelectable(-1, 1);
-                            lvItems.setSelection(first >= 0 ? first : 0);
-                            lvItems.requestFocus();
-                        }
+                        if (!parsed.isEmpty()) lvItems.requestFocus();
                     }
                 });
             }
         }).start();
     }
 
+    /** 拉订阅里那些直播列表用的快通道：连不通就赶紧跳过，不要拖住整页 */
+    private String fetchQuick(String url, int connMs) throws Exception {
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(connMs);
+            c.setReadTimeout(connMs + 4000);
+            c.setRequestProperty("User-Agent", "CDesk/1.0");
+            InputStream in = c.getInputStream();
+            BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line).append('\n');
+            r.close();
+            return sb.toString();
+        } finally {
+            if (c != null) c.disconnect();
+        }
+    }
+
     private String fetch(String url) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-        c.setConnectTimeout(15000);
-        c.setReadTimeout(20000);
-        c.setRequestProperty("User-Agent", "CDesk/1.0");
-        InputStream in = c.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) sb.append(line).append('\n');
-        r.close();
-        c.disconnect();
-        return sb.toString();
+        HttpURLConnection c = null;
+        try {
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(15000);
+            c.setReadTimeout(20000);
+            c.setRequestProperty("User-Agent", "CDesk/1.0");
+            InputStream in = c.getInputStream();
+            BufferedReader r = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line).append('\n');
+            r.close();
+            return sb.toString();
+        } finally {
+            if (c != null) c.disconnect();
+        }
     }
 
     /** 列表：分组标题 + 条目，两种行样式 */
@@ -325,53 +369,41 @@ public abstract class BaseShellActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            PlaylistParser.Item it = items.get(position);
+            final PlaylistParser.Item it = items.get(position);
             ThemeManager.Palette p = ThemeManager.current(BaseShellActivity.this);
-            TextView tv;
-            if (convertView instanceof TextView) {
-                tv = (TextView) convertView;
-            } else {
-                tv = new TextView(BaseShellActivity.this);
-            }
-            tv.setTextSize(17f);
+            TextView tv = convertView instanceof TextView
+                    ? (TextView) convertView : new TextView(BaseShellActivity.this);
             tv.setGravity(Gravity.CENTER_VERTICAL);
-            tv.setPadding(dp(20), dp(16), dp(20), dp(16));
             if (it.url == null) {
-                // 分组头：不可点，只作分隔，不可聚焦
+                // 分组头：不可点、不可聚焦，只作分隔
                 tv.setText(it.name);
                 tv.setTextColor(p.isLight ? 0xFF8A6A16 : p.accent);
                 tv.setTextSize(14f);
                 tv.setPadding(dp(20), dp(18), dp(20), dp(8));
                 tv.setBackgroundColor(0x00000000);
-                tv.setFocusable(false);
+                tv.setOnClickListener(null);
+                tv.setOnLongClickListener(null);
                 tv.setClickable(false);
-                tv.setFocusableInTouchMode(false);
+                tv.setFocusable(false);
             } else {
                 tv.setText(it.name);
                 tv.setTextColor(p.fg);
+                tv.setTextSize(17f);
+                tv.setPadding(dp(20), dp(16), dp(20), dp(16));
                 tv.setBackgroundResource(R.drawable.bg_row);
                 tv.setFocusable(true);
-                tv.setClickable(true);
-                tv.setFocusableInTouchMode(true);
+                // setItemsCanFocus(true) 时触摸和 DPAD_CENTER 都落在行自己身上，
+                // ListView 的 OnItemClickListener 不会再触发。bg_row 早就画好了
+                // state_focused 焦点框，缺的就是这一下点击接线。
+                tv.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick(View v) { onItemSelected(it); }
+                });
+                tv.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override public boolean onLongClick(View v) { return toggleFavorite(it); }
+                });
             }
             return tv;
         }
-    }
-
-    /** 从当前位置按方向找下一个可选项（跳过分组头） */
-    private int findNextSelectable(int from, int dir) {
-        int n = items.size();
-        if (n == 0) return -1;
-        int i = from;
-        for (int step = 0; step < n; step++) {
-            i += dir;
-            if (i < 0) i = n - 1;
-            if (i >= n) i = 0;
-            if (i == from && step >= n) break;
-            PlaylistParser.Item it = items.get(i);
-            if (it.url != null) return i;
-        }
-        return from;
     }
 
     protected int dp(float v) {

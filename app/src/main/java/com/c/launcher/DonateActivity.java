@@ -29,6 +29,9 @@ public class DonateActivity extends Activity {
         Screen.apply(this);
         setContentView(R.layout.activity_donate);
 
+        View rootBg = findViewById(R.id.rootDonate);
+        WPManager.applyToRoot(this, rootBg);
+
         findViewById(R.id.btnBack).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }
         });

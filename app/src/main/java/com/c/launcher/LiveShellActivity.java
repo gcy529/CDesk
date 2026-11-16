@@ -13,7 +13,12 @@ public class LiveShellActivity extends BaseShellActivity {
 
     @Override protected String prefKey() { return "live_src"; }
 
+    @Override
+    protected String targetKind() { return "live"; }
+
     @Override protected int titleRes() { return R.string.live_title; }
+
+    @Override protected int emptyTitleRes() { return R.string.live_empty_title; }
 
     @Override
     protected void onItemSelected(PlaylistParser.Item it) {
@@ -21,6 +26,7 @@ public class LiveShellActivity extends BaseShellActivity {
         i.putExtra(PlayerActivity.EXTRA_URL, it.url);
         i.putExtra(PlayerActivity.EXTRA_NAME, it.name);
         i.putExtra(PlayerActivity.EXTRA_LIVE, true);
+        i.putExtra(PlayerActivity.EXTRA_KIND, "live");
         startActivity(i);
     }
 }

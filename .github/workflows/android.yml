@@ -17,7 +17,6 @@ on:
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
   build:
@@ -61,18 +60,23 @@ jobs:
             echo "KS=$HOME/.cdesk-debug.keystore" >> $GITHUB_ENV
             echo "fixed keystore restored from repo file"
           else
-            echo "::warning::no secret and no repo keystore, fallback to random debug signing"
+            echo "::warning::没有 secret 也没有仓库 keystore，回退随机调试签名（升级需卸载重装）"
           fi
 
       - name: Build debug APK
         env:
           KS: ${{ env.KS }}
+          CDESK_KS_PASS: ${{ secrets.CDESK_KS_PASS }}
+          CDESK_KEY_PASS: ${{ secrets.CDESK_KEY_PASS }}
         run: |
           chmod +x gradlew || true
-          gradle wrapper --gradle-version 7.5 || true
-          if [ -n "$KS" ]; then
+          # 不再用裸 gradle 生成 wrapper：runner 预装 Gradle 版本漂移（Ubuntu 26 镜像 Gradle 9）
+          # 会在评估期撞 DependencyHandler.module() 移除错误。仓库自带 gradle-wrapper.jar，直接用。
+          # 签名口令统一走 GitHub Secrets（CDESK_KS_PASS / CDESK_KEY_PASS），
+          # 未配置时回退默认调试签名，保证构建仍能出包，不硬编码口令。
+          if [ -n "$KS" ] && [ -n "$CDESK_KS_PASS" ] && [ -n "$CDESK_KEY_PASS" ]; then
             ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} \
-              -PksFile=$KS -PksPass=cdesk2026 -PkeyAlias=cdesk -PkeyPass=cdesk2026 --stacktrace
+              -PksFile=$KS -PksPass="$CDESK_KS_PASS" -PkeyAlias=cdesk -PkeyPass="$CDESK_KEY_PASS" --stacktrace
           else
             ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} --stacktrace
           fi
@@ -82,12 +86,6 @@ jobs:
         with:
           name: ${{ steps.appid.outputs.value }}
           path: app/build/outputs/apk/debug/*.apk
-
-      - name: Copy versioned APK (tag)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          TAG="${GITHUB_REF_NAME#v}"
-          cp app/build/outputs/apk/debug/*.apk "app/build/outputs/apk/debug/CDesk-${TAG}.apk"
 
       - name: Compute SHA-256
         if: startsWith(github.ref, 'refs/tags/v')
@@ -102,10 +100,8 @@ jobs:
       - name: Write release body
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          VER="${GITHUB_REF_NAME#v}"
-          cat > release_body.md <<EOF
-          ## 下载（四选一，速度不同）
-          - 带版本号（推荐）：https://github.com/gcy529/CDesk/releases/download/${GITHUB_REF_NAME}/CDesk-${VER}.apk
+          cat > release_body.md <<'EOF'
+          ## 下载（三选一，速度不同）
           - 官网（国内直连）：https://gcy5.cn.mt
           - GitHub 直链（海外快）：见下方 Assets
           - GHFast 加速（国内推荐）：https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/TAGNAME/APKNAME
@@ -127,9 +123,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            app/build/outputs/apk/debug/CDesk-*.apk
-            app/build/outputs/apk/debug/app-debug.apk
+          files: app/build/outputs/apk/debug/*.apk
           body_path: release_body.md
           draft: false
           prerelease: false
@@ -138,25 +132,28 @@ jobs:
         run: |
           VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo '?')
           {
-            echo '## 尝鲜版 Beta'
-            echo ''
-            echo '开发分支自动构建，**可能不稳定**。功能在 beta 上验证通过后，才合并进 main 成为正式版。'
-            echo ''
-            echo '| 版本 | 提交 |'
-            echo '| --- | --- |'
-            echo "| $VER | ${GITHUB_SHA:0:7} |"
+            echo "## CDesk b${VER}（测试版）"
             echo ''
             if [ -f CHANGELOG.md ]; then
               awk '/^## /{ if (++c==2) exit } c>=1' CHANGELOG.md
+              echo ''
             fi
+            echo '### 下载'
             echo ''
-            echo '### 安装说明'
+            echo "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk"
             echo ''
-            echo '与正式版同一签名，可直接覆盖安装；想回正式版就下 Releases 里的最新正式版。'
+            echo '国内下不动就用这两条（同一个包）：'
             echo ''
-            echo '---'
-            echo '[稳定版](https://github.com/gcy529/CDesk/releases/latest) · [官网](https://gcy5.cn.mt) · [全部更新日志](https://github.com/gcy529/CDesk/blob/main/CHANGELOG.md)'
+            echo "https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk"
+            echo ''
+            echo "https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-${VER}-beta.apk"
           } > release_body_beta.md
+      - name: Copy versioned APK (beta)
+        if: github.ref == 'refs/heads/beta'
+        run: |
+          VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo unknown)
+          cp app/build/outputs/apk/debug/*.apk "app/build/outputs/apk/debug/CDesk-${VER}-beta.apk"
+
       - name: Clean previous beta asset
         if: github.ref == 'refs/heads/beta'
         continue-on-error: true
@@ -166,6 +163,19 @@ jobs:
           gh release view beta --json assets -q '.assets[].name' 2>/dev/null | while read -r n; do
             gh release delete-asset beta "$n" -y || true
           done
+      - name: Write version.json (update checker)
+        run: |
+          VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle || echo '')
+          if [ -z "$VER" ]; then echo "VER empty, skip"; exit 0; fi
+          APK="app/build/outputs/apk/debug/CDesk-${VER}-beta.apk"
+          SUM=$(sha256sum "$APK" | awk '{print $1}')
+          cat > version.json <<EOF
+          {"version":"$VER","url":"https://github.com/gcy529/CDesk/releases/download/beta/CDesk-$VER-beta.apk","sha256":"$SUM","channel":"beta","force":false}
+          EOF
+          cat version.json
+          # 不再由 CI 提交 version.json 回 beta：那会把发版提交顶掉，线上版本号永远落后
+          echo 'version.json 由发版提交维护，CI 不提交'
+
       - name: Release beta
         if: github.ref == 'refs/heads/beta'
         uses: softprops/action-gh-release@v2
@@ -175,39 +185,32 @@ jobs:
           body_path: release_body_beta.md
           prerelease: true
           make_latest: 'false'
-          files: app/build/outputs/apk/debug/*.apk
-      - name: Report size
-        run: ls -lh app/build/outputs/apk/debug/*.apk
-
-      - name: Sync download links on site
-        if: startsWith(github.ref, 'refs/tags/v')
-        continue-on-error: true
-        env:
-          SHASUM: ${{ steps.sha.outputs.sum }}
-        run: |
-          TAG="${GITHUB_REF_NAME}"
-          SIZE=$(awk -v b="$(stat -c%s app/build/outputs/apk/debug/app-debug.apk)" 'BEGIN{printf "%.2f MB", b/1048576}')
-          sed -i -E "s#/releases/download/v[0-9]+\.[0-9]+\.[0-9]+/app-debug\.apk#/releases/download/${TAG}/app-debug.apk#g" index.html classic/index.html README.md
-          sed -i -E "s#(<span class=\"version\">)v[0-9]+\.[0-9]+\.[0-9]+#\1${TAG}#" index.html
-          sed -i -E "s#>v[0-9]+\.[0-9]+\.[0-9]+<#>${TAG}<#" classic/index.html
-          sed -i -E "s/__SIZE__/${SIZE}/g; s/__SHA256__/${SHASUM}/g" index.html
-          if git diff --quiet; then echo "links already up to date"; exit 0; fi
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add index.html classic/index.html README.md
-          git commit -m "chore: 下载链接同步 ${TAG} [skip ci]"
-          git push origin HEAD:refs/heads/main || true
-
-      - name: Prune old workflow runs
-        if: always() && github.event_name != 'pull_request'
+          # 只放带版本号的一个包：多一个 app-debug.apk 会让人搞不清该下哪个
+          files: |
+            app/build/outputs/apk/debug/CDesk-*-beta.apk
+      - name: Cleanup old runs
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api "repos/${{ github.repository }}/actions/runs?per_page=100" > runs.json
-          jq -r --arg cur "$GITHUB_RUN_ID" '[.workflow_runs[] | select(.status == "completed" and (.id | tostring) != $cur)][2:] | .[].id' runs.json \
-            | while read -r id; do
-                if [ -n "$id" ]; then
-                  gh api -X DELETE "repos/${{ github.repository }}/actions/runs/$id" > /dev/null && echo "deleted run $id" || true
-                fi
-              done
+          for wf in $(gh api repos/$GITHUB_REPOSITORY/actions/workflows -q '.workflows[].id'); do
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$wf/runs?per_page=100" -q '.workflow_runs[10:].[].id' | while read -r id; do
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id" || true
+            done
+          done
+
+      - name: Report size
+        run: ls -lh app/build/outputs/apk/debug/*.apk
+
+      - name: Sync download links in index.html (retired)
+        if: startsWith(github.ref, 'refs/tags/v')
+        continue-on-error: true
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          sed -i -E "s#/releases/download/v[0-9]+\.[0-9]+\.[0-9]+/app-debug\.apk#/releases/download/${TAG}/app-debug.apk#g" index.html README.md
+          if git diff --quiet; then echo "links already up to date"; exit 0; fi
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add index.html README.md
+          git commit -m "chore: 下载链接同步 ${TAG} [skip ci]"
+          git push origin HEAD:refs/heads/main || true

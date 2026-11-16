@@ -1,12 +1,13 @@
 package com.c.launcher;
 
 import android.app.Activity;
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -31,51 +33,48 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * C桌面 主界面（测试版）。
+ * C桌面 主界面（稳定版 0.3）。
  *
- * 视觉体系（按设计批评落地）：
- *  - 背景 = 大面积底色，内容全部坐在统一的半透明"玻璃"Dock/底座上
- *  - accent 只给小元素（焦点描边、圆点、按钮描边），不做大面积色块
- *  - 浅色主题大字用 fg（深灰），accent 只描边 —— 紫色大字在白底上很突兀
- *  - 焦点态 = 3dp 白描边 + 放大 1.06（Aerial 的做法，遥控器场景必须看清）
+ * 视觉体系：
+ *  - 背景 = 大面积底色，内容坐在统一的半透明玻璃底座上
+ *  - accent 只给小元素（焦点描边、圆点），不做大面积色块
+ *  - 焦点态 = 3dp 白描边 + 放大 1.06（遥控器场景必须看清）
  *
- * 页面：应用 / 最近 / 影音。影音页是内置壳（CPlay / C听）的入口，
- * 不是用户装的播放器列表 —— 界面上永远只有「影视」「音乐」四个字。
+ * 页面：应用 / 最近（两页，左右滑动或方向键翻页）
+ * 竖屏当手机处理：全宽 2 列网格，无右侧留白
  */
 public class MainActivity extends Activity {
 
     private static final int REQ_OVERLAY = 2001;
+    private static final int REQ_NOTIFICATION = 2002;
 
     private ImageView ivWallpaper;
+    private ImageView ivStatusDown;
+    private ImageView ivStatusUp;
     private View bgTop;
     private View bgBottom;
-    private View dock;
+    private View contentMain;
     private TextView tvClock;
     private TextView tvDate;
     private TextView tvWeather;
     private TextView tvBadge;
-    private Button btnPalette;
-    private Button btnLang;
-    private Button btnTransfer;
-    private Button btnDonate;
     private GridView gridApps;
-    private int appCols = 6;
     private AppAdapter adapter;
-    private MediaAdapter mediaAdapter;
-    private Button btnPagePrev;
-    private Button btnPageNext;
     private TextView tvPageTitle;
     private TextView tvPageDots;
     private TextView tvPageHint;
 
-    private static final int PAGE_COUNT = 3;
+    private static final int PAGE_COUNT = 2;
     private static final int PAGE_APPS = 0;
     private static final int PAGE_RECENT = 1;
-    private static final int PAGE_MEDIA = 2;
     private static final String PREFS_RECENT = "cdesk_recent";
     private static final String KEY_RECENT = "pkg_list";
     private static final int RECENT_MAX = 12;
-    private int page = PAGE_APPS;
+    /** 应用网格列数：DPAD 边界判断和 setNumColumns 必须用同一个值，否则右键翻页位置会错 */
+    private static final int APP_COLS = 6;
+    /** 实际生效的应用列数：fitContentLayout() 按屏宽算，小屏 3 列 / 车机大屏 4~6 列 */
+    private int appCols = APP_COLS;
+    private int page = PAGE_RECENT;
     private int lastLang = -99;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -98,46 +97,50 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         CLog.init(this);
         CLog.i("onCreate start, sdk=" + android.os.Build.VERSION.SDK_INT);
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override public void uncaughtException(Thread t, Throwable e) {
-                CLog.e("CRASH " + t.getName(), e);
-                try {
-                    android.content.Intent i = new android.content.Intent(MainActivity.this, CrashActivity.class);
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("CRASH ").append(t.getName()).append("\n");
-                    java.io.StringWriter sw = new java.io.StringWriter();
-                    e.printStackTrace(new java.io.PrintWriter(sw));
-                    sb.append(sw.toString());
-                    sb.append("\n--- CLog ---\n").append(CLog.read());
-                    i.putExtra(CrashActivity.EXTRA_MSG, sb.toString());
-                    i.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(i);
-                } catch (Throwable ignored) { }
-                android.os.Process.killProcess(android.os.Process.myPid());
-            }
-        });
+        PerfDiag.markStart(this);
+        // 崩溃 handler 已移到 App（进程入口），这里不再重复安装
         Screen.apply(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        // 按屏宽自适应：右侧留白 + 应用列数，小屏不再把应用挤没
+        fitContentLayout();
+        // 切语言会把 Activity 重建一遍，之前每次都掉回「应用」页。
+        // 记住上次停在哪一页，重建后回到原处。
+        page = getSharedPreferences("cdesk_core", MODE_PRIVATE).getInt("page_last", PAGE_APPS);
+        if (page < 0 || page >= PAGE_COUNT) { page = PAGE_APPS; }
 
         ivWallpaper = (ImageView) findViewById(R.id.ivWallpaper);
+        ivStatusDown = (ImageView) findViewById(R.id.ivStatusDown);
+        ivStatusUp = (ImageView) findViewById(R.id.ivStatusUp);
+        if (ivStatusDown != null) ivStatusDown.setVisibility(View.GONE);
+        if (ivStatusUp != null) ivStatusUp.setVisibility(View.GONE);
+        TextView tvVersion = (TextView) findViewById(R.id.tvVersion);
+        if (tvVersion != null) {
+            try {
+                tvVersion.setText("b" + getPackageManager()
+                        .getPackageInfo(getPackageName(), 0).versionName);
+            } catch (Exception ignored) { }
+        }
         bgTop = findViewById(R.id.bgTop);
         bgBottom = findViewById(R.id.bgBottom);
-        dock = findViewById(R.id.dock);
+        contentMain = findViewById(R.id.contentMain);
         tvClock = (TextView) findViewById(R.id.tvClock);
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvWeather = (TextView) findViewById(R.id.tvWeather);
         tvBadge = (TextView) findViewById(R.id.tvBadge);
-        btnPalette = (Button) findViewById(R.id.btnPalette);
-        btnLang = (Button) findViewById(R.id.btnLang);
-        btnTransfer = (Button) findViewById(R.id.btnTransfer);
-        btnDonate = (Button) findViewById(R.id.btnDonate);
+        TextView tvTicker = (TextView) findViewById(R.id.tvTicker);
+        if (tvTicker != null) {
+            tvTicker.setSelected(true);   // 跑马灯必须 selected 才动
+            tvTicker.setFocusable(false);
+            tvTicker.setFocusableInTouchMode(false);
+        }
         gridApps = (GridView) findViewById(R.id.gridApps);
-        
+
         // 更新提醒：每天最多查一次，静默失败
         UpdateChecker.checkIfNeeded(this, new UpdateChecker.Callback() {
-            @Override public void onUpdate(String ver, String url) {
+            @Override public void onLatest(String v) { }
+            @Override public void onUpdate(String ver, String url, String notes) {
                 if (tvBadge != null) {
                     tvBadge.setText(getString(R.string.update_found, ver));
                     tvBadge.setTextColor(ThemeManager.ACCENT2);
@@ -150,73 +153,66 @@ public class MainActivity extends Activity {
                     });
                 }
             }
+
+            @Override public void onForceUpdate(String ver, String url, String notes) {
+                // 服务端 version.json 标了 "force":true：这次必须更新，对话框关不掉
+                if (tvBadge != null) {
+                    tvBadge.setText(getString(R.string.update_found, ver));
+                    tvBadge.setTextColor(ThemeManager.ACCENT2);
+                }
+                CLog.i("force update required: " + ver);
+                UpdatePrompt.show(MainActivity.this, ver, url, notes, true);
+            }
         });
 
-        btnPagePrev = (Button) findViewById(R.id.btnPagePrev);
-        btnPageNext = (Button) findViewById(R.id.btnPageNext);
+        // 启动时校验正版授权：令牌通过放行，未授权弹窗提示并退出。
+        // SelfCheck 降级为辅助记录，不再作为唯一判定依据——定制版签名不同，
+        // 由令牌的签名指纹绑定来确认授权身份。
+        LicenseCheck.ensure(this, new LicenseCheck.Callback() {
+            @Override public void onLicensed(String cid, String scope) {
+                CLog.i("license ok: cid=" + cid + " scope=" + scope);
+                // 日志页显示用：英文，避免被「英文界面不许出现中文」的测试抓出来
+                if (!SelfCheck.isOfficial(MainActivity.this)) {
+                    CLog.e("unofficial signature: package was modified or re-signed");
+                }
+            }
+            @Override public void onDenied(String reason) {
+                CLog.e("license denied: " + reason);
+                new android.app.AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.license_denied_title)
+                        .setMessage(getString(R.string.license_denied_msg, reason))
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.license_exit, new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface d, int which) {
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .show();
+            }
+        });
+
         tvPageTitle = (TextView) findViewById(R.id.tvPageTitle);
         tvPageDots = (TextView) findViewById(R.id.tvPageDots);
         tvPageHint = (TextView) findViewById(R.id.tvPageHint);
 
         adapter = new AppAdapter(this);
-        mediaAdapter = new MediaAdapter(this);
         gridApps.setAdapter(adapter);
+        // 触摸点击走 item 自己的监听：item 是 focusable，GridView.onItemClick 在触摸下收不到
+        adapter.setOnCardClick(new AppAdapter.OnCardClick() {
+            @Override public void onAppClick(int position) {
+                if (page == PAGE_APPS) launchApp(adapter.getItem(position));
+            }
+        });
 
         ThemeManager.Palette p = ThemeManager.current(this);
         curBgTop = p.bgTop;
         curBgBottom = p.bgBottom;
         applyPalette(p, false);
 
-        btnPalette.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { cycleWallpaper(); }
-        });
-        btnPalette.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override public boolean onLongClick(View v) {
-                startActivity(new Intent(MainActivity.this, WallpaperSettingsActivity.class));
-                return true;
-            }
-        });
-        btnLang.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { LangManager.cycle(MainActivity.this); }
-        });
-        tvBadge.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SetupActivity.class));
-            }
-        });
-        btnTransfer.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { openTransfer(); }
-        });
-        btnDonate.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, DonateActivity.class));
-            }
-        });
         gridApps.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (page == PAGE_MEDIA) {
-                    String type = mediaAdapter.typeAt(position);
-                    Class<?> target = "live".equals(type) ? LiveShellActivity.class
-                            : "audio".equals(type) ? MusicShellActivity.class
-                            : VodShellActivity.class;
-                    startActivity(new Intent(MainActivity.this, target));
-                } else {
-                    launchApp(adapter.getItem(position));
-                }
-            }
-        });
-
-        btnPagePrev.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { switchPage(page - 1); }
-        });
-        btnPageNext.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { switchPage(page + 1); }
-        });
-        btnPagePrev.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override public boolean onLongClick(View v) {
-                switchPage(PAGE_COUNT - 1);
-                return true;
+                launchApp(adapter.getItem(position));
             }
         });
 
@@ -224,48 +220,30 @@ public class MainActivity extends Activity {
         gridApps.setOnKeyListener(new View.OnKeyListener() {
             @Override public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-                if (page == PAGE_MEDIA) {
-                    int pos = gridApps.getSelectedItemPosition();
-                    if (pos < 0) pos = 0;
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && (pos % 2) == 0) { switchPage(page - 1); return true; }
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && (pos % 2) == 1) { switchPage(page + 1); return true; }
-                    return false;
-                }
+                int cols = appCols;
                 int count = adapter.getCount();
-                int pos2 = gridApps.getSelectedItemPosition();
-                if (pos2 < 0) pos2 = 0;
-                if (count == 0) {
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) { switchPage(page - 1); return true; }
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) { switchPage(page + 1); return true; }
-                    return false;
-                }
-                boolean firstCol = (pos2 % appCols) == 0;
-                boolean lastCol = (pos2 % appCols) == appCols - 1 || pos2 == count - 1;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && firstCol) { switchPage(page - 1); return true; }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && lastCol) { switchPage(page + 1); return true; }
+                int pos = gridApps.getSelectedItemPosition();
+                if (pos < 0) pos = 0;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && (count == 0 || (pos % cols) == 0)) { switchPage(page - 1); return true; }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && (count == 0 || (pos % cols) == cols - 1 || pos == count - 1)) { switchPage(page + 1); return true; }
                 return false;
             }
         });
 
         ui.post(clockTick);
 
-        // 首次启动先弹使用须知（只一次），再进引导页
-        if (!DisclaimerActivity.agreed(this)) {
-            startActivity(new Intent(this, DisclaimerActivity.class));
+        // 首启零打断：引导/须知全删（入口在设置页），悬浮窗权限只在第一次问一次
+        if (!getSharedPreferences("cdesk_core", MODE_PRIVATE).getBoolean("overlay_asked", false)) {
+            getSharedPreferences("cdesk_core", MODE_PRIVATE).edit().putBoolean("overlay_asked", true).commit();
+            ensureOverlayPermission();
         }
-
-        // 首次启动先进引导页：普通应用无法用代码把自己设成默认桌面，
-        // 只能把操作步骤讲清楚，所以这一步不能省。
-        if (!ThemeManager.isSetupDone(this)) {
-            startActivity(new Intent(this, SetupActivity.class));
-        }
-
-        ensureOverlayPermission();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        PerfDiag.recordStartup(this);
+        fitContentLayout();
         if (adapter != null) {
             adapter.reload();
             applyPage(page);
@@ -277,7 +255,12 @@ public class MainActivity extends Activity {
                 gridApps.requestFocus();
             }
         });
+        ensureNotificationPermission();
         startSpeedService();
+        // 角标状态恢复：任何页面写过的状态在这里落回桌面
+        android.content.SharedPreferences sp = getSharedPreferences("cdesk_status", 0);
+        if (ivStatusDown != null) ivStatusDown.setVisibility(sp.getInt("down", 0) == 1 ? View.VISIBLE : View.GONE);
+        if (ivStatusUp != null) ivStatusUp.setVisibility(sp.getInt("up", 0) == 1 ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -286,11 +269,77 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    /**
+     * 触摸/遥控双模的收口：
+     * 手指抬起来之后，Android 会进入"触摸模式"，此时 GridView 上的焦点被系统清空，
+     * 遥控器下一方向盘键可能落到任意控件。这里在每次触摸结束后把焦点拉回主网格，
+     * 保证"摸完一下，遥控器马上就能接着用"。
+     * 兼容性：dispatchTouchEvent 是 Activity API 1+ 方法 ✓
+     */
+    /** 左下角下载角标：true=显示（下载进行中）。静态方法，任何页面都能开关桌面角标 */
+    public static void showDownloadBadge(android.content.Context c, boolean on) {
+        android.content.SharedPreferences p = c.getSharedPreferences("cdesk_status", 0);
+        p.edit().putInt("down", on ? 1 : 0).commit();
+    }
+
+    /** 右下角上传角标：true=显示（上传进行中） */
+    public static void showUploadBadge(android.content.Context c, boolean on) {
+        android.content.SharedPreferences p = c.getSharedPreferences("cdesk_status", 0);
+        p.edit().putInt("up", on ? 1 : 0).commit();
+    }
+
+    private float touchDownX = 0f;
+    private float touchDownY = 0f;
+    private long touchDownTime = 0L;
+    private static final int SWIPE_MIN_DISTANCE_DP = 60;
+    private static final int SWIPE_MAX_TIME_MS = 300;
+
+    /** 横竖屏交叉淡入：Activity 旋转会重建，实例字段清零，用静态字段记住上一次朝向 */
+    private static boolean sOrientKnown = false;
+    private static boolean sLastPortrait = false;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int action = ev.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            touchDownX = ev.getRawX();
+            touchDownY = ev.getRawY();
+            touchDownTime = System.currentTimeMillis();
+        } else if (action == MotionEvent.ACTION_UP) {
+            float dx = ev.getRawX() - touchDownX;
+            float dy = ev.getRawY() - touchDownY;
+            long dt = System.currentTimeMillis() - touchDownTime;
+            int minDp = (int) (SWIPE_MIN_DISTANCE_DP * getResources().getDisplayMetrics().density);
+            // 横向位移必须明显大于纵向，否则上下滑动会被误判成翻页
+            if (dt < SWIPE_MAX_TIME_MS && Math.abs(dx) > minDp && Math.abs(dx) > Math.abs(dy)) {
+                if (dx < 0) switchPage(page + 1);
+                else switchPage(page - 1);
+            }
+        }
+        boolean handled = super.dispatchTouchEvent(ev);
+        if (action == MotionEvent.ACTION_UP
+                || action == MotionEvent.ACTION_CANCEL) {
+            View focus = getCurrentFocus();
+            boolean focusOnButton = focus instanceof Button;
+            if (gridApps != null && page == PAGE_APPS && !gridApps.hasFocus() && !focusOnButton) {
+                gridApps.post(new Runnable() {
+                    @Override public void run() {
+                        if (gridApps != null && !gridApps.hasFocus()) {
+                            gridApps.setSelection(gridApps.getSelectedItemPosition() < 0 ? 0 : gridApps.getSelectedItemPosition());
+                            gridApps.requestFocus();
+                        }
+                    }
+                });
+            }
+        }
+        return handled;
+    }
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_H) {
             WPManager.setAuto(this, false);
-            WPManager.setWhich(this, (WPManager.which(this) + 1) % 4);
+            WPManager.setWhich(this, (WPManager.which(this) + 1) % 6);
             applyPalette(ThemeManager.current(this), false);
             return true;
         }
@@ -302,19 +351,80 @@ public class MainActivity extends Activity {
     private void switchPage(int target) {
         int next = ((target % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT;
         if (next == page) return;
+        // 方向必须在更新 page 之前算，否则 page 已等于 next，方向恒为 -1
+        int dir = next > page ? 1 : -1;
         page = next;
+        CLog.i("switchPage -> " + page);
         applyPage(page);
-        gridApps.setSelection(0);
-        gridApps.requestFocus();
+        animatePageTransition(dir);
+        if (gridApps.hasFocus()) {
+            gridApps.setSelection(0);
+            gridApps.requestFocus();
+        }
     }
 
-    /** 按当前页号切数据源（应用页/最近页共用 adapter，影音页用大卡片） */
+    /** 切页滑动动画：旧页滑出、新页滑入并淡入，方向由入参决定 */
+    private void animatePageTransition(int dir) {
+        if (gridApps == null) return;
+        gridApps.setTranslationX(dir * -60);
+        gridApps.setAlpha(0.3f);
+        gridApps.animate()
+                .translationX(0)
+                .alpha(1f)
+                .setDuration(180)
+                .start();
+    }
+
+    /** 按当前屏宽自适应布局：
+     *  - 横屏右侧留白 26% 给壁纸人物；竖屏当手机处理，留白 0%
+     *  - 应用网格列数随可用宽度算：竖屏 2 列，横屏 3~6 列 */
+    private void fitContentLayout() {
+        try {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int wPx = dm.widthPixels;
+            int hPx = dm.heightPixels;
+            boolean portrait = hPx > wPx;
+            float reserveRatio = portrait ? 0f : 0.26f;
+            int reservePx = (int) (wPx * reserveRatio);
+            View cm = findViewById(R.id.contentMain);
+            if (cm != null) {
+                int left = cm.getPaddingLeft();
+                int top = cm.getPaddingTop();
+                int bottom = cm.getPaddingBottom();
+                cm.setPadding(left, top, reservePx, bottom);
+            }
+            // 横竖屏切换交叉淡入：旋转会重建 Activity，用静态字段记住上一次朝向，
+            // 朝向变化时让内容整体淡入，避免硬切
+            if (cm != null) {
+                if (sOrientKnown && sLastPortrait != portrait) {
+                    cm.setAlpha(0f);
+                    cm.animate().alpha(1f).setDuration(220)
+                            .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
+                            .start();
+                }
+                sOrientKnown = true;
+                sLastPortrait = portrait;
+            }
+            int usablePx = wPx - (cm != null ? cm.getPaddingLeft() : 48) - reservePx;
+            int usableDp = (int) (usablePx / dm.density);
+            int cols;
+            if (portrait) {
+                cols = 2;
+            } else {
+                cols = (int) Math.round(usableDp / 104.0);
+                if (cols < 3) cols = 3;
+                if (cols > 6) cols = 6;
+            }
+            appCols = cols;
+            if (gridApps != null) gridApps.setNumColumns(appCols);
+        } catch (Throwable ignored) { }
+    }
+
+    /** 按当前页号切数据源（应用页/最近页共用 adapter） */
     private void applyPage(int p) {
         page = ((p % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT;
-        boolean media = page == PAGE_MEDIA;
-        appCols = computeAppColumns();
-        gridApps.setAdapter(media ? mediaAdapter : adapter);
-        gridApps.setNumColumns(media ? 3 : appCols);
+        gridApps.setAdapter(adapter);
+        gridApps.setNumColumns(appCols);
         gridApps.setSelection(0);
 
         List<AppAdapter.AppItem> all = adapter.allItems();
@@ -328,30 +438,19 @@ public class MainActivity extends Activity {
 
         updatePageBar();
 
-        if (!media && list.isEmpty()) {
+        if (list.isEmpty()) {
             tvPageHint.setVisibility(View.VISIBLE);
             tvPageHint.setText(page == PAGE_RECENT
                     ? R.string.page_recent_empty
-                    : R.string.page_media_empty);
+                    : R.string.page_apps_empty);
         } else {
             tvPageHint.setVisibility(View.GONE);
         }
     }
 
-    /** 按当前屏宽算应用网格列数：小屏 3 列、大屏 4~6 列，避免小手机上图标被挤没 */
-    private int computeAppColumns() {
-        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-        int usableDp = (int) (dm.widthPixels / dm.density) - 64;
-        int cols = (int) Math.round(usableDp / 104.0);
-        if (cols < 3) cols = 3;
-        if (cols > 6) cols = 6;
-        return cols;
-    }
-
     private void updatePageBar() {
         String title = page == PAGE_APPS ? getString(R.string.page_apps)
-                : page == PAGE_RECENT ? getString(R.string.page_recent)
-                : getString(R.string.page_media);
+                : getString(R.string.page_recent);
         tvPageTitle.setText(title);
         StringBuilder dots = new StringBuilder();
         for (int i = 0; i < PAGE_COUNT; i++) {
@@ -402,49 +501,22 @@ public class MainActivity extends Activity {
         tvDate.setText(new SimpleDateFormat("yyyy-MM-dd  EEEE", Locale.getDefault()).format(now));
     }
 
-    /** 点换肤键：循环 纯色 -> 鲸夜 -> 晨光 -> 金色时刻 -> 纯色。手动选定后关闭日夜自动 */
-    private void cycleWallpaper() {
-        int next = (WPManager.which(this) + 1) % 4;
-        WPManager.setAuto(this, false);
-        WPManager.setWhich(this, next);
-        applyPalette(ThemeManager.current(this), false);
-        int nameRes = next == WPManager.WP_NIGHT ? R.string.wp_night
-                : next == WPManager.WP_DAY ? R.string.wp_day
-                : next == WPManager.WP_SUNSET ? R.string.wp_sunset : R.string.wp_none;
-        Toast.makeText(this, nameRes, Toast.LENGTH_SHORT).show();
-    }
 
-
-
-    /** 把整套配色刷到所有界面元素（含 Dock、天气行、按钮） */
+    /** 把整套配色刷到所有界面元素（天气行、按钮） */
     private void applyPalette(ThemeManager.Palette p, boolean animate) {
         boolean hasWall = WPManager.apply(this, ivWallpaper, bgTop, bgBottom);
         if (hasWall) {
             // 有壁纸：文字按壁纸明暗反色，跳过主题渐变动画
             int wp = WPManager.effective(this);
             boolean dark = WPManager.isDarkWallpaper(wp);
+            // 图标名颜色跟随壁纸明暗（海盐灰在奶油底上看不清）
+            adapter.setLightBg(!dark);
             int big = dark ? 0xFFF2F3F8 : 0xFF232B3A;
             int dim = dark ? 0xFFB9BECB : 0xFF5A6474;
             tvClock.setTextColor(big);
             tvDate.setTextColor(dim);
             if (tvWeather != null) tvWeather.setTextColor(dim);
             tvBadge.setTextColor(dark ? 0xFFD9C2FF : 0xFF5A3FB0);
-            int[] ids = new int[] { R.id.btnPalette, R.id.btnLang, R.id.btnDonate, R.id.btnTransfer };
-            for (int id : ids) {
-                Button b = (Button) findViewById(id);
-                GradientDrawable gd = new GradientDrawable();
-                gd.setCornerRadius(dp(999));
-                gd.setColor(dark ? 0x33000000 : 0x26FFFFFF);
-                gd.setStroke(dp(1), dark ? 0x66FFFFFF : 0x59232B3A);
-                b.setBackgroundDrawable(gd);
-                b.setTextColor(dark ? 0xFFF2F3F8 : 0xFF232B3A);
-            }
-            GradientDrawable dg = new GradientDrawable();
-            dg.setCornerRadius(dp(22));
-            dg.setColor(dark ? 0x40000000 : 0x33FFFFFF);
-            dg.setStroke(dp(1), dark ? 0x59FFFFFF : 0x4D232B3A);
-            dock.setBackgroundDrawable(dg);
-            btnLang.setText(LangManager.label(this));
             lastLang = LangManager.index(this);
             updatePageBar();
             return;
@@ -461,12 +533,6 @@ public class MainActivity extends Activity {
             bgBottom.setBackgroundColor(p.bgBottom);
             tvClock.setTextColor(p.isLight ? p.fg : p.accent);
         }
-        // Dock:统一"玻璃"底座
-        GradientDrawable dg = new GradientDrawable();
-        dg.setCornerRadius(dp(22));
-        dg.setColor(p.isLight ? 0x0D000000 : 0x14FFFFFF);
-        dg.setStroke(dp(1), p.isLight ? 0x14000000 : 0x22FFFFFF);
-        dock.setBackgroundDrawable(dg);
 
         tvDate.setTextColor(p.dim);
         if (tvWeather != null) {
@@ -488,29 +554,36 @@ public class MainActivity extends Activity {
                 @Override public void onClick(View v) { showWeatherCityDialog(); }
             });
         }
-        tvBadge.setText(p.name);
+        tvBadge.setText(p.isLight ? R.string.theme_light : R.string.theme_dark);
         tvBadge.setTextColor(p.accent);
-        int[] ids = new int[] { R.id.btnPalette, R.id.btnLang, R.id.btnDonate, R.id.btnTransfer };
-        for (int id : ids) {
-            ThemeManager.styleButton((Button) findViewById(id), p);
-        }
-        btnLang.setText(LangManager.label(this));
         lastLang = LangManager.index(this);
     }
 
     /** 启动被点中的第三方应用；失败就提示，不让桌面卡住 */
-    /** 手动城市：只填城市名，自动反查经纬度。留空 = 回到自动 */
+    /** 手动城市：城市名 + 纬度 + 经度，三行输入。留空城市名 = 回到自动 */
     private void showWeatherCityDialog() {
         final android.widget.EditText etCity = new android.widget.EditText(this);
         etCity.setHint(R.string.weather_hint_city);
         if (WeatherManager.manualCityName(this) != null) etCity.setText(WeatherManager.manualCityName(this));
-        etCity.setSingleLine(true);
-
+        final android.widget.EditText etLat = new android.widget.EditText(this);
+        etLat.setHint("lat (22.55)");
+        final android.widget.EditText etLon = new android.widget.EditText(this);
+        etLon.setHint("lon (114.05)");
+        if (WeatherManager.manualLatLng(this) != null) {
+            double[] ll = WeatherManager.manualLatLng(this);
+            etLat.setText(String.valueOf(ll[0]));
+            etLon.setText(String.valueOf(ll[1]));
+        }
         android.widget.LinearLayout box = new android.widget.LinearLayout(this);
         box.setOrientation(android.widget.LinearLayout.VERTICAL);
         int pad = dp(20);
         box.setPadding(pad, dp(8), pad, 0);
+        etCity.setSingleLine(true);
+        etLat.setSingleLine(true);
+        etLon.setSingleLine(true);
         box.addView(etCity);
+        box.addView(etLat);
+        box.addView(etLon);
 
         new android.app.AlertDialog.Builder(this)
                 .setTitle(R.string.weather_manual)
@@ -523,14 +596,15 @@ public class MainActivity extends Activity {
                             WeatherManager.fetch(MainActivity.this, weatherRefresh());
                             return;
                         }
-                        double[] ll = WeatherManager.cityToLatLng(city);
-                        if (ll == null) {
+                        try {
+                            double lat = Double.parseDouble(etLat.getText().toString().trim());
+                            double lon = Double.parseDouble(etLon.getText().toString().trim());
+                            WeatherManager.setManualCity(MainActivity.this, city, lat, lon);
+                            WeatherManager.fetch(MainActivity.this, weatherRefresh());
+                        } catch (NumberFormatException e) {
                             android.widget.Toast.makeText(MainActivity.this,
-                                    R.string.weather_city_not_found, android.widget.Toast.LENGTH_SHORT).show();
-                            return;
+                                    R.string.shell_failed, android.widget.Toast.LENGTH_SHORT).show();
                         }
-                        WeatherManager.setManualCity(MainActivity.this, city, ll[0], ll[1]);
-                        WeatherManager.fetch(MainActivity.this, weatherRefresh());
                     }
                 })
                 .setNeutralButton(R.string.weather_auto, new android.content.DialogInterface.OnClickListener() {
@@ -556,49 +630,99 @@ public class MainActivity extends Activity {
         };
     }
 
+    /**
+     * 启动应用。
+     *
+     * 旧实现把 doLaunch 挂在 ViewPropertyAnimator 的 withEndAction 上，
+     * 只有那 160ms 动画正常收尾才会真正启动 —— 窗口失焦、系统关掉动画、
+     * view 被回收，回调就不会来，图标点了毫无反应（作为桌面时最容易复现）。
+     * 现在改成：先启动，动效只做视觉反馈，不影响启动。
+     */
     private void launchApp(final AppAdapter.AppItem it) {
         if (it == null) return;
-
-        // 启动动效：下压回弹后切出（深海与微光 · 模块5）
-        final View focused = getCurrentFocus();
-        if (focused != null) {
-            focused.animate().scaleX(0.92f).scaleY(0.92f).setDuration(70)
-                    .withEndAction(new Runnable() {
-                        @Override public void run() {
-                            focused.animate().scaleX(1.06f).scaleY(1.06f).setDuration(90)
-                                    .withEndAction(new Runnable() {
-                                        @Override public void run() { doLaunch(it); }
-                                    }).start();
-                        }
-                    }).start();
-            return;
-        }
         doLaunch(it);
+        try {
+            View focused = getCurrentFocus();
+            if (focused != null) {
+                focused.animate().scaleX(0.94f).scaleY(0.94f).setDuration(60).start();
+            }
+        } catch (Throwable ignored) { }
     }
 
+    /**
+     * 三级兜底启动，任何一级成功就返回：
+     *   1. 显式 ComponentName（最快最准）
+     *   2. PackageManager 给的启动 Intent（适配包可见性过滤）
+     *   3. 隐式 ACTION_MAIN + CATEGORY_LAUNCHER + setPackage
+     * 全失败才提示，并把原因一起显示出来，便于截图定位。
+     */
     private void doLaunch(AppAdapter.AppItem it) {
+        if (it == null) return;
 
-        // 点自己：不是再启动一次，而是唤出系统的「选择桌面」窗口。
-        // 系统没有默认桌面时会弹出"始终 / 仅此一次"，
-        // 这是被固件锁死 Home 键的设备上唯一能设默认的入口。
+        // 点自己：唤出系统「选择桌面」窗口，而不是再启动一次
         if (getPackageName().equals(it.pkg)) {
             openHomeChooser();
             return;
         }
 
-        try {
-            ComponentName cn = new ComponentName(it.pkg, it.cls);
-            Intent i = new Intent(Intent.ACTION_MAIN);
-            i.addCategory(Intent.CATEGORY_LAUNCHER);
-            i.setComponent(cn);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            startActivity(i);
-            pushRecent(it.pkg);
-        } catch (Throwable t) {
-            Toast.makeText(this, it.label + "  " + getString(R.string.launch_failed),
-                    Toast.LENGTH_SHORT).show();
+        Throwable last = null;
+
+        // 1) 显式组件
+        if (it.cls != null) {
+            try {
+                ComponentName cn = new ComponentName(it.pkg, it.cls);
+                Intent i = new Intent(Intent.ACTION_MAIN);
+                i.addCategory(Intent.CATEGORY_LAUNCHER);
+                i.setComponent(cn);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                startActivity(i);
+                CLog.i("launch ok(component) " + it.pkg + "/" + it.cls);
+                pushRecent(it.pkg);
+                return;
+            } catch (Throwable t) {
+                last = t;
+                CLog.e("launch component failed " + it.pkg, t);
+            }
         }
+
+        // 2) 系统启动 Intent
+        try {
+            Intent li = getPackageManager().getLaunchIntentForPackage(it.pkg);
+            if (li != null) {
+                li.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                startActivity(li);
+                CLog.i("launch ok(intent) " + it.pkg);
+                pushRecent(it.pkg);
+                return;
+            }
+        } catch (Throwable t) {
+            last = t;
+            CLog.e("launch intent failed " + it.pkg, t);
+        }
+
+        // 3) 隐式
+        try {
+            Intent im = new Intent(Intent.ACTION_MAIN);
+            im.addCategory(Intent.CATEGORY_LAUNCHER);
+            im.setPackage(it.pkg);
+            im.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            startActivity(im);
+            CLog.i("launch ok(implicit) " + it.pkg);
+            pushRecent(it.pkg);
+            return;
+        } catch (Throwable t) {
+            last = t;
+            CLog.e("launch implicit failed " + it.pkg, t);
+        }
+
+        String why = last == null ? "" : last.getClass().getSimpleName()
+                + (last.getMessage() == null ? "" : ": " + last.getMessage());
+        if (why.length() > 90) why = why.substring(0, 90);
+        Toast.makeText(this, it.label + "  " + getString(R.string.launch_failed)
+                + (why.length() > 0 ? "\n" + why : ""), Toast.LENGTH_LONG).show();
     }
 
     /** 桌面不该被返回键退出 */
@@ -621,11 +745,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void openTransfer() {
-        Intent i = new Intent(this, TransferActivity.class);
-        startActivity(i);
-    }
-
     private void ensureOverlayPermission() {
         if (Build.VERSION.SDK_INT < 23) return;
         if (!Settings.canDrawOverlays(this)) {
@@ -637,16 +756,47 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void ensureNotificationPermission() {
+        // Android 13+ 通知需运行时授权；前台服务通知本身豁免，此处为面向未来普通通知补全
+        if (Build.VERSION.SDK_INT < 33) return;
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED) return;
+        SharedPreferences sp = getSharedPreferences("cdesk_core", MODE_PRIVATE);
+        if (sp.getBoolean("notif_asked", false)) return;
+        sp.edit().putBoolean("notif_asked", true).commit();
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFICATION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_NOTIFICATION) {
+            // 授权与否都不阻断：前台服务通知豁免，更新弹窗走 AlertDialog/Toast 不受影响
+            startSpeedService();
+        }
+    }
+
     private void startSpeedService() {
         if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(this)) return;
         Intent svc = new Intent(this, SpeedService.class);
         try {
             if (Build.VERSION.SDK_INT >= 26) startForegroundService(svc);
             else startService(svc);
-        } catch (Throwable ignored) { }
+        } catch (Throwable t) {
+            // 厂商 ROM（澎湃/Flyme/ColorOS 等）常限制后台服务启动，静默失败会让用户误以为功能坏了
+            Toast.makeText(this, R.string.guardian_service_failed, Toast.LENGTH_LONG).show();
+        }
     }
 
     private int dp(float v) {
         return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    /** 记住当前页号，切语言/重建后回到这一页 */
+    private void savePage() {
+        try {
+            getSharedPreferences("cdesk_core", MODE_PRIVATE).edit().putInt("page_last", page).commit();
+        } catch (Throwable ignored) {
+        }
     }
 }

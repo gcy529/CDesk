@@ -7,8 +7,11 @@
 <meta name="description" content="C桌面（CDesk）是给老车机、电视盒子、Android TV 用的一块干净桌面：无广告、无推荐流、内置 4K 壁纸、网速悬浮窗、局域网传文件。">
 <meta property="og:title" content="C桌面 CDesk — 老车机、电视盒子的干净桌面">
 <meta property="og:description" content="无广告、无推荐流。三页桌面 + 4K 壁纸 + 网速悬浮窗 + 局域网传文件。">
-<meta property="og:image" content="assets/icon-512.png">
-<link rel="icon" href="assets/icon-512.png">
+<meta property="og:image" content="https://gcy5.cn.mt/classic/assets/icon-512.png">
+<meta property="og:url" content="https://gcy5.cn.mt/classic/">
+<link rel="canonical" href="https://gcy5.cn.mt/classic/">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
 <style>
   :root{
     --bg:#0f0d0a; --card:#1a1610; --line:#332a1c;
@@ -136,8 +139,8 @@
   <details><summary>装完打开是黑屏 / 闪退？</summary><p>多数是老系统缺资源。请确认 Android 版本 ≥ 4.1（API 16）；仍不行到公众号反馈，说明车型和系统版本。</p></details>
   <details><summary>为什么图标不是我想要的样子？</summary><p>桌面上的图标全部读取设备内应用的真实图标，本应用不替换任何第三方图标。只有 C桌面 自己的图标是内置的。</p></details>
   <details><summary>壁纸能换成自己的照片吗？</summary><p>可以。在「壁纸设置」里选自定义图片，从相册挑一张就行；也可以用「局域网传文件」把电脑/手机里的图传过来直接设成壁纸。</p></details>
-  <details><summary>影音页里的直播 / 点播 / 音乐是干嘛的？</summary><p>只是播放器入口，内容自行导入、自行负责。</p></details>
-  <details><summary>会收集我的数据吗？</summary><p>不会。除了天气需要按 IP 判断城市外，应用不向任何服务器上传数据；局域网传文件也只在你自己的网络内进行。</p></details>
+  <details><summary>影音页里的直播 / 点播 / 音乐是干嘛的？</summary><p>提供播放器能力，具体内容由用户自行安排。</p></details>
+  <details><summary>会收集我的数据吗？</summary><p>不会。除了天气按 IP 判断城市、正版授权校验会向授权服务器发送设备签名指纹外，应用不向任何服务器上传其他数据；局域网传文件也只在你自己的网络内进行。</p></details>
 </section>
 
 <section class="wrap">
@@ -149,11 +152,11 @@
     <!-- 正式版 -->
     <div style="flex:1 1 340px;min-width:300px;padding:24px;border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03)">
       <p style="margin:0 0 6px;font-size:12px;letter-spacing:.16em;color:#22C55E;font-weight:700">STABLE</p>
-      <p style="margin:0 0 10px;font-size:21px;font-weight:700">正式版 <span style="font-size:13px;font-weight:400;color:var(--dim)">v0.2.5</span></p>
-      <p style="margin:0 0 18px;font-size:14px;line-height:1.75;color:var(--dim)">验证过的版本。官网默认下载它，App 内的更新提示也只认这个通道。</p>
+      <p style="margin:0 0 10px;font-size:21px;font-weight:700">正式版 <span style="font-size:13px;font-weight:400;color:var(--dim)">v0.3.0</span></p>
+      <p style="margin:0 0 18px;font-size:14px;line-height:1.75;color:var(--dim)">桌面 UI 重构后的重新发布版，验证过的版本。官网默认下载它，App 内的更新提示也只认这个通道。本次更换了签名密钥，旧版本设备请先卸载再装。</p>
       <div class="btns" style="justify-content:flex-start">
-        <a class="btn gold" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk">⚡ GHFast 加速</a>
-        <a class="btn red" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/v0.2.5/app-debug.apk">GH-Proxy</a>
+        <a class="btn gold" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/v0.3.0/app-debug.apk">⚡ GHFast 加速</a>
+        <a class="btn red" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/v0.3.0/app-debug.apk">GH-Proxy</a>
         <a class="btn ghost" href="https://github.com/gcy529/CDesk/releases/latest">GitHub 直链</a>
       </div>
     </div>
@@ -161,11 +164,11 @@
     <!-- 尝鲜版 -->
     <div style="flex:1 1 340px;min-width:300px;padding:24px;border-radius:16px;border:1px solid rgba(77,107,254,.32);background:rgba(77,107,254,.07)">
       <p style="margin:0 0 6px;font-size:12px;letter-spacing:.16em;color:#4D6BFE;font-weight:700">BETA</p>
-      <p style="margin:0 0 10px;font-size:21px;font-weight:700">尝鲜版</p>
+      <p style="margin:0 0 10px;font-size:21px;font-weight:700">尝鲜版 <span style="font-size:13px;font-weight:400;color:var(--dim)">v0.7.14</span></p>
       <p style="margin:0 0 18px;font-size:14px;line-height:1.75;color:var(--dim)">新功能先在这里跑，可能带 bug。愿意帮忙试错、想早点用上新东西就用它。</p>
       <div class="btns" style="justify-content:flex-start">
-        <a class="btn" style="background:#4D6BFE;color:#fff;border-color:#4D6BFE" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.13-beta.apk">🧪 GHFast 加速</a>
-        <a class="btn ghost" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.13-beta.apk">GH-Proxy</a>
+        <a class="btn" style="background:#4D6BFE;color:#fff;border-color:#4D6BFE" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.14-beta.apk">🧪 GHFast 加速</a>
+        <a class="btn ghost" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.14-beta.apk">GH-Proxy</a>
         <a class="btn ghost" href="https://github.com/gcy529/CDesk/releases/tag/beta">更新记录</a>
       </div>
     </div>

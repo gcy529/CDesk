@@ -1,7 +1,5 @@
 package com.c.launcher;
 
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -13,29 +11,52 @@ import android.widget.Toast;
 
 /**
  * 音乐壳：导入用户自己的音频列表（M3U / TXT / JSON），点条目播放。
- * 用系统 MediaPlayer，后台播放跟随 Activity 生命周期；不内置任何音源。
+ *
+ * 播放内核统一走 MusicKernel（ExoPlayer），与音乐首页、影视/直播的
+ * PlayerActivity 内核一致；API < 21 的老车机由 MusicKernel 内部回退原生。
+ * UI 上保留音乐专属的底部控制条（上一首 / 播放暂停 / 下一首）。
  */
-public class MusicShellActivity extends BaseShellActivity {
+public class MusicShellActivity extends BaseShellActivity implements MusicKernel.Listener {
 
-    private MediaPlayer mp;
     private LinearLayout controlBar;
     private TextView tvNow;
     private int current = -1;
+    private int errStreak = 0;
 
     @Override protected String prefKey() { return "music_src"; }
 
+    @Override protected String targetKind() { return "music"; }
+
     @Override protected int titleRes() { return R.string.music_title; }
+
+    @Override protected int emptyTitleRes() { return R.string.music_empty_title; }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Screen.apply(this);
+        CLog.i("MusicShellActivity onCreate");
         buildControls();
+        MusicKernel k = MusicKernel.get(this);
+        k.addListener(this);
+        k.setOnCompleted(new Runnable() {
+            @Override public void run() { step(1); }
+        });
+        k.setOnError(new Runnable() {
+            @Override public void run() {
+                errStreak++;
+                if (errStreak < 3) { step(1); return; }
+                Toast.makeText(MusicShellActivity.this, R.string.shell_play_failed, Toast.LENGTH_SHORT).show();
+                NetDiag.diag(MusicKernel.get(MusicShellActivity.this).url(), new NetDiag.Sink() {
+                    @Override public void line(String s) { CLog.i("music diag: " + s); }
+                });
+            }
+        });
+        syncNow();
     }
 
     /** 底部控制条：上一首 / 播放暂停 / 下一首 */
     private void buildControls() {
-        LinearLayout root = (LinearLayout) findViewById(R.id.lvItems).getParent();
+        LinearLayout root = (LinearLayout) findViewById(R.id.rootShell);
         ThemeManager.Palette p = ThemeManager.current(this);
 
         controlBar = new LinearLayout(this);
@@ -65,14 +86,12 @@ public class MusicShellActivity extends BaseShellActivity {
         });
         pp.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                if (mp == null) { step(1); return; }
-                if (mp.isPlaying()) mp.pause(); else mp.start();
+                MusicKernel.get(MusicShellActivity.this).toggle();
             }
         });
 
         // 插到列表下面
-        LinearLayout parent = (LinearLayout) root;
-        parent.addView(controlBar);
+        root.addView(controlBar);
     }
 
     private Button mkButton(String text) {
@@ -92,30 +111,10 @@ public class MusicShellActivity extends BaseShellActivity {
     }
 
     private void play(PlaylistParser.Item it) {
-        int idx = items.indexOf(it);
-        current = idx;
-        stopPlayer();
-        try {
-            mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mp.setDataSource(it.url);
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override public void onPrepared(MediaPlayer player) { player.start(); }
-            });
-            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override public boolean onError(MediaPlayer player, int what, int extra) {
-                    Toast.makeText(MusicShellActivity.this, R.string.shell_play_failed, Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-            });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override public void onCompletion(MediaPlayer player) { step(1); }
-            });
-            mp.prepareAsync();
-            if (tvNow != null) tvNow.setText(it.name);
-        } catch (Exception e) {
-            Toast.makeText(this, R.string.shell_play_failed, Toast.LENGTH_SHORT).show();
-        }
+        current = items.indexOf(it);
+        MusicKernel.get(this).play(it.url, it.name, false);
+        History.push(this, it.name, it.url, "music", 0);
+        syncNow();
     }
 
     /** 上/下一首：跳过分组头（url 为 null 的条目） */
@@ -131,24 +130,36 @@ public class MusicShellActivity extends BaseShellActivity {
         }
     }
 
-    private void stopPlayer() {
-        if (mp != null) {
-            try { mp.stop(); } catch (Exception ignored) { }
-            try { mp.release(); } catch (Exception ignored) { }
-            mp = null;
+    /** 同步当前曲名到控制条 */
+    private void syncNow() {
+        if (tvNow == null) return;
+        String t = MusicKernel.get(this).title();
+        if (t.length() == 0) {
+            tvNow.setText(R.string.music_none);
+        } else {
+            tvNow.setText(t);
         }
+    }
+
+    @Override
+    public void onStateChanged(boolean playing, String title, String url, boolean live) {
+        if (playing) errStreak = 0;
+        syncNow();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // 进后台就停，避免车上切走后一直响
-        if (mp != null && mp.isPlaying()) mp.pause();
+        // 进后台就暂停，避免车上切走后一直响
+        MusicKernel.get(this).pause();
     }
 
     @Override
     protected void onDestroy() {
-        stopPlayer();
+        MusicKernel k = MusicKernel.get(this);
+        k.removeListener(this);
+        k.setOnCompleted(null);
+        k.setOnError(null);
         super.onDestroy();
     }
 }

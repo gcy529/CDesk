@@ -9,15 +9,15 @@
 
 ```
 一个 APK
-minSdk 14  →  Android 4.0
+minSdk 16  →  Android 4.1
 targetSdk 34 →  Android 15
-零 native 库
-不加任何第三方依赖
+零 native 库（无 .so，不分 ABI）
+第三方依赖最小化：ExoPlayer 2.18.1 + 纯 Java 工具库
 ```
 
 参考产品 Aerial 分了 3 个包（standard / guard / lite），
 其中 standard 与 lite 的差异**纯粹因为他们用了 ExoPlayer 和 AndroidX**，
-不是系统限制。我们不走那条路。
+我们锁 ExoPlayer 2.18.1 兼容 minSdk 16，一个 APK 通吃全版本。
 
 ---
 
@@ -35,15 +35,18 @@ targetSdk 34 →  Android 15
 AndroidX 组件大量要求 minSdk 21，且会让 APK 从 3 MB 涨到 8 MB 以上。
 我们的界面全部用原生 View 手工搭。
 
-### 2. 不引入 ExoPlayer
+### 2. ExoPlayer 锁 2.18.1（最后一版支持 minSdk 16），不升 media3
 
 ```
-✗ com.google.android.exoplayer:exoplayer-core   // minSdk 21
-✓ android.widget.VideoView                      // API 1
-✓ android.media.MediaPlayer                     // API 1
+✓ com.google.android.exoplayer:exoplayer-*:2.18.1   // 声明 minSdk 16，一个 APK 通吃
+✗ com.google.android.media3:exoplayer-*              // media3 起要求 API 21，老车机用不了
 ```
 
-这是 Aerial 被迫拆出 Lite 版的直接原因。要做动态壁纸，用 VideoView 或逐帧。
+ExoPlayer 2.18.1 是最后一版声明支持 minSdk 16 的版本。media3 起要求 API 21，
+一旦升级就得把 minSdk 提到 21、放弃 Android 4.x 老车机。所以锁死 2.18.1，
+不升 media3，这是"一个 APK 通吃 Android 4.1 ~ 15"的关键。
+
+**引入前必查**：确认 ExoPlayer 版本声明 minSdk ≤ 16，且不携带 .so 文件。
 
 ### 3. 不引入任何带 .so 的库
 
@@ -91,9 +94,15 @@ Android 9 起，只要 APK 里有 native 库，64 位设备就强制要求 64 �
 
 ## 允许的依赖
 
-**没有。** `dependencies { }` 保持为空。
+**最小化。** 只保留纯 Java、无 native、不引发 ABI 拆分的第三方库：
 
-所有能力都用 Android Framework 自带 API 实现：
+| 依赖 | 用途 | 约束 |
+|---|---|---|
+| `com.google.android.exoplayer:exoplayer-*:2.18.1` | 播放器（minSdk 16 兼容） | 纯 Java，无 .so，锁版本不升 media3 |
+| `com.google.zxing:core:3.5.3` | 局域网传输二维码 | 纯 Java，R8 裁剪后约 30KB |
+| `org.mozilla:rhino:1.7.14` | 音乐源 .js 脚本 | 纯 Java，无 native |
+
+其余能力全部用 Android Framework 自带 API 实现：
 
 | 需求 | 方案 |
 |---|---|
@@ -139,14 +148,18 @@ Android 9 起，只要 APK 里有 native 库，64 位设备就强制要求 64 �
 
 ## 提交前自检
 
-- [ ] `dependencies { }` 还是空的吗？
-- [ ] 有没有新增 `.so`？（`unzip -l app-release.apk | grep '\.so'`）
+- [ ] 新依赖是纯 Java、无 `.so` 吗？（`unzip -l app-release.apk | grep '\.so'`）
 - [ ] 新调用的 API 有没有版本分支？
-- [ ] `minSdkVersion` 还是 14 吗？
+- [ ] `minSdkVersion` 还是 16 吗？
 - [ ] APK 装到 Android 4.4 真机上还能起来吗？
 
-## 依赖例外：ZXing
+## 依赖说明
 
-唯一第三方依赖 `com.google.zxing:core:3.5.3`（Apache 2.0）。
-用途仅一个：局域网传输页的地址二维码。
-纯 Java、无 native、不引发 ABI 拆分，R8 裁剪后增量约 30KB。
+**ExoPlayer**：`com.google.android.exoplayer:exoplayer-*:2.18.1`。
+锁 2.18.1（最后一版支持 minSdk 16），纯 Java 无 native，不引发 ABI 拆分。详见铁律 2。
+
+**ZXing**：`com.google.zxing:core:3.5.3`（Apache 2.0）。
+用途仅一个：局域网传输页的地址二维码。纯 Java、无 native，R8 裁剪后增量约 30KB。
+
+**Rhino**：`org.mozilla:rhino:1.7.14`。
+用途：跑音乐源 .js 脚本（花音源等 lx-music 格式）。纯 Java、无 native。

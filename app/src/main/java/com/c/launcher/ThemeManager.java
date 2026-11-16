@@ -180,7 +180,8 @@ public class ThemeManager {
         g.setColor(p.isLight ? 0x14000000 : 0x1AFFFFFF);
         g.setStroke(2, p.accent);
         b.setBackgroundDrawable(g);
-        b.setTextColor(p.accent);
+        // 文字跟正文同色：之前整页按钮都是强调色（紫），跟旁边的字两套颜色，很突兀
+        b.setTextColor(p.fg);
     }
 
     public static int interpolate(int from, int to, float t) {
