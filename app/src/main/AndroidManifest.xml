@@ -166,6 +166,23 @@
                 android:value="Realtime network speed overlay for desktop replacement" />
         </service>
 
+        <!-- 手机遥控 / 互联遥控：局域网 HTTP 服务，随桌面常驻 -->
+        <service
+            android:name=".RemoteService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="LAN remote control endpoint for the desktop" />
+        </service>
+
+        <activity
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
+            android:name=".RemoteActivity"
+            android:exported="false"
+            android:label="@string/remote_title" />
+
         <activity
             android:name=".VodHomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

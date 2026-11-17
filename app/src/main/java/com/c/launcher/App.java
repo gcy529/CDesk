@@ -1,6 +1,8 @@
 package com.c.launcher;
 
+import android.app.Activity;
 import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,6 +26,24 @@ public class App extends Application {
         CLog.init(this);
         CLog.i("App onCreate");
         installCrashHandler();
+        trackResumedForRemote();
+    }
+
+    /** 遥控按键要派发到「当前前台的那一页」，这里跟着 Activity 生命周期记住它 */
+    private void trackResumedForRemote() {
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override public void onActivityResumed(Activity activity) {
+                RemoteKeys.attach(activity);
+            }
+            @Override public void onActivityPaused(Activity activity) {
+                RemoteKeys.detach(activity);
+            }
+            @Override public void onActivityCreated(Activity activity, android.os.Bundle b) { }
+            @Override public void onActivityStarted(Activity activity) { }
+            @Override public void onActivityStopped(Activity activity) { }
+            @Override public void onActivitySaveInstanceState(Activity activity, android.os.Bundle b) { }
+            @Override public void onActivityDestroyed(Activity activity) { }
+        });
     }
 
     private void installCrashHandler() {

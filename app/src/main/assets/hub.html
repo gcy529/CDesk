@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#11131B">
+<title>C桌面 · 互联遥控</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#11131B;color:#F2F6FC;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+  body{display:flex;flex-direction:column;height:100dvh}
+  nav{display:flex;gap:8px;padding:10px 12px;background:#171A24;flex:0 0 auto}
+  nav button{flex:1;padding:11px 0;border:0;border-radius:10px;background:#232838;
+    color:#9AA7BB;font-size:15px;font-weight:600}
+  nav button.on{background:#4D6BFE;color:#fff}
+  main{flex:1 1 auto;position:relative;overflow:hidden}
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#11131B}
+</style>
+</head>
+<body>
+<nav>
+  <button type="button" data-tab="remote" class="on">遥控</button>
+  <button type="button" data-tab="transfer">传文件</button>
+</nav>
+<main><iframe id="fr" title="C桌面"></iframe></main>
+<script>
+(function () {
+  var K = '';
+  var q = location.search.replace(/^\?/, '');
+  if (q) {
+    var parts = q.split('&');
+    for (var i = 0; i < parts.length; i++) {
+      var kv = parts[i].split('=');
+      if (kv[0] === 'k') K = decodeURIComponent(kv[1] || '');
+    }
+  }
+  var fr = document.getElementById('fr');
+  var btns = document.querySelectorAll('nav button');
+  function go(tab) {
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute('data-tab') === tab) btns[i].className = 'on';
+      else btns[i].className = '';
+    }
+    fr.src = '/' + tab + '?k=' + encodeURIComponent(K);
+  }
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].onclick = (function (b) {
+      return function () { go(b.getAttribute('data-tab')); };
+    })(btns[i]);
+  }
+  go('remote');
+})();
+</script>
+</body>
+</html>

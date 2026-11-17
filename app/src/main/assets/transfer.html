@@ -73,13 +73,19 @@ drop.addEventListener('drop',function(ev){
   if(ev.dataTransfer && ev.dataTransfer.files.length){fi.files=ev.dataTransfer.files;}
 });
 
+var K='';
+(function(){var q=location.search.replace(/^\?/,'');if(q){var ps=q.split('&');
+for(var i=0;i<ps.length;i++){var kv=ps[i].split('=');
+if(kv[0]==='k')K=decodeURIComponent(kv[1]||'');}}})();
+function withK(u){return u+(u.indexOf('?')>=0?'&':'?')+'k='+encodeURIComponent(K);}
+
 btn.onclick=function(){
   if(!fi.files.length){msg.textContent='请选择文件 / no file selected';return;}
   var f=fi.files[0];
   btn.disabled=true;
   msg.textContent='上传中 / uploading…';
   var x=new XMLHttpRequest();
-  x.open('POST','/upload');
+  x.open('POST',withK('/upload'));
   x.setRequestHeader('X-File-Name',encodeURIComponent(f.name));
   x.upload.onprogress=function(e){
     if(e.lengthComputable){
@@ -111,7 +117,7 @@ sbtn.onclick=function(){
   sbtn.disabled=true;
   smsg.textContent='发送中 / sending…';
   var x=new XMLHttpRequest();
-  x.open('POST','/text');
+  x.open('POST',withK('/text'));
   x.setRequestHeader('X-CDesk-Target', tgt.value || '');
   x.onload=function(){
     sbtn.disabled=false;

@@ -259,4 +259,13 @@
     <string name="guardian_perf_bad">異常</string>
     <string name="guardian_perf_unknown">未知</string>
     <string name="guardian_perf_close">關閉</string>
+    <string name="hub_label">互聯遙控</string>
+    <string name="remote_title">手機遙控</string>
+    <string name="remote_idle">遙控未啟動</string>
+    <string name="remote_starting">正在啟動…</string>
+    <string name="remote_running">遙控執行中，手機掃碼即可操作</string>
+    <string name="remote_start">啟動遙控</string>
+    <string name="remote_stop">停止遙控</string>
+    <string name="remote_hint">手機和本機連同一個 Wi-Fi，掃碼後像遙控器一樣操作桌面</string>
+    <string name="remote_qr_hint">手機掃碼，開啟遙控器</string>
 </resources>

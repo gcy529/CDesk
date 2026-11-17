@@ -1,8 +1,8 @@
 {
-  "version": "0.7.14",
-  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.14-beta.apk",
-  "sha256": "5cc1661115858f8b31be9382e7c2f5ae8419f09ed203d05b80f8044c47deef6f",
+  "version": "0.7.16",
+  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.16-beta.apk",
+  "sha256": "",
   "channel": "beta",
   "force": false,
-  "releaseNotes": "0.7.14 更新内容：\n- 授权容错：授权服务端不可达时放行，避免新用户被锁死\n- 脚本沙箱：音源脚本全屏蔽 Java 调用并加超时保护，杜绝远程代码执行\n- 安全加固：CI 签名口令改用密钥管理，消除硬编码风险\n- 测速修复：镜像测速排序修复，非镜像节点不被顶到首位\n- 性能优化：QQ 群二维码压缩至 9.5KB，页面加载更快\n- SEO 完善：补充 og:url/canonical/favicon，搜索收录更友好"
+  "releaseNotes": "0.7.16 更新内容：\n- 桌面常驻「互联遥控」二维码：开机自动就绪，手机扫一张码即可在「遥控 / 传文件」之间切换\n- 遥控令牌落盘保存，地址跨重启固定，手机书签长期有效\n- 手机传文件、粘贴影音地址走同一张码\n- 稳定版与 beta 启用同一把签名密钥，可互相覆盖安装，后续升级不再需要卸载\n- 版本号与官网、CHANGELOG 统一由 CI 校验"
 }

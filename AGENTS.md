@@ -9,7 +9,8 @@
   - `./bump-version.sh`：写回 `app/build.gradle`
   - `./bump-version.sh --dry`：仅预览不写回
 - 推 beta 会触发 CI 自动出包，资产名随 `versionName` 变化（如 `CDesk-0.7.13-beta.apk`）。
-- 官网 `index.html`、`classic/index.html` 与 `version.json` 里的版本号/资产名由脚本一并同步，不要手改。
+- 官网 `index.html` 与 `version.json` 里的版本号/资产名由脚本一并同步，不要手改。
+- `classic/` 经典版页面已删除，不要再加回来；它曾长期停在 0.3.0，是版本号对外不同步的根因。
 - CI 会强制校验 `versionName` / `version.json` / `index.html` / `CHANGELOG.md` 四者一致，缺一段就构建失败。
 
 ## 签名与发布（全分支通用）
