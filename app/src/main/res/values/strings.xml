@@ -282,4 +282,5 @@
     <string name="guardian_perf_bad">异常</string>
     <string name="guardian_perf_unknown">未知</string>
     <string name="guardian_perf_close">关闭</string>
+    <string name="hub_label">互联遥控</string>
 </resources>

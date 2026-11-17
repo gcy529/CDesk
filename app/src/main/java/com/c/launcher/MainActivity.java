@@ -64,6 +64,8 @@ public class MainActivity extends Activity {
     private TextView tvPageTitle;
     private TextView tvPageDots;
     private TextView tvPageHint;
+    private ImageView ivHubQr;
+    private String hubQrUrl;
 
     private static final int PAGE_COUNT = 2;
     private static final int PAGE_APPS = 0;
@@ -200,6 +202,19 @@ public class MainActivity extends Activity {
         tvPageDots = (TextView) findViewById(R.id.tvPageDots);
         tvPageHint = (TextView) findViewById(R.id.tvPageHint);
 
+        ivHubQr = (ImageView) findViewById(R.id.ivHubQr);
+        if (ivHubQr != null) {
+            ivHubQr.setFocusable(false);
+            ivHubQr.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, RemoteActivity.class));
+                }
+            });
+        }
+        ensureHubRunning();
+        ui.postDelayed(hubQrTick, 600);
+        ui.postDelayed(hubQrTick, 2000);
+
         adapter = new AppAdapter(this);
         gridApps.setAdapter(adapter);
         // 触摸点击走 item 自己的监听：item 是 focusable，GridView.onItemClick 在触摸下收不到
@@ -244,6 +259,57 @@ public class MainActivity extends Activity {
         }
     }
 
+    /** 桌面起来就把遥控服务拉起；开机进桌面后不用再找物理遥控器 */
+    private void ensureHubRunning() {
+        if (!getSharedPreferences("cdesk_remote", MODE_PRIVATE).getBoolean("auto_start", true)) return;
+        try {
+            if (!RemoteService.isRunning()) RemoteService.start(this);
+        } catch (Throwable ignored) { }
+    }
+
+    private final Runnable hubQrTick = new Runnable() {
+        @Override public void run() { refreshHubQr(); }
+    };
+
+    private void refreshHubQr() {
+        if (ivHubQr == null) return;
+        String url = RemoteService.url();
+        String token = RemoteService.token();
+        if (!RemoteService.isRunning() || url == null || url.length() == 0
+                || token == null || token.length() == 0) {
+            ivHubQr.setVisibility(View.INVISIBLE);
+            return;
+        }
+        String full = url + "/?k=" + token;
+        if (full.equals(hubQrUrl)) {
+            ivHubQr.setVisibility(View.VISIBLE);
+            return;
+        }
+        try {
+            com.google.zxing.qrcode.QRCodeWriter w = new com.google.zxing.qrcode.QRCodeWriter();
+            java.util.Map<com.google.zxing.EncodeHintType, Object> hints =
+                    new java.util.HashMap<com.google.zxing.EncodeHintType, Object>();
+            hints.put(com.google.zxing.EncodeHintType.MARGIN, Integer.valueOf(1));
+            com.google.zxing.common.BitMatrix mx =
+                    w.encode(full, com.google.zxing.BarcodeFormat.QR_CODE, 260, 260, hints);
+            int side = mx.getWidth();
+            int[] px = new int[side * side];
+            for (int y = 0; y < side; y++) {
+                for (int xx = 0; xx < side; xx++) {
+                    px[y * side + xx] = mx.get(xx, y) ? 0xFF11131B : 0xFFFFFFFF;
+                }
+            }
+            android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(
+                    side, side, android.graphics.Bitmap.Config.ARGB_8888);
+            bmp.setPixels(px, 0, side, 0, 0, side, side);
+            ivHubQr.setImageBitmap(bmp);
+            ivHubQr.setVisibility(View.VISIBLE);
+            hubQrUrl = full;
+        } catch (Throwable ignored) {
+            ivHubQr.setVisibility(View.INVISIBLE);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -262,6 +328,7 @@ public class MainActivity extends Activity {
         });
         ensureNotificationPermission();
         startSpeedService();
+        ui.postDelayed(hubQrTick, 400);
         // 角标状态恢复：任何页面写过的状态在这里落回桌面
         android.content.SharedPreferences sp = getSharedPreferences("cdesk_status", 0);
         if (ivStatusDown != null) ivStatusDown.setVisibility(sp.getInt("down", 0) == 1 ? View.VISIBLE : View.GONE);

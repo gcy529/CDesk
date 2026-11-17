@@ -281,4 +281,5 @@
     <string name="device_car">Device: Car</string>
     <string name="device_pad">Device: Pad</string>
     <string name="device_phone">Device: Phone</string>
+    <string name="hub_label">Connect &amp; Remote</string>
 </resources>

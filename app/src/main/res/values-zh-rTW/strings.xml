@@ -280,4 +280,5 @@
     <string name="device_car">裝置：車機</string>
     <string name="device_pad">裝置：平板</string>
     <string name="device_phone">裝置：手機</string>
+    <string name="hub_label">互聯遙控</string>
 </resources>

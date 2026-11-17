@@ -1,6 +1,6 @@
 {
-  "version": "0.3.2",
-  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.2/app-debug.apk",
+  "version": "0.3.3",
+  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.3/app-debug.apk",
   "channel": "stable",
   "force": false,
   "releaseNotes": "稳定版 0.3.2：修复签名问题。此前每个版本的签名证书都不相同（0.3.0 与 0.3.1 也无法互相覆盖），导致升级必须卸载。本版起改用固定发布密钥并加了构建校验，从本版开始后续版本可直接覆盖更新，不再需要卸载。注意：从 0.3.1 及更早版本升级到 0.3.2 仍需卸载一次。另新增：远程公告弹窗（服务端可控，同一公告只弹一次）、手机遥控入口。",

@@ -7,12 +7,15 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.IBinder;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,7 +106,7 @@ public class RemoteService extends Service {
             return;
         }
         server = ss;
-        sToken = newToken();
+        sToken = loadToken();
         sUrl = "http://" + localIp() + ":" + port;
         sRunning = true;
         CLog.i("remote started " + sUrl);
@@ -113,6 +116,17 @@ public class RemoteService extends Service {
         }, "cdesk-remote-accept");
         t.setDaemon(true);
         t.start();
+    }
+
+    /** 令牌只生成一次并落盘：这样断电重启后二维码/书签里的地址仍然有效 */
+    private String loadToken() {
+        SharedPreferences sp = getSharedPreferences("cdesk_remote", MODE_PRIVATE);
+        String t = sp.getString("token", null);
+        if (t == null || t.length() < 6) {
+            t = newToken();
+            sp.edit().putString("token", t).apply();
+        }
+        return t;
     }
 
     private static String newToken() {
@@ -166,15 +180,15 @@ public class RemoteService extends Service {
             String method = parts[0];
             String target = parts[1];
 
-            // 头部读完即可，遥控请求没有 body
+            // 上传要读 body，所以先记下长度；普通遥控请求没有 body
+            long contentLength = -1L;
             String line;
             while ((line = readLine(in)) != null) {
                 if (line.length() == 0) break;
-            }
-
-            if (!"GET".equals(method)) {
-                sendJson(out, 405, "{\"ok\":false,\"err\":\"method\"}");
-                return;
+                if (line.toLowerCase().startsWith("content-length:")) {
+                    try { contentLength = Long.parseLong(line.substring(15).trim()); }
+                    catch (Throwable ignored) { contentLength = -1L; }
+                }
             }
 
             String path = target;
@@ -190,14 +204,29 @@ public class RemoteService extends Service {
                 return;
             }
 
+            if ("POST".equals(method)) {
+                if (path.startsWith("/upload")) { receiveFile(in, out, contentLength); return; }
+                if (path.startsWith("/text")) { receiveText(in, out, contentLength); return; }
+                sendJson(out, 405, "{\"ok\":false,\"err\":\"method\"}");
+                return;
+            }
+            if (!"GET".equals(method)) {
+                sendJson(out, 405, "{\"ok\":false,\"err\":\"method\"}");
+                return;
+            }
+
             if (path.startsWith("/key")) {
                 String code = queryParam(query, "c");
                 boolean ok = RemoteKeys.dispatch(getApplicationContext(), code);
                 sendJson(out, 200, ok ? "{\"ok\":true}" : "{\"ok\":false}");
             } else if (path.startsWith("/ping")) {
                 sendJson(out, 200, "{\"ok\":true}");
+            } else if (path.startsWith("/remote")) {
+                sendAsset(out, "remote.html");
+            } else if (path.startsWith("/transfer")) {
+                sendAsset(out, "transfer.html");
             } else if (path.equals("/") || path.startsWith("/index")) {
-                sendHtml(out);
+                sendAsset(out, "hub.html");
             } else if (path.startsWith("/favicon")) {
                 byte[] empty = new byte[0];
                 writeHeaders(out, 204, "No Content", "text/plain", empty.length);
@@ -230,12 +259,68 @@ public class RemoteService extends Service {
         return "";
     }
 
-    private void sendHtml(OutputStream out) throws IOException {
-        byte[] body = readAsset("remote.html");
+    private void sendAsset(OutputStream out, String name) throws IOException {
+        byte[] body = readAsset(name);
         if (body == null) body = ("<h1>" + getString(R.string.app_name) + "</h1>").getBytes("UTF-8");
         writeHeaders(out, 200, "OK", "text/html; charset=utf-8", body.length);
         out.write(body);
         out.flush();
+    }
+
+    /** 手机传上来的文件落在外部私有目录的 CDeskTransfer/ 下，和传输页一致 */
+    private void receiveFile(InputStream in, OutputStream out, long len) throws IOException {
+        File dir = saveDir();
+        String name = "upload-" + System.currentTimeMillis() + ".bin";
+        File f = new File(dir, name);
+        long got = 0L;
+        FileOutputStream fos = new FileOutputStream(f);
+        byte[] buf = new byte[8192];
+        try {
+            while (len < 0 || got < len) {
+                int want = buf.length;
+                if (len >= 0) want = (int) Math.min((long) buf.length, len - got);
+                int n = in.read(buf, 0, want);
+                if (n <= 0) break;
+                fos.write(buf, 0, n);
+                got += n;
+            }
+            fos.flush();
+        } finally {
+            try { fos.close(); } catch (Throwable ignored) { }
+        }
+        CLog.i("hub: file received " + got + " bytes -> " + f.getName());
+        sendJson(out, 200, "{\"ok\":true,\"bytes\":" + got + "}");
+    }
+
+    /** 手机发来的影音地址：存起来，回到影音页自动填入并加载 */
+    private void receiveText(InputStream in, OutputStream out, long len) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        if (len > 0) {
+            byte[] buf = new byte[(int) Math.min(len, 65536)];
+            int got = 0;
+            while (got < buf.length) {
+                int n = in.read(buf, got, buf.length - got);
+                if (n <= 0) break;
+                got += n;
+            }
+            sb.append(new String(buf, 0, got, "UTF-8"));
+        }
+        String text = sb.toString().trim();
+        if (text.length() > 0) {
+            getSharedPreferences("cdesk_shell", MODE_PRIVATE).edit()
+                    .putString("pending_src", text)
+                    .putLong("pending_at", System.currentTimeMillis())
+                    .commit();
+        }
+        sendJson(out, 200, text.length() > 0 ? "{\"ok\":true}" : "{\"ok\":false}");
+    }
+
+    private File saveDir() {
+        File ext = getExternalFilesDir(null);
+        String root = ext != null ? ext.getAbsolutePath() : getFilesDir().getAbsolutePath();
+        File d = new File(root, "CDeskTransfer");
+        if (!d.exists()) d.mkdirs();
+        return d;
     }
 
     private void sendJson(OutputStream out, int status, String json) throws IOException {
