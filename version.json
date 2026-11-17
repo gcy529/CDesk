@@ -1,8 +1,8 @@
 {
-  "version": "0.7.16",
-  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.16-beta.apk",
+  "version": "0.7.17",
+  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.17-beta.apk",
   "sha256": "",
   "channel": "beta",
   "force": false,
-  "releaseNotes": "0.7.16 更新内容：\n- 桌面常驻「互联遥控」二维码：开机自动就绪，手机扫一张码即可在「遥控 / 传文件」之间切换\n- 遥控令牌落盘保存，地址跨重启固定，手机书签长期有效\n- 手机传文件、粘贴影音地址走同一张码\n- 稳定版与 beta 启用同一把签名密钥，可互相覆盖安装，后续升级不再需要卸载\n- 版本号与官网、CHANGELOG 统一由 CI 校验"
+  "releaseNotes": "0.7.17 更新内容：\n- 官网导航栏加中英切换：按浏览器语言自动判断，也可手动点按钮切换并记住选择\n- 语言切换覆盖全站文案，英文译文中的版本号自动跟随，不会写死\n- 桌面左侧常驻「互联遥控」二维码：开机自动就绪，一张码切换遥控 / 传文件\n- 遥控令牌落盘，地址跨重启固定\n- 稳定版与 beta 同一签名密钥，可互相覆盖，后续升级无需卸载"
 }
