@@ -50,11 +50,18 @@ jobs:
         run: |
           VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle)
           JVER=$(grep -oP '"version"\s*:\s*"\K[^"]+' version.json)
-          HVER=$(grep -oP '当前版本 v\K[0-9.]+' index.html | head -1)
-          echo "gradle=$VER version.json=$JVER index=$HVER"
-          [ "$VER" = "$JVER" ] || { echo "::error::version.json($JVER) 与 build.gradle($VER) 不一致"; exit 1; }
-          [ "$VER" = "$HVER" ] || { echo "::error::index.html($HVER) 与 build.gradle($VER) 不一致"; exit 1; }
+          echo "gradle=$VER version.json=$JVER"
           grep -q "^## $VER" CHANGELOG.md || { echo "::error::CHANGELOG.md 缺少 ## $VER"; exit 1; }
+
+          # version.json 声明「线上已发布的版本」；官网已迁到 site 分支，
+          # 这里不再校验 index.html，也不再要求 version.json 必须等于 build.gradle，
+          # 只保证它不低于 build.gradle（发版时相等）。
+          echo "$JVER" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' || { echo "::error::version.json($JVER) 版本号格式非法"; exit 1; }
+          LOW=$(printf '%s\n%s\n' "$JVER" "$VER" | sort -V | head -n 1)
+          [ "$LOW" = "$VER" ] || { echo "::error::version.json($JVER) 低于 build.gradle($VER)，会让线上用户收不到更新"; exit 1; }
+          if [ -f index.html ]; then
+            echo "::warning::beta 分支仍有 index.html，官网应在 site 分支维护"
+          fi
 
       - name: Restore signing keystore
         shell: bash
@@ -219,7 +226,7 @@ jobs:
         run: ls -lh app/build/outputs/apk/debug/*.apk
 
       - name: Sync download links in index.html (retired)
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: false
         continue-on-error: true
         run: |
           TAG="${GITHUB_REF_NAME}"
