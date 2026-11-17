@@ -9,8 +9,8 @@
   - `./bump-version.sh`：写回 `app/build.gradle`
   - `./bump-version.sh --dry`：仅预览不写回
 - 推 beta 会触发 CI 自动出包，资产名随 `versionName` 变化（如 `CDesk-0.7.13-beta.apk`）。
-- 官网 `index.html`、`classic/index.html` 与 `version.json` 里的版本号/链接由脚本一并同步，不要手改。
-- CI 强制校验 `versionName` / `version.json` / `index.html` / `CHANGELOG.md` 四者一致，缺一段就构建失败。
+- 官网 `index.html` 中的下载直链需同步更换资产名；beta 卡片指向 `releases/tag/beta` 发布页，不写死版本号，避免漂移。
+- `classic/` 经典版页面已删除，不要再加回来。发版只需改四处：`app/build.gradle`、`version.json`、`index.html`、`CHANGELOG.md`，CI 会校验四者一致。
 
 ## 构建约定（全分支通用）
 
@@ -23,16 +23,10 @@
 ## 架构铁律（全分支通用）
 
 - 不使用 AndroidX / AppCompat / Material 组件，直接继承 `android.app.Activity`，保持 APK 体积小、启动快。
-- 播放器沿用 ExoPlayer 2.18.1（最后一版支持 minSdk 16）；不得升级到 media3 或要求 API 21+ 的版本。
+- 不使用 ExoPlayer。
 - 不引入 `.so` 原生库。
 - 不使用 API 21+ 专属特性，如需使用须做版本分支处理。
-- 前台服务通知：API 26+ 必须建低优先级 NotificationChannel，低版本走旧构造。
-
-## 签名与发布（全分支通用）
-
-- 发布密钥只存 GitHub Secrets：`DEBUG_KEYSTORE_B64`、`CDESK_KS_PASS`、`CDESK_KEY_PASS`。
-- 禁止把 keystore 文件、口令字面量写进仓库、工作流或日志；CI 缺 Secrets 时直接失败，不允许回退随机签名。
-- CI 会校验 APK 证书指纹（预期值写在 `android.yml` 的 `EXPECT`），不符即失败。任何情况下都不要更换发布密钥——换了就必须让所有用户卸载重装。
+- 不使用 NotificationChannel。
 
 ## 分支约定
 

@@ -55,6 +55,16 @@ jobs:
           [ "$VER" = "$JVER" ] || { echo "::error::version.json($JVER) 与 build.gradle($VER) 不一致"; exit 1; }
           [ "$VER" = "$HVER" ] || { echo "::error::index.html($HVER) 与 build.gradle($VER) 不一致"; exit 1; }
           grep -q "^## $VER" CHANGELOG.md || { echo "::error::CHANGELOG.md 缺少 ## $VER"; exit 1; }
+          # 官网/版本文件里不允许残留其它版本的直链（classic 页曾长期停留在旧号，这条就是为它加的）
+          BAD=$(grep -oP 'releases/download/v\K[0-9]+\.[0-9]+\.[0-9]+' index.html version.json README.md 2>/dev/null | cut -d: -f2 | sort -u | grep -vx "$VER" || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::以下版本的下载直链仍残留在官网/README：$(echo $BAD | tr '\n' ' ')（当前 $VER）"
+            exit 1
+          fi
+          if [ -d classic ]; then
+            echo "::error::classic/ 页面已下线，请删除该目录"
+            exit 1
+          fi
           if [ "${GITHUB_REF_TYPE:-}" = "tag" ]; then
             [ "${GITHUB_REF_NAME}" = "v$VER" ] || { echo "::error::tag(${GITHUB_REF_NAME}) 与 versionName(v$VER) 不一致"; exit 1; }
           fi

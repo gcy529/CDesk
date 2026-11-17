@@ -123,7 +123,7 @@
         <p class="eyebrow">安装指南</p>
         <h2>三步装好，不用 root，不用电脑</h2>
         <ol class="steps">
-          <li>到底部下载区下载 APK；页面会自动测速，把当前最快的一条线路排在最前，其余线路也能手动选。</li>
+          <li>到底部下载区点「下载」；线路已在后台测速，默认走最快的一条，下载慢时页面上有备用入口。</li>
           <li>把 APK 拷到 U 盘插车机，或用「局域网传文件」从手机传过去。</li>
           <li>安装后按 Home 键，系统会问用哪个桌面 —— 选「C桌面」，勾「始终」。想换回来在系统设置里改默认桌面。</li>
         </ol>
@@ -134,6 +134,7 @@
           <li>系统版本 Android 4.1（API 16）或更高，32 位 / 64 位架构均可。</li>
           <li>允许安装未知来源应用，安装完成后可再关闭。</li>
           <li>默认桌面可随时在系统设置里换回原桌面。</li>
+          <li><strong>签名已统一</strong>：稳定版与 beta 用同一把密钥（证书 SHA-256 <code>c3d95bd9…307044</code>）。从 v0.3.6 起，两个通道之间、以及以后任何版本都可以直接覆盖安装，<strong>不用再卸载</strong>。</li>
         </ul>
       </aside>
     </div>
@@ -159,6 +160,19 @@
         <details>
           <summary>会收集我的数据吗？</summary>
           <p>不会。除了天气按 IP 判断城市、正版授权校验会向授权服务器发送设备签名指纹外，应用不向任何服务器上传其他数据；局域网传文件也只在你自己的网络内进行。</p>
+        </details>
+        <details id="uninstall">
+          <summary>升级时要不要先卸载？</summary>
+          <p><strong>从 v0.3.6 开始不用了。</strong>发布密钥曾经丢失并重建，所以 0.3.1 及更早版本、以及 v0.3.6 之前下载的 beta 包，签名和现在不同，那批老包<strong>必须先卸载一次</strong>。装上 v0.3.6 或之后的任何版本，以后都能直接覆盖升级。</p>
+          <p>卸载会清除应用数据（桌面布局、壁纸、收藏、设置），升级前请先记下需要保留的内容。</p>
+        </details>
+        <details>
+          <summary>稳定版和 beta 能互相覆盖吗？</summary>
+          <p>能。两个通道从 v0.3.6 起使用同一把签名密钥，可以互相覆盖安装；但两者包名相同，同一台设备同一时间只能装一个，切换时会覆盖掉另一个。</p>
+        </details>
+        <details>
+          <summary>怎么确认下载的包没被换过？</summary>
+          <p>下载卡片上给了 SHA-256，可自行核对。签名证书的 SHA-256 固定为 <code>c3d95bd9ab940abc812ed7458664581e656c910e891cf5cc64e39f851d307044</code>，稳定版与 beta 完全一致。</p>
         </details>
         <details>
           <summary>收费吗？有内购吗？</summary>
@@ -272,31 +286,28 @@
   <section class="section" id="download">
     <div class="wrap">
       <p class="eyebrow">下载</p>
-      <h2>当前版本 v0.3.3 · 稳定版</h2>
+      <h2>当前版本 v0.3.6 · 稳定版</h2>
       <p class="section-lead">APK 不收费，不接入任何支付 SDK。完整版本列表见 Releases。</p>
       <div class="download-grid">
         <article class="card download-card download-card--stable">
           <p class="badge badge--stable">稳定版 · 推荐</p>
-          <h3>v0.3.3</h3>
-          <p>修复签名问题：此前每个版本的签名证书都不同，升级必须卸载。本版起改用固定发布密钥，后续版本可直接覆盖更新。功能上含手机扫码遥控、远程公告。</p>
+          <h3>v0.3.6</h3>
+          <p>桌面左侧常驻「互联遥控」二维码：开机自动就绪，手机扫同一张码即可在「遥控 / 传文件」之间切换，不用再找物理遥控器。</p>
           <p class="download-meta">稳定声明：此版本经过完整测试，核心功能均已验证通过，适合日常长期使用。</p>
-          <p class="download-meta">安装提示：从 0.3.1 及更早版本升级到 0.3.2 需要<strong>卸载一次</strong>（历史版本签名不一致）；从 0.3.2 起后续版本可直接覆盖更新，无需卸载。</p>
-          <div class="download-actions" data-mirror-group>
-            <a class="btn btn--primary btn--default" data-mirror="GHFast" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/v0.3.3/app-debug.apk" target="_blank" rel="noopener">GHFast 加速 · 默认</a>
-            <a class="btn btn--ghost" data-mirror="GH-Proxy" href="https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/download/v0.3.3/app-debug.apk" target="_blank" rel="noopener">GH-Proxy</a>
-            <a class="btn btn--quiet" data-mirror="GitHub 直链" href="https://github.com/gcy529/CDesk/releases/download/v0.3.3/app-debug.apk" target="_blank" rel="noopener">GitHub 直链</a>
+          <p class="download-meta"><strong>安装前必看：</strong>发布密钥曾丢失并已重建。0.3.1 及更早版本、以及 0.3.6 之前下载的 beta 包，签名与此版不同，<strong>必须先卸载旧版再安装</strong>（卸载会清空应用数据）。装上本版之后，后续升级可直接覆盖，无需再卸载。</p>
+          <div class="download-actions">
+            <a class="btn btn--primary btn--default" href="https://ghfast.top/https://github.com/gcy529/CDesk/releases/download/v0.3.6/app-debug.apk" target="_blank" rel="noopener">下载 v0.3.6</a>
+            <a class="btn btn--quiet" href="https://github.com/gcy529/CDesk/releases/tag/v0.3.6" target="_blank" rel="noopener">其他线路 / 版本详情</a>
           </div>
-          <p class="mirror-status" data-mirror-status role="status" aria-live="polite"></p>
           <p class="download-meta">SHA-256：<code class="verify-val">__SHA256__</code></p>
         </article>
         <article class="card download-card">
           <p class="badge badge--beta">尝鲜版 · 滚动更新</p>
           <h3>Beta 通道</h3>
-          <p>桌面 UI 与体验的滚动测试版。新功能先在 beta 上跑，稳定后再合入稳定版。两个通道独立安装、互不影响。</p>
+          <p>新功能先在 beta 上跑，稳定后再合入稳定版。</p>
           <p class="download-meta">注意：beta 与稳定版包名相同，同一台设备只能装其中一个；切换时需卸载另一个。</p>
-          <div class="download-actions" data-mirror-group>
+          <div class="download-actions">
             <a class="btn btn--primary" href="https://github.com/gcy529/CDesk/releases/tag/beta" target="_blank" rel="noopener">打开 Beta 下载页</a>
-            <a class="btn btn--ghost" href="https://github.com/gcy529/CDesk/releases" target="_blank" rel="noopener">全部版本</a>
           </div>
         </article>
       </div>
@@ -304,10 +315,9 @@
         <article class="card download-card">
           <p class="badge badge--beta">更新日志</p>
           <h3>版本记录</h3>
-          <p>每个版本的更新内容、变更说明与历史版本，均可在 Releases 页面查看。</p>
-          <div class="download-actions" data-mirror-group>
+          <p>每个版本的更新内容、变更说明与历史版本，均可在 Releases 页面查看。v0.3.6 起稳定版与 beta 签名统一，可直接覆盖升级。</p>
+          <div class="download-actions">
             <a class="btn btn--primary" href="https://github.com/gcy529/CDesk/releases" target="_blank" rel="noopener">查看 Releases</a>
-            <a class="btn btn--ghost" href="https://github.com/gcy529/CDesk/releases/tag/v0.3.3" target="_blank" rel="noopener">当前版本详情</a>
           </div>
         </article>
       </div>
@@ -350,7 +360,6 @@
     <nav class="footer-links" aria-label="页脚导航">
       <a href="https://github.com/gcy529/CDesk" target="_blank" rel="noopener">GitHub 仓库</a>
       <a href="https://github.com/gcy529/CDesk/releases" target="_blank" rel="noopener">版本记录</a>
-      <a href="classic/">经典版页面</a>
       <a href="https://github.com/gcy529/CDesk/blob/main/LICENSE" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>
     </nav>
     <p class="footer-copy">© 2026 C桌面 · CDesk</p>
