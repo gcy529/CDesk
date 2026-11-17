@@ -341,3 +341,20 @@ details p { padding: 0 22px 18px; color: var(--site-muted); font-size: 15px; }
   :root { --site-motion: 0; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* 语言切换：放在 GitHub 链接左边，轻量胶囊按钮 */
+.lang-toggle{
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  min-width: 44px;
+  padding: 6px 10px;
+  border: 1px solid rgba(0,0,0,.16);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.lang-toggle:hover{ background: rgba(0,0,0,.06); }
+.lang-toggle:focus-visible{ outline: 2px solid currentColor; outline-offset: 2px; }

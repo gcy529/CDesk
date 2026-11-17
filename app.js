@@ -1,3 +1,5 @@
+const isEn = () => document.documentElement.lang === 'en';
+
 const navToggle = document.querySelector('.nav-toggle');
 const nav = document.getElementById('primary-nav');
 const navLabel = navToggle.querySelector('.sr-only');
@@ -5,7 +7,7 @@ const navLabel = navToggle.querySelector('.sr-only');
 function setNav(open) {
   nav.classList.toggle('is-open', open);
   navToggle.setAttribute('aria-expanded', String(open));
-  navLabel.textContent = open ? '关闭导航' : '打开导航';
+  navLabel.textContent = open ? (isEn() ? 'Close menu' : '关闭导航') : (isEn() ? 'Open menu' : '打开导航');
 }
 
 navToggle.addEventListener('click', () => setNav(!nav.classList.contains('is-open')));
@@ -54,9 +56,9 @@ document.querySelectorAll('[data-copy]').forEach((button) => {
     const value = button.dataset.copy;
     try {
       await copyText(value);
-      copyStatus.textContent = '群号已复制';
+      copyStatus.textContent = isEn() ? 'Group ID copied' : '群号已复制';
     } catch {
-      copyStatus.textContent = '复制失败，请手动复制群号';
+      copyStatus.textContent = isEn() ? 'Copy failed — please copy it manually' : '复制失败，请手动复制群号';
     }
     clearTimeout(copyTimer);
     copyTimer = setTimeout(() => { copyStatus.textContent = ''; }, 2400);
@@ -71,9 +73,9 @@ document.querySelectorAll('[data-copy-target]').forEach((button) => {
     if (!target) return;
     try {
       await copyText(target.textContent.trim());
-      button.textContent = '已复制';
+      button.textContent = isEn() ? 'Copied' : '已复制';
     } catch {
-      button.textContent = '复制失败';
+      button.textContent = isEn() ? 'Copy failed' : '复制失败';
     }
     clearTimeout(timer);
     timer = setTimeout(() => { button.textContent = original; }, 1800);
