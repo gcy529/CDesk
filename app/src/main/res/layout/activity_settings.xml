@@ -80,6 +80,10 @@
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:layout_marginTop="8dp" android:text="@string/settings_core" />
 
+            <Button android:id="@+id/btnSetRemote"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="8dp" android:text="@string/remote" />
+
             <Button android:id="@+id/btnSetDevice"
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:layout_marginTop="8dp" android:text="@string/device_auto" />

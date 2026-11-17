@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- Android 13+ 通知运行时权限，前台服务通知本身豁免，补全以面向未来普通通知 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 手机遥控的音量键：普通权限，安装即授予，无运行时弹窗 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <!-- 车机 / TV / 盒子没有触摸屏，必须声明为非必需，否则装不上 -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -116,6 +118,13 @@
             android:exported="false"
             android:label="@string/transfer_title" />
 
+        <activity
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
+            android:name=".RemoteActivity"
+            android:exported="false"
+            android:label="@string/remote_title" />
+
         <!-- 更新包用 content:// 交给安装器：Android 7 起 file:// 会直接抛 FileUriExposedException -->
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -135,6 +144,16 @@
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Realtime network speed overlay for desktop replacement" />
+        </service>
+
+        <!-- 手机遥控：局域网 HTTP 服务，随桌面常驻 -->
+        <service
+            android:name=".RemoteService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="LAN remote control endpoint for the desktop" />
         </service>
 
         <activity

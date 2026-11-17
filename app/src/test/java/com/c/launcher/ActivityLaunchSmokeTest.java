@@ -103,6 +103,26 @@ public class ActivityLaunchSmokeTest {
         }
     }
 
+    @Test
+    public void remoteService_createsAndDestroys() {
+        ServiceController<RemoteService> controller = null;
+        try {
+            controller = Robolectric.buildService(RemoteService.class);
+            controller.create().startCommand(0, 0);
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
+        } catch (Throwable t) {
+            fail("RemoteService 启动崩溃: " + describe(t));
+        } finally {
+            if (controller != null) {
+                try {
+                    controller.destroy();
+                } catch (Throwable t) {
+                    fail("RemoteService 销毁崩溃: " + describe(t));
+                }
+            }
+        }
+    }
+
     private static Intent intentFor(Class<? extends Activity> cls) {
         Intent i = new Intent(RuntimeEnvironment.getApplication(), cls);
         if (cls == CrashActivity.class) {

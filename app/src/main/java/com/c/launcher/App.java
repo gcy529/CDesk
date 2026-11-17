@@ -1,7 +1,9 @@
 package com.c.launcher;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -24,6 +26,23 @@ public class App extends Application {
         CLog.init(this);
         CLog.i("App onCreate");
         installCrashHandler();
+        trackResumedForRemote();
+    }
+
+    /**
+     * 记住当前前台页面，手机遥控的按键才能落到正确的窗口。
+     * 只跟踪 C桌面 自己的 Activity，第三方应用不注入。
+     */
+    private void trackResumedForRemote() {
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override public void onActivityCreated(Activity a, Bundle b) { }
+            @Override public void onActivityStarted(Activity a) { }
+            @Override public void onActivityResumed(Activity a) { RemoteKeys.attach(a); }
+            @Override public void onActivityPaused(Activity a) { RemoteKeys.detach(a); }
+            @Override public void onActivityStopped(Activity a) { }
+            @Override public void onActivitySaveInstanceState(Activity a, Bundle b) { }
+            @Override public void onActivityDestroyed(Activity a) { }
+        });
     }
 
     private void installCrashHandler() {

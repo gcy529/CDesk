@@ -1,8 +1,7 @@
 {
-  "version": "0.3.0",
-  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.0/app-debug.apk",
-  "sha256": "210e62e5023fbf05b47f09044d74fdf8d8edb963f007f49d21a5c4b7dc995e3c",
+  "version": "0.3.1",
+  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.1/app-debug.apk",
   "channel": "stable",
   "force": false,
-  "releaseNotes": "稳定版 3.0：桌面 UI 重构后重新发布。桌面精简为「应用 / 最近」两页，去掉 Dock 与影音入口，新增设备类型识别与横竖屏过渡。注意：此版本更换了签名密钥，此前安装过旧版本（含测试版）的设备请先卸载旧版本再安装。"
+  "releaseNotes": "稳定版 0.3.1：新增「手机遥控」——桌面起一个局域网服务，手机扫码打开网页就是遥控器，方向键/确认/返回/主页/菜单/音量都能用，指令带一次性令牌，同一 Wi-Fi 下别人按不了。修补：设置页入口补齐、遥控页自动启动不占额外操作。"
 }

@@ -20,6 +20,15 @@
     <string name="transfer_title">LAN Transfer</string>
     <string name="transfer_hint">Phone and this device on the same Wi-Fi, open the address below in a browser</string>
     <string name="transfer_log">Log</string>
+    <string name="remote">Phone remote</string>
+    <string name="remote_title">Phone remote</string>
+    <string name="remote_idle">Remote not running</string>
+    <string name="remote_starting">Starting…</string>
+    <string name="remote_running">Remote is running, scan to control</string>
+    <string name="remote_start">Start remote</string>
+    <string name="remote_stop">Stop remote</string>
+    <string name="remote_hint">Phone and this device on the same Wi-Fi; scan and use it like a remote</string>
+    <string name="remote_qr_hint">Scan to open the remote</string>
     <string name="no_apps">No apps found</string>
     <string name="launch_failed">cannot be opened</string>
     <string name="donate">Support</string>

@@ -45,6 +45,7 @@ public class SettingsActivity extends Activity {
         Button btnLang = (Button) findViewById(R.id.btnSetLang);
         final Button btnDevice = (Button) findViewById(R.id.btnSetDevice);
         Button btnTransfer = (Button) findViewById(R.id.btnSetTransfer);
+        Button btnRemote = (Button) findViewById(R.id.btnSetRemote);
         Button btnUpdate = (Button) findViewById(R.id.btnSetUpdate);
         Button btnDisclaimer = (Button) findViewById(R.id.btnSetDisclaimer);
         Button btnCore = (Button) findViewById(R.id.btnSetCore);
@@ -52,7 +53,7 @@ public class SettingsActivity extends Activity {
         final Button btnCleanup = (Button) findViewById(R.id.btnSetCleanup);
         final Button btnBack = (Button) findViewById(R.id.btnSetBack);
 
-        Button[] all = new Button[] { btnCore, btnWall, btnOrient, btnLang, btnDevice, btnTransfer, btnUpdate, btnDisclaimer, btnLog, btnCleanup, btnBack };
+        Button[] all = new Button[] { btnCore, btnWall, btnOrient, btnLang, btnDevice, btnRemote, btnTransfer, btnUpdate, btnDisclaimer, btnLog, btnCleanup, btnBack };
         for (int i = 0; i < all.length; i++) {
             if (all[i] != null) ThemeManager.styleButton(all[i], p);
         }
@@ -105,6 +106,14 @@ public class SettingsActivity extends Activity {
                 startActivity(new Intent(SettingsActivity.this, TransferActivity.class));
             }
         });
+
+        if (btnRemote != null) {
+            btnRemote.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    startActivity(new Intent(SettingsActivity.this, RemoteActivity.class));
+                }
+            });
+        }
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {

@@ -21,6 +21,15 @@
     <string name="transfer_title">局域网传输</string>
     <string name="transfer_hint">手机和本机连同一个 Wi-Fi，在手机浏览器打开下面地址即可传文件</string>
     <string name="transfer_log">日志</string>
+    <string name="remote">手机遥控</string>
+    <string name="remote_title">手机遥控</string>
+    <string name="remote_idle">遥控未启动</string>
+    <string name="remote_starting">正在启动…</string>
+    <string name="remote_running">遥控运行中，手机扫码即可操作</string>
+    <string name="remote_start">启动遥控</string>
+    <string name="remote_stop">停止遥控</string>
+    <string name="remote_hint">手机和本机连同一个 Wi-Fi，扫码后像遥控器一样操作桌面</string>
+    <string name="remote_qr_hint">手机扫码，打开遥控器</string>
     <string name="no_apps">没有找到应用</string>
     <string name="launch_failed">打不开</string>
     <string name="donate">打赏</string>

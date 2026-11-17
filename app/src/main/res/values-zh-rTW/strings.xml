@@ -19,6 +19,15 @@
     <string name="transfer_title">區域網路傳輸</string>
     <string name="transfer_hint">手機和本機連同一個 Wi-Fi，在手機瀏覽器開啟下方位址即可傳檔案</string>
     <string name="transfer_log">紀錄</string>
+    <string name="remote">手機遙控</string>
+    <string name="remote_title">手機遙控</string>
+    <string name="remote_idle">遙控未啟動</string>
+    <string name="remote_starting">正在啟動…</string>
+    <string name="remote_running">遙控執行中，手機掃碼即可操作</string>
+    <string name="remote_start">啟動遙控</string>
+    <string name="remote_stop">停止遙控</string>
+    <string name="remote_hint">手機和本機連同一個 Wi-Fi，掃碼後像遙控器一樣操作桌面</string>
+    <string name="remote_qr_hint">手機掃碼，開啟遙控器</string>
     <string name="no_apps">找不到應用程式</string>
     <string name="launch_failed">無法開啟</string>
     <string name="donate">打賞</string>

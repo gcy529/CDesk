@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b1020">
+<title>C桌面 · 手机遥控</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{margin:0;padding:18px 16px 28px;background:#0b1020;color:#eef2ff;
+       font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+       display:flex;flex-direction:column;align-items:center;
+       user-select:none;-webkit-user-select:none;touch-action:manipulation}
+  h1{font-size:19px;margin:4px 0 2px;font-weight:700}
+  #conn{font-size:13px;color:#64748b;margin-bottom:14px}
+  #conn.ok{color:#34d399}
+  #conn.bad{color:#f87171}
+
+  .pad{display:grid;grid-template-columns:repeat(3,76px);grid-template-rows:repeat(3,76px);
+       gap:10px;margin:6px 0 18px}
+  .pad button{grid-area:auto}
+  .up{grid-column:2;grid-row:1}
+  .left{grid-column:1;grid-row:2}
+  .ok{grid-column:2;grid-row:2}
+  .right{grid-column:3;grid-row:2}
+  .down{grid-column:2;grid-row:3}
+
+  button{border:0;border-radius:20px;background:#17223d;color:#eef2ff;
+         font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;
+         box-shadow:0 4px 0 #0a1226;transition:transform .06s,background .12s}
+  button:active{transform:translateY(2px);box-shadow:0 2px 0 #0a1226;background:#22345c}
+  .ok{background:#2563eb;box-shadow:0 4px 0 #14306f}
+  .ok:active{background:#3b82f6}
+
+  .row{display:flex;gap:10px;width:100%;max-width:390px;margin-bottom:10px}
+  .row button{flex:1;height:62px;font-size:15px;border-radius:16px}
+  .row.small button{height:54px;font-size:14px}
+  .sys{background:#111a30}
+  .danger{background:#3a1d28}
+
+  .lbl{font-size:11px;color:#64748b;margin:2px 0 8px;letter-spacing:.08em}
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+         background:#0f1a30;color:#cbd5e1;font-size:13px;padding:8px 16px;border-radius:999px;
+         opacity:0;transition:opacity .18s;pointer-events:none;white-space:nowrap}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+  <h1>C桌面 · 手机遥控</h1>
+  <div id="conn">连接中…</div>
+
+  <div class="pad">
+    <button class="up"    data-c="UP">▲</button>
+    <button class="left"  data-c="LEFT">◀</button>
+    <button class="ok"    data-c="OK">OK</button>
+    <button class="right" data-c="RIGHT">▶</button>
+    <button class="down"  data-c="DOWN">▼</button>
+  </div>
+
+  <div class="row">
+    <button class="sys" data-c="BACK">返回</button>
+    <button class="sys" data-c="HOME">主页</button>
+    <button class="sys" data-c="MENU">菜单</button>
+  </div>
+
+  <div class="lbl">音量 / 系统</div>
+  <div class="row small">
+    <button class="sys" data-c="VOLDOWN">音量 −</button>
+    <button class="sys" data-c="MUTE">静音</button>
+    <button class="sys" data-c="VOLUP">音量 ＋</button>
+  </div>
+  <div class="row small">
+    <button class="sys" data-c="SETTINGS">打开设置</button>
+    <button class="danger" id="stop">停止遥控</button>
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+(function () {
+  // 兼容老浏览器：不用 URLSearchParams
+  var K = '';
+  var q = location.search.replace(/^\?/, '');
+  if (q) {
+    var parts = q.split('&');
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i].split('=');
+      if (p[0] === 'k') K = decodeURIComponent(p[1] || '');
+    }
+  }
+
+  var conn = document.getElementById('conn');
+  var toast = document.getElementById('toast');
+  var toastTimer;
+
+  function say(msg) {
+    toast.textContent = msg;
+    toast.className = 'show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.className = ''; }, 1100);
+  }
+
+  function req(path, cb) {
+    var x = new XMLHttpRequest();
+    x.open('GET', path + (path.indexOf('?') >= 0 ? '&' : '?') + 'k=' + encodeURIComponent(K), true);
+    x.timeout = 4000;
+    x.onload = function () {
+      var ok = false;
+      try { ok = JSON.parse(x.responseText).ok === true; } catch (e) { ok = false; }
+      if (cb) cb(ok);
+    };
+    x.onerror = function () { if (cb) cb(false); };
+    x.ontimeout = function () { if (cb) cb(false); };
+    x.send();
+  }
+
+  function send(c) {
+    req('/key?c=' + encodeURIComponent(c), function (ok) {
+      if (!ok) say('指令未送达');
+    });
+  }
+
+  function ping() {
+    req('/ping', function (ok) {
+      conn.className = ok ? 'ok' : 'bad';
+      conn.textContent = ok ? '已连接 · 可以遥控' : '连不上桌面，检查是否同一 Wi-Fi';
+    });
+  }
+  ping();
+  setInterval(ping, 5000);
+
+  // 方向键长按连发，松手即停
+  var repeatTimer, delayTimer;
+
+  function stopRepeat() {
+    clearInterval(repeatTimer);
+    clearTimeout(delayTimer);
+    repeatTimer = null;
+    delayTimer = null;
+  }
+
+  var buttons = document.querySelectorAll('[data-c]');
+  for (var i = 0; i < buttons.length; i++) {
+    (function (btn) {
+      var c = btn.getAttribute('data-c');
+      var isDir = (c === 'UP' || c === 'DOWN' || c === 'LEFT' || c === 'RIGHT' || c === 'VOLUP' || c === 'VOLDOWN');
+
+      btn.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        send(c);
+        if (isDir) {
+          clearTimeout(delayTimer);
+          clearInterval(repeatTimer);
+          delayTimer = setTimeout(function () {
+            repeatTimer = setInterval(function () { send(c); }, 130);
+          }, 420);
+        }
+      }, { passive: false });
+
+      btn.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        send(c);
+        if (isDir) {
+          clearTimeout(delayTimer);
+          clearInterval(repeatTimer);
+          delayTimer = setTimeout(function () {
+            repeatTimer = setInterval(function () { send(c); }, 130);
+          }, 420);
+        }
+      });
+
+      ['touchend', 'touchcancel', 'mouseup', 'mouseleave'].forEach(function (ev) {
+        btn.addEventListener(ev, stopRepeat);
+      });
+    })(buttons[i]);
+  }
+
+  document.getElementById('stop').addEventListener('click', function () {
+    say('请在电视上点「停止遥控」');
+  });
+})();
+</script>
+</body>
+</html>
