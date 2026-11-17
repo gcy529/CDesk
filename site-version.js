@@ -8,38 +8,44 @@
  */
 (function () {
   var RAW = 'https://raw.githubusercontent.com/gcy529/CDesk/main/version.json';
-  var MIRRORS = [
-    'https://ghfast.top/',
-    'https://gh-proxy.com/',
+  var CANDIDATES = [
+    'https://ghfast.top/' + RAW,
+    'https://gh-proxy.com/' + RAW,
     'https://cdn.jsdelivr.net/gh/gcy529/CDesk@main/version.json'
   ];
 
-  function fill(ver, url, sha) {
-    if (!ver) return;
+  var DATA = null;    // 取到就缓存，切语言时不用重新请求
+  var PENDING = null; // 进行中的请求，避免同时触发两次
+
+  function fill(d) {
+    if (!d || !d.ver) return;
+    var ver = d.ver;
+
     var all = document.querySelectorAll('[data-ver]');
     for (var i = 0; i < all.length; i++) {
       var el = all[i];
-      // 只替换文本里的版本号，别把「其他线路 / 版本详情」这类字一起吃掉
-      if (/^v?\d+\.\d+\.\d+$/.test(el.textContent.trim())) {
+      var text = el.textContent.trim();
+      if (/^v?\d+\.\d+\.\d+$/.test(text)) {
         el.textContent = 'v' + ver;
       } else {
         el.textContent = el.textContent.replace(/v?\d+\.\d+\.\d+/g, 'v' + ver);
       }
-      if (el.hasAttribute('data-dl') && url) {
-        el.setAttribute('href', 'https://ghfast.top/' + url);
+      if (el.hasAttribute('data-dl') && d.url) {
+        el.setAttribute('href', 'https://ghfast.top/' + d.url);
       }
       if (el.hasAttribute('data-tag')) {
         el.setAttribute('href', 'https://github.com/gcy529/CDesk/releases/tag/v' + ver);
       }
     }
-    var shaEl = document.querySelector('[data-sha]');
-    if (shaEl && sha) shaEl.textContent = sha;
 
-    var h2 = document.querySelector('#download h2[data-ver]');
-    if (h2 && h2.textContent.indexOf('Current version') === -1) {
-      // 中文版式里「· 稳定版」要保留
-      if (h2.textContent.indexOf('·') === -1) h2.textContent = '当前版本 v' + ver;
+    var shaEl = document.querySelector('.verify-val');
+    if (shaEl) {
+      // version.json 没写 sha256 时别把占位符露给用户
+      var en = document.documentElement.lang === 'en';
+      shaEl.textContent = d.sha || (en ? 'see release page' : '见 Release 页');
     }
+
+    document.documentElement.setAttribute('data-app-version', ver);
   }
 
   function parse(text) {
@@ -50,26 +56,40 @@
     } catch (e) { return null; }
   }
 
-  function tryOne(src) {
-    return fetch(src, { cache: 'no-store' })
+  function fetchOne(url) {
+    return fetch(url, { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.text() : Promise.reject(0); })
-      .then(function (t) { return parse(t); });
+      .then(parse);
   }
 
   function run() {
     if (!window.fetch) return;
+    if (DATA) { fill(DATA); return; }
+    if (PENDING) {
+      // 已有请求在飞，等它回来重填即可，不重复发请求
+      PENDING.then(function (d) { if (d) fill(d); });
+      return;
+    }
     var chain = Promise.reject(0);
-    var urls = [MIRRORS[0] + RAW, MIRRORS[1] + RAW, MIRRORS[2]];
-    urls.forEach(function (u) {
-      chain = chain.catch(function () { return tryOne(u); });
+    for (var i = 0; i < CANDIDATES.length; i++) {
+      (function (u) {
+        chain = chain.catch(function () { return fetchOne(u); });
+      })(CANDIDATES[i]);
+    }
+    PENDING = chain.then(function (d) {
+      if (d) DATA = d;
+      return d;
+    }).catch(function () {
+      PENDING = null;  // 全挂就允许下次重试
+      return null;
     });
-    chain.then(function (d) {
-      if (d) {
-        fill(d.ver, d.url, d.sha);
-        document.documentElement.setAttribute('data-app-version', d.ver);
-      }
-    }).catch(function () { /* 全挂就保留 HTML 里的占位版本，不影响阅读 */ });
+    PENDING.then(function (d) {
+      if (d) fill(d); /* 都失败就保留 HTML 占位版本，不影响阅读 */
+    });
   }
+
+  // 切语言时 i18n 会整体重写 innerHTML，把注入的版本号冲掉，这里补一次
+  document.addEventListener('cdesk:lang', run);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();

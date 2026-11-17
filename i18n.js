@@ -95,7 +95,7 @@ window.CDESK_I18N = {
  "桌面左侧常驻「互联遥控」二维码：开机自动就绪，手机扫同一张码即可在「遥控 / 传文件」之间切换，不用再找物理遥控器。": "A permanent “Connect & Remote” QR code on the left of the home screen: ready at boot, and one code switches between remote and file transfer — no more hunting for a physical remote.",
  "稳定声明：此版本经过完整测试，核心功能均已验证通过，适合日常长期使用。": "Stability note: fully tested, core features verified, suitable for everyday long-term use.",
  "<strong>安装前必看：</strong>发布密钥曾丢失并已重建。#V# 及更早版本、以及 #V# 之前下载的 beta 包，签名与此版不同，<strong>必须先卸载旧版再安装</strong>（卸载会清空应用数据）。装上本版之后，后续升级可直接覆盖，无需再卸载。": "<strong>Read before installing:</strong> the release key was lost and rebuilt. 0.3.1 and earlier, and any beta downloaded before #V#, are signed differently — <strong>uninstall the old build first</strong> (this clears app data). From this version on, updates install straight over the top.",
- "SHA-256：<code class=\"verify-val\">__SHA256__</code>": "SHA-256: <code class=\"verify-val\">__SHA256__</code>",
+ "SHA-256：<code class=\"verify-val\">见 Release 页</code>": "SHA-256: <code class=\"verify-val\">see release page</code>",
  "尝鲜版 · 滚动更新": "Beta · Rolling updates",
  "新功能先在 beta 上跑，稳定后再合入稳定版。": "New features ship to beta first, then land in stable.",
  "注意：beta 与稳定版包名相同，同一台设备只能装其中一个；切换时需卸载另一个。": "Note: beta and stable share a package name, so one device holds only one; switching means uninstalling the other.",
@@ -224,6 +224,12 @@ window.CDESK_I18N = {
       btns[b].setAttribute('aria-label', en ? '切换到中文' : 'Switch to English');
       btns[b].setAttribute('aria-pressed', en ? 'true' : 'false');
     }
+
+    // 版本号 / SHA / 下载链接由 site-version.js 注入，
+    // 上面的 innerHTML 整体替换会把它们冲掉，这里通知它重填。
+    try {
+      document.dispatchEvent(new CustomEvent('cdesk:lang', { detail: { lang: en ? 'en' : 'zh' } }));
+    } catch (e) { /* 老浏览器没有 CustomEvent 就跳过，页面仍可读 */ }
   }
 
   function stored() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
