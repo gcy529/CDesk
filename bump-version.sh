@@ -36,5 +36,30 @@ fi
 sed -i "s/versionName \"${cur_ver}\"/versionName \"${new_ver}\"/" "$GRADLE"
 sed -i "s/versionCode ${cur_code}/versionCode ${new_code}/" "$GRADLE"
 
-echo "已写回 $GRADLE"
+# version.json：版本号 + 资产名（稳定版资产名是 app-debug.apk，只换 tag 目录）
+if [ -f version.json ]; then
+    sed -i "s/\"version\": *\"${cur_ver}\"/\"version\": \"${new_ver}\"/" version.json
+    sed -i "s#/download/v${cur_ver}/#/download/v${new_ver}/#g" version.json
+fi
+
+# 官网：版本号与下载链接
+for f in index.html classic/index.html; do
+    [ -f "$f" ] || continue
+    sed -i "s/v${cur_ver}/v${new_ver}/g" "$f"
+done
+
+# 自检：三处版本必须一致，否则直接失败
+GVER=$(grep -oP 'versionName "\K[^"]+' "$GRADLE")
+JVER=$(grep -oP '"version"\s*:\s*"\K[^"]+' version.json 2>/dev/null || echo "")
+HVER=$(grep -oP '当前版本 v\K[0-9.]+' index.html 2>/dev/null | head -1 || echo "")
+if [ "$GVER" != "$JVER" ] || [ "$GVER" != "$HVER" ]; then
+    echo "版本仍不一致：gradle=$GVER json=$JVER index=$HVER" >&2
+    exit 1
+fi
+
+if ! grep -q "^## ${new_ver}" CHANGELOG.md 2>/dev/null; then
+    echo "提醒：CHANGELOG.md 还没有 '## ${new_ver}' 段，CI 会因此失败。" >&2
+fi
+
+echo "已写回 $GRADLE / version.json / index.html"
 grep -n "versionName\|versionCode" "$GRADLE" | head -2
