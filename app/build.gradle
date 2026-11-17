@@ -15,6 +15,7 @@ android {
         signingConfigs {
             cdesk {
                 storeFile file(project.property('ksFile'))
+                storeType "PKCS12"
                 storePassword project.property('ksPass')
                 keyAlias project.property('keyAlias')
                 keyPassword project.property('keyPass')

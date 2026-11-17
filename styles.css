@@ -149,6 +149,7 @@ ul, ol { margin: 0; padding: 0; }
 .device-tag { justify-self: end; padding: 3px 10px; border: 1px solid var(--site-border); border-radius: 999px; font-size: 12px; }
 .device-frame img { display: block; width: 100%; }
 .device-embed { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #20180f url("shots/desk-ui-v2.jpg") center / cover; }
+.device-embed img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .device-embed iframe { position: absolute; left: -1px; top: -1px; width: calc(100% + 2px); height: calc(100% + 2px); border: 0; display: block; }
 .device-frame figcaption { padding: 14px 18px; color: var(--site-muted); font-size: 13.5px; border-top: 1px solid var(--site-border); }
 

@@ -46,38 +46,56 @@ jobs:
           echo "value=$ID" >> $GITHUB_OUTPUT
           echo "building with applicationId = $ID"
 
-      - name: Restore fixed debug keystore
+      - name: Verify version consistency
+        run: |
+          VER=$(grep -oP 'versionName "\K[^"]+' app/build.gradle)
+          JVER=$(grep -oP '"version"\s*:\s*"\K[^"]+' version.json)
+          HVER=$(grep -oP '当前版本 v\K[0-9.]+' index.html | head -1)
+          echo "gradle=$VER version.json=$JVER index=$HVER"
+          [ "$VER" = "$JVER" ] || { echo "::error::version.json($JVER) 与 build.gradle($VER) 不一致"; exit 1; }
+          [ "$VER" = "$HVER" ] || { echo "::error::index.html($HVER) 与 build.gradle($VER) 不一致"; exit 1; }
+          grep -q "^## $VER" CHANGELOG.md || { echo "::error::CHANGELOG.md 缺少 ## $VER"; exit 1; }
+
+      - name: Restore signing keystore
         shell: bash
         env:
           KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.CDESK_KS_PASS }}
+          KEY_PASS: ${{ secrets.CDESK_KEY_PASS }}
         run: |
-          if [ -n "$KEYSTORE_B64" ]; then
-            echo "$KEYSTORE_B64" | base64 -d > $HOME/.cdesk-debug.keystore
-            echo "KS=$HOME/.cdesk-debug.keystore" >> $GITHUB_ENV
-            echo "fixed keystore restored from secret"
-          elif [ -f debug.keystore ]; then
-            cp debug.keystore $HOME/.cdesk-debug.keystore
-            echo "KS=$HOME/.cdesk-debug.keystore" >> $GITHUB_ENV
-            echo "fixed keystore restored from repo file"
-          else
-            echo "::warning::没有 secret 也没有仓库 keystore，回退随机调试签名（升级需卸载重装）"
+          # 口令只存在于 Secrets，禁止再出现明文字面量
+          if [ -z "$KEYSTORE_B64" ] || [ -z "$KS_PASS" ] || [ -z "$KEY_PASS" ]; then
+            echo "::error::缺少签名 Secrets（DEBUG_KEYSTORE_B64 / CDESK_KS_PASS / CDESK_KEY_PASS）"
+            exit 1
           fi
+          echo "$KEYSTORE_B64" | base64 -d > "$HOME/.cdesk-release.p12"
+          echo "KS=$HOME/.cdesk-release.p12" >> "$GITHUB_ENV"
+          echo "keystore restored ($(stat -c%s "$HOME/.cdesk-release.p12") bytes)"
 
       - name: Build debug APK
         env:
           KS: ${{ env.KS }}
+          CDESK_KS_PASS: ${{ secrets.CDESK_KS_PASS }}
+          CDESK_KEY_PASS: ${{ secrets.CDESK_KEY_PASS }}
         run: |
           chmod +x gradlew || true
           # 不再用裸 gradle 生成 wrapper：runner 预装 Gradle 版本漂移（Ubuntu 26 镜像 Gradle 9）
           # 会在评估期撞 DependencyHandler.module() 移除错误。仓库自带 gradle-wrapper.jar，直接用。
-          # 签名口令暂用仓库 keystore 已知口令（与 0.7.13 成功构建一致）；
-          # 后续在 Settings→Secrets 配好 CDESK_KS_PASS/CDESK_KEY_PASS 后再切回 secrets，避免硬编码。
-          if [ -n "$KS" ]; then
-            ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} \
-              -PksFile=$KS -PksPass=cdesk2026 -PkeyAlias=cdesk -PkeyPass=cdesk2026 --stacktrace
-          else
-            ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} --stacktrace
+          ./gradlew assembleDebug -PappId=${{ steps.appid.outputs.value }} \
+            -PksFile="$KS" -PksPass="$CDESK_KS_PASS" -PkeyAlias=cdesk -PkeyPass="$CDESK_KEY_PASS" --stacktrace
+
+      - name: Verify APK signature
+        run: |
+          APK=$(ls app/build/outputs/apk/debug/*.apk | head -n 1)
+          APKSIGNER=$(command -v apksigner || ls "$ANDROID_SDK_ROOT"/build-tools/*/apksigner | sort -V | tail -n 1)
+          "$APKSIGNER" verify --print-certs "$APK" | tee certs.txt
+          GOT=$(grep -m1 'SHA-256 digest' certs.txt | awk '{print $NF}')
+          EXPECT="c3d95bd9ab940abc812ed7458664581e656c910e891cf5cc64e39f851d307044"
+          if [ "$GOT" != "$EXPECT" ]; then
+            echo "::error::APK 证书指纹不符：$GOT != $EXPECT"
+            exit 1
           fi
+          echo "signature ok: $GOT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
