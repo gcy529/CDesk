@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>C桌面 预览</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#07090f;color:#e2e8f0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+       padding:26px 22px 40px}
+  .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+  .top h1{font-size:17px;font-weight:600;letter-spacing:.02em}
+  .top .sub{font-size:12px;color:#64748b}
+  .swatches{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+  .sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+      transition:transform .15s,border-color .15s}
+  .sw:hover{transform:scale(1.14)}
+  .sw.on{border-color:#fff;transform:scale(1.14)}
+  .stage{display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap}
+  .frame{border-radius:16px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.65);
+         position:relative;transition:background .3s}
+  .frame .label{position:absolute;top:10px;left:14px;font-size:10px;letter-spacing:.12em;
+                text-transform:uppercase;opacity:.45;z-index:9;pointer-events:none}
+  /* ---------- 横屏车机 ---------- */
+  #land{width:760px;height:428px}
+  /* ---------- 竖屏手机 ---------- */
+  #port{width:330px;height:620px}
+  .desk{position:absolute;inset:0;display:flex;flex-direction:column;padding:20px 22px}
+  .head{display:flex;align-items:flex-start}
+  .clock{font-size:56px;font-weight:700;line-height:.95;transition:color .3s;
+         letter-spacing:.02em;font-variant-numeric:tabular-nums}
+  #port .clock{font-size:44px}
+  .date{font-size:12px;color:#94a3b8;margin-top:6px}
+  .badge{margin-left:auto;text-align:right}
+  .badge .name{font-size:12px;transition:color .3s}
+  .badge .hint{font-size:10px;color:#64748b;margin-top:3px}
+  .btnrow{display:flex;gap:8px;margin-top:16px}
+  .btn{flex:1;height:38px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+       font-size:12px;background:rgba(255,255,255,.10);transition:color .3s,border-color .3s,box-shadow .3s;
+       border:1px solid transparent}
+  #port .btnrow{margin-top:12px}
+  #port .btn{height:34px;font-size:11px}
+  .grid{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-top:16px;
+        align-content:start}
+  #port .grid{grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  .app{border-radius:13px;background:rgba(255,255,255,.07);display:flex;flex-direction:column;
+       align-items:center;justify-content:center;padding:8px 4px;gap:5px;
+       border:1.5px solid transparent;transition:border-color .3s,background .3s}
+  .app.focus{background:rgba(255,255,255,.20);transition:border-color .3s,background .2s}
+  .dot{width:26px;height:26px;border-radius:8px;opacity:.9}
+  #port .dot{width:22px;height:22px}
+  .nm{font-size:8.5px;color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      max-width:100%}
+  /* ---------- 左右下角网速胶囊 ---------- */
+  .pill{position:absolute;bottom:13px;padding:5px 11px;border-radius:999px;
+        font:700 11.5px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;
+        border:1px solid;transition:color .3s,background .3s,border-color .3s}
+  #port .pill{font-size:10px;padding:4px 9px;bottom:11px}
+  .pill.dl{left:13px}
+  .pill.up{right:13px}
+  .legend{margin-top:26px;font-size:12px;color:#64748b;line-height:1.85;max-width:1100px}
+  .legend b{color:#94a3b8;font-weight:600}
+  .legend code{background:#111827;padding:1px 6px;border-radius:5px;color:#38bdf8;font-size:11px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div>
+    <h1>C桌面 预览</h1>
+    <div class="sub"><a href="/preview-showcase.html" style="color:#cba6f7">看全界面展示 →</a> · <a href="/preview-desk2.html" style="color:#38bdf8">看新版分页预览 →</a> · 点色块切撞色 · <a href="/preview-donate.html" style="color:#38bdf8">看打赏页 →</a></div>
+  </div>
+  <div class="swatches" id="sw"></div>
+</div>
+
+<div class="stage">
+  <div class="frame" id="land"><div class="label">LANDSCAPE · 车机 / TV</div></div>
+  <div class="frame" id="port"><div class="label">PORTRAIT · 手机 / 竖屏</div></div>
+</div>
+
+<div class="legend">
+  <b>自动黑白</b>：胶囊按下缘中间区域的壁纸亮度反转。深底 → 白字 + 深胶囊；浅底 → 黑字 + 浅胶囊。<br>
+  <b>撞色</b>：只染强调元素（时钟 / 网速胶囊描边 / 幸运色名），不碰正文，避免花哨。<br>
+  <b>今日幸运色</b>：<code>日期字符串哈希 % 12</code>，同一天同色，次日自动换。
+</div>
+
+<script>
+var PALETTES = [
+  ['深海荧光', '#0B1020', '#1E2A4A', '#FACC15'],
+  ['暗夜冰蓝', '#0B1020', '#16243D', '#38BDF8'],
+  ['幻紫霓虹', '#2B1055', '#3B1E6E', '#4ADE80'],
+  ['墨黑樱粉', '#0C0F16', '#1A1F2E', '#F472B6'],
+  ['极光青柠', '#0F2027', '#1B3B3A', '#A3E635'],
+  ['落日熔金', '#3A1C24', '#4A2630', '#FB923C'],
+  ['午夜电紫', '#101322', '#1B1440', '#A855F7'],
+  ['松石澄蓝', '#0A1A1F', '#12303A', '#22D3EE'],
+  ['炭灰琥珀', '#14161A', '#20242B', '#F59E0B'],
+  ['深海玫红', '#0B1020', '#1F1630', '#EC4899'],
+  ['苔绿奶白', '#0E1A14', '#183026', '#D9F99D'],
+  ['钢青熔橙', '#0D1620', '#1A2A3A', '#F97316']
+];
+var APPS = ['投屏','高德','网易云','QQ音乐','收音机','蓝牙','文件','设置','相册','视频','天气','计算器'];
+
+function todayIndex(){
+  var d = new Date();
+  var k = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+  var h = 0;
+  for (var i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) & 0x7fffffff;
+  return h % PALETTES.length;
+}
+
+function buildDesk(el, kind){
+  var desk = document.createElement('div');
+  desk.className = 'desk';
+  desk.style.background = 'linear-gradient(160deg,' + 'VAR1 0%,VAR2 100%)';
+
+  var head = document.createElement('div');
+  head.className = 'head';
+  head.innerHTML =
+    '<div><div class="clock">19:42</div><div class="date">2026-11-07  星期六</div></div>' +
+    '<div class="badge"><div class="name"></div><div class="hint">按方向键选择 · H 换色</div></div>';
+
+  var btnrow = document.createElement('div');
+  btnrow.className = 'btnrow';
+  btnrow.innerHTML = '<div class="btn">换色</div><div class="btn">自动黑白</div><div class="btn">打赏</div><div class="btn">局域网传输</div>';
+
+  var grid = document.createElement('div');
+  grid.className = 'grid';
+  for (var i = 0; i < APPS.length; i++){
+    var a = document.createElement('div');
+    a.className = 'app' + (i === 0 ? ' focus' : '');
+    a.innerHTML = '<div class="dot"></div><div class="nm">' + APPS[i] + '</div>';
+    grid.appendChild(a);
+  }
+
+  desk.appendChild(head);
+  desk.appendChild(btnrow);
+  desk.appendChild(grid);
+
+  var dl = document.createElement('div');
+  dl.className = 'pill dl';
+  dl.textContent = '\u2193 12.45';
+  var up = document.createElement('div');
+  up.className = 'pill up';
+  up.textContent = '\u2191 2.10';
+  desk.appendChild(dl);
+  desk.appendChild(up);
+
+  el.appendChild(desk);
+  return { desk: desk, dl: dl, up: up, dots: grid.querySelectorAll('.dot') };
+}
+
+var landEl = buildDesk(document.getElementById('land'), 'land');
+var portEl = buildDesk(document.getElementById('port'), 'port');
+
+function applyPalette(idx){
+  var p = PALETTES[idx];
+  var name = p[0], top = p[1], bottom = p[2], accent = p[3];
+  [landEl, portEl].forEach(function(view){
+    view.desk.style.background = 'linear-gradient(160deg,' + top + ' 0%,' + bottom + ' 100%)';
+    var clock = view.desk.querySelector('.clock');
+    clock.style.color = accent;
+    var bn = view.desk.querySelector('.badge .name');
+    bn.textContent = name;
+    bn.style.color = accent;
+    var btns = view.desk.querySelectorAll('.btn');
+    for (var i = 0; i < btns.length; i++){
+      btns[i].style.color = accent;
+      btns[i].style.borderColor = accent;
+    }
+    var focus = view.desk.querySelector('.app.focus');
+    if (focus) focus.style.borderColor = accent;
+    for (var j = 0; j < view.dots.length; j++){
+      view.dots[j].style.background = j % 2 === 0 ? accent : 'rgba(255,255,255,.28)';
+      view.dots[j].style.borderRadius = (j % 3 === 0) ? '50%' : '8px';
+    }
+    view.dl.style.borderColor = accent;
+    view.up.style.borderColor = accent;
+    refreshContrast(view, bottom);
+  });
+  document.querySelectorAll('.sw').forEach(function(s, i){
+    s.classList.toggle('on', i === idx);
+  });
+}
+
+/* 用真实的感知亮度公式判断胶囊文字黑白，和 Java 里 AutoContrast 一致 */
+function luminance(hex){
+  var c = hex.replace('#','');
+  var r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
+  return (0.299*r + 0.587*g + 0.114*b) / 255;
+}
+
+function refreshContrast(view, bottomHex){
+  var lum = luminance(bottomHex);
+  var dark = lum < 0.62;
+  var color = dark ? '#FFFFFF' : '#0C0F16';
+  var bg = dark ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.62)';
+  view.dl.style.color = color;
+  view.up.style.color = color;
+  view.dl.style.background = bg;
+  view.up.style.background = bg;
+}
+
+var sw = document.getElementById('sw');
+PALETTES.forEach(function(p, i){
+  var d = document.createElement('div');
+  d.className = 'sw';
+  d.style.background = 'linear-gradient(140deg,' + p[1] + ',' + p[3] + ')';
+  d.title = p[0];
+  d.onclick = function(){ applyPalette(i); };
+  sw.appendChild(d);
+});
+
+applyPalette(todayIndex());
+</script>
+</body>
+</html>

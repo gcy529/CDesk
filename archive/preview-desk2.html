@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>C桌面 · 分页预览</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07090f;color:#e2e8f0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:24px 20px 44px}
+h1{font-size:16px;font-weight:600;margin-bottom:4px}
+.sub{font-size:12px;color:#64748b;margin-bottom:18px}
+.screen{width:960px;height:540px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.7);
+  background:linear-gradient(160deg,#0B1020 0%,#0A1A2F 100%)}
+.glow{position:absolute;width:520px;height:520px;border-radius:50%;right:-160px;top:-180px;
+  background:radial-gradient(circle,rgba(56,189,248,.18),transparent 70%)}
+.inner{position:relative;height:100%;padding:26px 28px;display:flex;flex-direction:column}
+.top{display:flex;align-items:flex-start}
+.clock{font-size:56px;font-weight:700;line-height:1;letter-spacing:-1px;color:#38BDF8;font-variant-numeric:tabular-nums}
+.date{font-size:13.5px;color:#94A3B8;margin-top:6px}
+.badge{margin-left:auto;text-align:right}
+.badge .n{font-size:13px;color:#38BDF8}
+.badge .h{font-size:11px;color:#64748B;margin-top:3px}
+.pbar{display:flex;align-items:center;margin-top:14px}
+.arrow{width:44px;height:36px;border-radius:999px;border:1px solid rgba(56,189,248,.35);background:rgba(255,255,255,.06);
+  color:#38BDF8;font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+.arrow:hover{background:rgba(56,189,248,.14)}
+.pinfo{flex:1;text-align:center}
+.ptitle{font-size:13.5px;font-weight:600;color:#E2E8F0}
+.dots{font-size:9px;color:#38BDF8;margin-top:3px;letter-spacing:1px}
+.grid{flex:1;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:min-content;gap:8px;margin-top:12px}
+.tile{border-radius:14px;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  border:1px solid transparent;transition:.18s;cursor:pointer}
+.tile:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);transform:translateY(-2px)}
+.tile.sel{background:rgba(255,255,255,.09);border-color:#fff;transform:scale(1.05);box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.nm{font-size:10.5px;color:#CBD5E1;text-align:center;line-height:1.2;max-width:100%;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.hint{margin-top:10px;font-size:12.5px;color:#64748B}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;height:42px;border-radius:999px;border:1px solid rgba(56,189,248,.4);background:rgba(255,255,255,.06);
+  color:#38BDF8;font-size:13px;display:flex;align-items:center;justify-content:center}
+</style></head><body>
+<h1>C桌面 · 分页预览</h1>
+<div class="sub">点 ‹ › 或圆点翻页。下面是 1280×720 车机屏的实际排布（等比缩放到 960×540）</div>
+<div class="screen"><div class="glow"></div><div class="inner">
+  <div class="top">
+    <div><div class="clock">14:32</div><div class="date">2026-11-07  星期六</div></div>
+    <div class="badge"><div class="n">深海荧光</div><div class="h">点这里进入设置</div></div>
+  </div>
+  <div class="pbar">
+    <div class="arrow" id="prev">‹</div>
+    <div class="pinfo"><div class="ptitle" id="ptitle">应用</div><div class="dots" id="dots">● ○ ○</div></div>
+    <div class="arrow" id="next">›</div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="hint" id="hint" style="display:none"></div>
+  <div class="btns">
+    <div class="btn">换色</div><div class="btn">自动黑白</div><div class="btn">打赏</div><div class="btn">局域网传输</div>
+  </div>
+</div></div>
+<script>
+var PAGES=[
+  {t:"应用",empty:"",items:[
+    ["高德地图","#1D6FE0","高"],["QQ音乐","#2BB673","♪"],["本地视频","#E0533D","▶"],["收音机","#B45309","FM"],
+    ["蓝牙","#2563EB","蓝"],["相册","#DB2777","图"],["文件","#0891B2","文"],["浏览器","#7C3AED","网"],
+    ["天气","#0EA5E9","☁"],["计算器","#64748B","="],["记录仪","#B91C1C","●"],["设置","#475569","⚙"]
+  ]},
+  {t:"最近",empty:"打开过的应用会出现在这里",items:[
+    ["QQ音乐","#2BB673","♪"],["高德地图","#1D6FE0","高"],["浏览器","#7C3AED","网"],["收音机","#B45309","FM"],
+    ["文件","#0891B2","文"],["相册","#DB2777","图"],["天气","#0EA5E9","☁"],["设置","#475569","⚙"]
+  ]},
+  {t:"影音",empty:"没找到播放类应用。装了视频/音乐 App 后会自动出现在这里",items:[
+    ["影视仓","#DC2626","影"],["Kodi","#1E7BC4","K"],["MX 播放器","#D97706","MX"],["VLC","#EA580C","▶"]
+  ]}
+];
+var cur=0;
+function render(){
+  var p=PAGES[cur];
+  document.getElementById("ptitle").textContent=p.t;
+  var d=""; for(var i=0;i<PAGES.length;i++){ d+=(i?"  ":"")+(i==cur?"●":"○"); }
+  document.getElementById("dots").textContent=d;
+  var g=document.getElementById("grid"); g.innerHTML="";
+  for(var j=0;j<p.items.length;j++){
+    var it=p.items[j];
+    var el=document.createElement("div");
+    el.className="tile"+(j===0?" sel":"");
+    el.innerHTML="<div class=\"ico\" style=\"background:linear-gradient(145deg,"+it[1]+",#0f172a)\">"+it[2]+"</div>"+
+                   "<div class=\"nm\">"+it[0]+"</div>";
+    g.appendChild(el);
+  }
+  var h=document.getElementById("hint");
+  if(p.items.length===0){ h.style.display="block"; h.textContent=p.empty; } else { h.style.display="none"; }
+}
+document.getElementById("prev").onclick=function(){ cur=(cur+PAGES.length-1)%PAGES.length; render(); };
+document.getElementById("next").onclick=function(){ cur=(cur+1)%PAGES.length; render(); };
+render();
+</script>
+</body></html>

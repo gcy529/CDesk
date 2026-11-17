@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>C桌面 · 配色试验台 v2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#05060a;color:#cbd5e1;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:22px 20px 40px}
+h1{font-size:15px;font-weight:600;color:#e2e8f0}
+.sub{font-size:12px;color:#475569;margin:5px 0 16px;line-height:1.7}
+.sub b{color:#94a3b8;font-weight:600}
+.screen{width:960px;height:540px;border-radius:18px;overflow:hidden;position:relative;
+  box-shadow:0 24px 70px rgba(0,0,0,.85);transition:background .45s}
+.inner{position:relative;height:100%;padding:26px 30px;display:flex;flex-direction:column}
+.top{display:flex;align-items:flex-start}
+.clock{font-size:52px;font-weight:500;line-height:1;color:var(--ac);font-variant-numeric:tabular-nums;
+  letter-spacing:-.5px;transition:color .4s}
+.date{font-size:12.5px;color:var(--dim);margin-top:8px;letter-spacing:.2px}
+.badge{margin-left:auto;text-align:right}
+.badge .n{font-size:12px;color:var(--ac);transition:color .4s;letter-spacing:.3px}
+.badge .h{font-size:10px;color:var(--dim);margin-top:4px}
+.pbar{display:flex;align-items:center;margin-top:16px}
+.arrow{width:40px;height:32px;border-radius:999px;border:1px solid var(--line);background:transparent;
+  color:var(--ac);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
+.arrow:hover{background:var(--hover)}
+.pinfo{flex:1;text-align:center}
+.ptitle{font-size:12.5px;font-weight:600;color:var(--fg);letter-spacing:.5px}
+.dots{font-size:7px;color:var(--ac);margin-top:5px;letter-spacing:3px;transition:color .4s}
+.grid{flex:1;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:min-content;gap:2px;margin-top:8px;align-content:start}
+.tile{border-radius:15px;padding:10px 3px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  border:1px solid transparent;transition:.2s;cursor:pointer}
+.tile:hover{background:var(--hover);border-color:var(--line);transform:translateY(-2px)}
+.tile.sel{background:var(--hover);border-color:var(--ac)}
+.ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:500;color:#fff;box-shadow:0 3px 12px rgba(0,0,0,.45);opacity:.92}
+.nm{font-size:9.5px;color:var(--dim);text-align:center;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;max-width:100%;letter-spacing:.2px}
+.btns{display:flex;gap:6px;margin-top:10px}
+.btn{flex:1;height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;
+  color:var(--ac);font-size:12px;display:flex;align-items:center;justify-content:center;transition:.45s;letter-spacing:.4px}
+.rail{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.sw{width:104px;height:46px;border-radius:11px;cursor:pointer;border:2px solid transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:8.5px;color:#fff;transition:.18s;position:relative;overflow:hidden}
+.sw span{position:relative;z-index:2;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.sw:hover{transform:translateY(-2px)}
+.sw.on{border-color:#fff}
+.tip{margin-top:16px;font-size:11.5px;color:#475569;line-height:1.9;max-width:960px}
+.tip b{color:#7dd3fc;font-weight:600}
+</style></head><body>
+<h1>C桌面 · 配色试验台 v2</h1>
+<div class="sub">配色全部取自开源设计系统（MIT / CC0，<b>无版权限制</b>）· 点色块切换 · 图标是<b>示意数据</b>，实际显示车机已装应用</div>
+
+<div class="screen" id="screen"><div class="inner">
+  <div class="top"><div><div class="clock" id="clock">14:32</div><div class="date">2026-11-07  星期六</div></div>
+    <div class="badge"><div class="n" id="pname"></div><div class="h">点这里进设置</div></div></div>
+  <div class="pbar"><div class="arrow" id="prev">‹</div>
+    <div class="pinfo"><div class="ptitle" id="ptitle">应用</div><div class="dots" id="dots"></div></div>
+    <div class="arrow" id="next">›</div></div>
+  <div class="grid" id="grid"></div>
+  <div class="btns"><div class="btn">换肤</div><div class="btn">自动黑白</div>
+    <div class="btn">打赏</div><div class="btn">局域网传输</div></div>
+</div></div>
+<div class="rail" id="rail"></div>
+
+<div class="tip">
+  <b>为什么之前看着古板？</b> 因为高饱和（#38BDF8）+ 高对比（纯黑底 + 亮字）是 2015 年的做法。<br>
+  <b>现在这套为什么现代？</b> Catppuccin / Tokyo Night 这类设计系统的原则是 <b>降低饱和度、降低对比度</b>，
+  文字用灰蓝而不是纯白，强调色用柔紫而不是亮青。眼睛不累，看着高级。
+</div>
+
+<script>
+var P=[{"n":"Catppuccin Mocha","top":"#1e1e2e","bot":"#11111b","ac":"#cba6f7","dim":"#7f849c","line":"rgba(203,166,247,.22)"},{"n":"Tokyo Night","top":"#1a1b26","bot":"#16161e","ac":"#7aa2f7","dim":"#565f89","line":"rgba(122,162,247,.22)"},{"n":"Catppuccin Macchiato","top":"#24273a","bot":"#1e2030","ac":"#8bd5ca","dim":"#8087a2","line":"rgba(139,213,202,.22)"},{"n":"Nord","top":"#2e3440","bot":"#242933","ac":"#88c0d0","dim":"#7b88a1","line":"rgba(136,192,208,.22)"},{"n":"Rosé Pine Moon","top":"#232136","bot":"#1f1d2e","ac":"#c4a7e7","dim":"#6e6a86","line":"rgba(196,167,231,.22)"},{"n":"Gruvbox Dark","top":"#282828","bot":"#1d2021","ac":"#fabd2f","dim":"#928374","line":"rgba(250,189,47,.22)"},{"n":"Radix Violet","top":"#12111a","bot":"#1a1826","ac":"#a78bfa","dim":"#6b6880","line":"rgba(167,139,250,.22)"},{"n":"石墨 Mono","top":"#0c0c0e","bot":"#15151a","ac":"#e2e8f0","dim":"#82868f","line":"rgba(226,232,240,.18)"}];
+var G=[
+  ["应用",[["地图","#2563EB","地"],["音乐","#16A34A","乐"],["视频","#DC2626","影"],["电台","#B45309","台"],
+    ["蓝牙","#1D4ED8","蓝"],["相册","#DB2777","相"],["文件","#0891B2","文"],["浏览器","#7C3AED","网"],
+    ["天气","#0EA5E9","天"],["计算器","#475569","算"],["记录仪","#991B1B","录"],["设置","#334155","设"]]],
+  ["最近",[["音乐","#16A34A","乐"],["地图","#2563EB","地"],["浏览器","#7C3AED","网"],["电台","#B45309","台"]]],
+  ["影音",[["影视仓","#B91C1C","影"],["Kodi","#1E7BC4","K"],["MX 播放器","#D97706","MX"],["VLC","#EA580C","▶"]]]
+];
+var cur=0,pi=0;
+function paint(){
+  var p=P[pi], s=document.getElementById("screen");
+  s.style.background="linear-gradient(165deg,"+p.top+" 0%,"+p.bot+" 100%)";
+  s.style.setProperty("--ac",p.ac); s.style.setProperty("--dim",p.dim);
+  s.style.setProperty("--line",p.line); s.style.setProperty("--hover","rgba(255,255,255,.05)");
+  s.style.setProperty("--fg","#e8e8ef");
+  document.getElementById("pname").textContent=p.n;
+  var r=document.getElementById("rail"); r.innerHTML="";
+  for(var i=0;i<P.length;i++){
+    var d=document.createElement("div");
+    d.className="sw"+(i===pi?" on":"");
+    d.style.background="linear-gradient(160deg,"+P[i].top+" 0%,"+P[i].bot+" 55%,"+P[i].ac+" 200%)";
+    d.innerHTML="<span>"+P[i].n+"</span>";
+    (function(k){ d.onclick=function(){ pi=k; paint(); render(); }; })(i);
+    r.appendChild(d);
+  }
+}
+function render(){
+  var g=G[cur];
+  document.getElementById("ptitle").textContent=g[0];
+  var dd=""; for(var i=0;i<G.length;i++) dd+=(i?"  ":"")+(i===cur?"●":"○");
+  document.getElementById("dots").textContent=dd;
+  var box=document.getElementById("grid"); box.innerHTML="";
+  for(var j=0;j<g[1].length;j++){
+    var it=g[1][j], el=document.createElement("div");
+    el.className="tile"+(j===0?" sel":"");
+    el.innerHTML="<div class=\"ico\" style=\"background:linear-gradient(150deg,"+it[1]+",#12121a)\">"+it[2]+"</div>"+
+                   "<div class=\"nm\">"+it[0]+"</div>";
+    box.appendChild(el);
+  }
+}
+document.getElementById("prev").onclick=function(){ cur=(cur+G.length-1)%G.length; render(); };
+document.getElementById("next").onclick=function(){ cur=(cur+1)%G.length; render(); };
+paint(); render();
+</script></body></html>

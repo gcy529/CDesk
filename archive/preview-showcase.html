@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>C桌面 · 配色 v4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07080c;color:#cbd5e1;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:24px 22px 48px}
+h1{font-size:17px;font-weight:600;color:#e2e8f0}
+.sub{display:block;font-size:12px;color:#475569;margin:6px 0 20px;line-height:1.8}
+.sub b{color:#94a3b8}
+.wrap{display:grid;grid-template-columns:repeat(2,560px);gap:22px}
+.lab{font-size:11.5px;color:#64748b;margin-bottom:7px}
+.lab b{color:#94a3b8;font-weight:600}
+.frame{width:560px;height:315px;border-radius:12px;overflow:hidden;position:relative;box-shadow:0 16px 44px rgba(0,0,0,.75)}
+.stage{width:960px;height:540px;transform:scale(.58334);transform-origin:top left;
+  padding:24px 30px;display:flex;flex-direction:column;position:relative;transition:background .4s}
+.aurora{position:absolute;width:700px;height:700px;border-radius:50%;filter:blur(70px);opacity:.5;
+  pointer-events:none;right:-220px;top:-260px}
+.stage>*{position:relative;z-index:1}
+.top{display:flex;align-items:flex-start}
+.clock{font-size:50px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.date{font-size:12.5px;margin-top:7px}
+.wx{font-size:13px;margin-top:4px}
+.badge{margin-left:auto;text-align:right}
+.badge .n{font-size:12px;font-weight:600}
+.badge .h{font-size:10px;margin-top:4px;opacity:.75}
+.pbar{display:flex;align-items:center;margin-top:14px}
+.arrow{width:40px;height:32px;border-radius:999px;border:1px solid;font-size:15px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pinfo{flex:1;text-align:center}
+.ptitle{font-size:12.5px;font-weight:600;letter-spacing:.5px}
+.dots{font-size:7px;margin-top:5px;letter-spacing:3px}
+.grid{flex:1;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:min-content;gap:6px;margin-top:10px;align-content:start}
+.grid2{flex:1;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:14px;align-content:start}
+.tile{border-radius:15px;padding:10px 3px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  border:3px solid transparent;transition:.15s;cursor:pointer}
+.tile:hover,.tile.sel{border-color:#fff;transform:scale(1.06);background:rgba(128,128,128,.16)}
+.ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.nm{font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mediacard{border-radius:22px;padding:26px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;border:3px solid transparent;cursor:pointer}
+.mediacard.sel{border-color:#fff;transform:scale(1.03)}
+.mediacard .big{width:74px;height:74px;border-radius:20px;display:flex;align-items:center;
+  justify-content:center;font-size:30px;color:#fff}
+.mediacard .t{font-size:17px;font-weight:600}
+.dock{display:flex;gap:8px;margin-top:12px;border-radius:22px;padding:10px;border:1px solid;transition:.4s}
+.dbtn{flex:1;height:40px;border-radius:999px;border:1px solid;font-size:12.5px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.3s}
+.t-title{font-size:25px;font-weight:600}
+.t-body{font-size:12.5px;line-height:2;margin-top:10px}
+.tflex{display:flex;gap:24px;margin-top:14px;flex:1;min-height:0}
+.tflex .left{flex:1.2;min-width:0}
+.ipbox{border:1px solid;border-radius:14px;padding:14px}
+.ip{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.ipl{font-size:10.5px;margin-top:4px;opacity:.8}
+.log{margin-top:12px;font-size:10.5px;line-height:1.9;font-family:monospace;opacity:.85}
+.qrbox{flex:.8;background:#fff;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:12px}
+.qrbox canvas{width:170px;height:170px}
+.qrhint{font-size:10.5px;color:#64748b;margin-top:8px;text-align:center}
+.d-flex{display:flex;flex:1;align-items:center}
+.d-title{font-size:27px;font-weight:600}
+.d-body{font-size:12.5px;line-height:2;margin-top:12px}
+.d-note{font-size:11px;line-height:1.9;margin-top:12px;opacity:.85}
+.d-card{width:300px;height:300px;background:#fff;border-radius:20px;display:flex;align-items:center;
+  justify-content:center;flex:0 0 auto;margin-left:26px;color:#94a3b8;font-size:13px}
+.rail{display:flex;gap:7px;margin-top:22px;flex-wrap:wrap}
+.sw{width:84px;height:36px;border-radius:9px;cursor:pointer;border:2px solid transparent;
+  display:flex;align-items:center;justify-content:center;font-size:9.5px;color:#fff;font-weight:600;transition:.15s}
+.sw:hover{transform:translateY(-2px)}.sw.on{border-color:#fff}
+</style></head><body>
+<h1>C桌面 · 配色 v4（2025 消费级）</h1>
+<span class="sub">彻底弃用编辑器风（Nord/Gruvbox/Catppuccin），换 <b>近黑底 + 高饱和强调色 + 极光渐变背景</b>（Arc/Linear/Spotify 的 2025 打法）· 点色块切换 · 白天池 4 套</span>
+<div class="wrap">
+<div><div class="lab"><b>①</b> 夜间 · 默认「极光」</div>
+  <div class="frame"><div class="stage" id="s1"><div class="aurora" id="au1"></div>
+    <div class="top"><div><div class="clock">22:41</div><div class="date i-date"></div><div class="wx i-wx"></div></div>
+      <div class="badge"><div class="n" id="pn1"></div><div class="h i-badgeh"></div></div></div>
+    <div class="pbar"><div class="arrow" id="prev">‹</div>
+      <div class="pinfo"><div class="ptitle" id="pt"></div><div class="dots" id="pd"></div></div>
+      <div class="arrow" id="next">›</div></div>
+    <div class="grid" id="grid"></div>
+    <div class="grid2" id="grid2" style="display:none"></div>
+    <div class="dock" id="dock1"><div class="dbtn t-skin"></div><div class="dbtn t-lang" id="lang1"></div>
+      <div class="dbtn t-donate"></div><div class="dbtn t-lan"></div></div>
+  </div></div></div>
+<div><div class="lab"><b>②</b> 白天 · 「晨雾」（自动近光灯切过来）</div>
+  <div class="frame"><div class="stage" id="s2"><div class="aurora" id="au2" style="opacity:.18"></div>
+    <div class="top"><div><div class="clock">09:18</div><div class="date i-date"></div><div class="wx i-wx"></div></div>
+      <div class="badge"><div class="n">晨雾</div><div class="h i-badgeh"></div></div></div>
+    <div class="pbar"><div class="arrow">‹</div>
+      <div class="pinfo"><div class="ptitle i-page0"></div><div class="dots">● ○ ○</div></div>
+      <div class="arrow">›</div></div>
+    <div class="grid" id="gridL"></div>
+    <div class="dock" id="dock2"><div class="dbtn t-skin"></div><div class="dbtn t-lang" id="lang2"></div>
+      <div class="dbtn t-donate"></div><div class="dbtn t-lan"></div></div>
+  </div></div></div>
+<div><div class="lab"><b>③</b> 局域网传输 · 扫码免输 IP</div>
+  <div class="frame"><div class="stage" id="s3"><div class="aurora" id="au3" style="opacity:.3"></div>
+    <div class="t-title i-tt"></div><div class="t-body i-tb"></div>
+    <div class="tflex"><div class="left">
+      <div class="ipbox"><div class="ip">192.168.1.23:8080</div><div class="ipl i-run"></div></div>
+      <div class="log">[22:41:07] 服务已启动：8080<br>[22:42:10] 已保存 高德地图_车机版.apk (286 MB)</div>
+      <div class="dock" id="dock3" style="margin-top:14px"><div class="dbtn i-stop"></div><div class="dbtn i-back"></div></div>
+    </div><div class="qrbox"><canvas id="qr" width="255" height="255"></canvas><div class="qrhint i-qrh"></div></div></div>
+  </div></div></div>
+<div><div class="lab"><b>④</b> 打赏</div>
+  <div class="frame"><div class="stage" id="s4" style="flex-direction:row;align-items:center"><div class="aurora" id="au4" style="opacity:.35"></div>
+    <div style="flex:1"><div class="d-title i-dt"></div><div class="d-body i-db"></div><div class="d-note i-dn"></div>
+      <div class="dock" id="dock4" style="margin-top:18px;max-width:260px"><div class="dbtn i-back2"></div></div></div>
+    <div class="d-card">微信赞赏码</div>
+  </div></div></div>
+</div>
+<div class="rail" id="rail"></div>
+<script>
+var P=[["极光","#0d0b1e","#1d1240","#8E51FF","#ECEBF5","#8B87A3","rgba(139,92,246,.30)",0],["霓虹海","#05070f","#053345","#00D3F2","#E6F6FA","#6E93A8","rgba(34,211,238,.30)",0],["薄荷夜","#071310","#0a2b20","#00D492","#E4F7F0","#6FA392","rgba(46,230,184,.30)",0],["樱粉夜","#140b12","#33103a","#F6339A","#FBE9EF","#A87F90","rgba(255,92,138,.30)",0],["火山","#120b08","#2e1403","#FF6900","#FBEAE2","#A8806B","rgba(255,107,61,.30)",0],["Volt","#0b0d07","#1b2408","#9AE600","#F2F7E4","#99A37F","rgba(216,255,62,.32)",0],["纯黑","#050506","#0e0e11","#F5F5F7","#FFFFFF","#8A8A93","rgba(245,245,247,.22)",0],["蓝调夜","#0a0e1a","#0f1d3d","#2B7FFF","#E8EEFA","#7E8BB0","rgba(77,124,254,.32)",0],["晨雾","#f8fafc","#edf1f7","#2E6BFF","#1E2A3A","#7C8AA0","rgba(46,107,255,.30)",1],["奶油","#fff9f1","#fff1df","#F97316","#3A2E22","#A08C77","rgba(249,115,22,.30)",1],["薄荷白","#f1fbf6","#e6f5ee","#0DA678","#1E332B","#7B948A","rgba(13,166,120,.30)",1],["樱日","#fff5f7","#ffe9ee","#F43F6B","#3A242B","#A87F8D","rgba(244,63,107,.30)",1]];
+var LANG=[
+ {n:"简",skin:"换肤",donate:"打赏",lan:"局域网传输",badge:"点这里进设置",
+  pages:["应用","最近","影音"],date:"2026-11-07  星期六",wx:"深圳  23°C  少云",
+  tt:"局域网传输",tb:"手机和本机连同一个 Wi-Fi，手机扫右边二维码即可传文件",run:"运行中，手机扫码或浏览器打开上方位址",
+  stop:"停止接收",back:"返回",qrh:"手机扫码，直接打开传输页",
+  dt:"支持 C桌面",db:"如果这个桌面让你的老车机、电视盒子多撑了几年，愿意的话请作者喝杯咖啡。",dn:"赞赏不解锁任何功能，所有功能永远免费。",back2:"返回",
+  media:[["影视","#DC2626","▶"],["音乐","#16A34A","♪"]]},
+ {n:"繁",skin:"換膚",donate:"打賞",lan:"區域網路傳輸",badge:"點這裡進設定",
+  pages:["應用","最近","影音"],date:"2026-11-07  星期六",wx:"深圳  23°C  少雲",
+  tt:"區域網路傳輸",tb:"手機和本機連同一個 Wi-Fi，手機掃右邊 QR Code 即可傳檔案",run:"執行中，手機掃碼或瀏覽器開啟上方位址",
+  stop:"停止接收",back:"返回",qrh:"手機掃碼，直接開啟傳輸頁",
+  dt:"支持 C桌面",db:"如果這個桌面讓你的老車機、電視盒子多撐了幾年，願意的話請作者喝杯咖啡。",dn:"贊助不解鎖任何功能，所有功能永遠免費。",back2:"返回",
+  media:[["影視","#DC2626","▶"],["音樂","#16A34A","♪"]]},
+ {n:"EN",skin:"Skin",donate:"Donate",lan:"LAN Transfer",badge:"Tap for setup",
+  pages:["Apps","Recent","Media"],date:"Sat, Nov 7 2026",wx:"Shenzhen  23°C  Partly cloudy",
+  tt:"LAN Transfer",tb:"Connect your phone to the same Wi-Fi and scan the QR code",run:"Running — scan or open the address above",
+  stop:"Stop",back:"Back",qrh:"Scan to open on your phone",
+  dt:"Support CDesk",db:"If this launcher adds a few more years to your old head unit or TV box, buy me a coffee.",dn:"Donations unlock nothing. Everything stays free.",back2:"Back",
+  media:[["Video","#DC2626","▶"],["Music","#16A34A","♪"]]}
+];
+var li=0, cur=0, pi=0;
+var APPS=[["地图","#2563EB","地"],["音乐","#16A34A","乐"],["视频","#DC2626","影"],["电台","#B45309","台"],
+ ["蓝牙","#1D4ED8","蓝"],["相册","#DB2777","相"],["文件","#0891B2","文"],["浏览器","#7C3AED","网"],
+ ["天气","#0EA5E9","天"],["计算器","#475569","算"],["记录仪","#991B1B","录"],["C桌面","#7C3AED","C"]];
+function tiles(box,list,selFirst){box.innerHTML="";
+  for(var j=0;j<list.length;j++){var it=list[j],el=document.createElement("div");
+    el.className="tile"+(selFirst&&j===0?" sel":"");
+    el.innerHTML="<div class=\"ico\" style=\"background:linear-gradient(150deg,"+it[1]+",#12121a)\">"+it[2]+"</div>"+
+      "<div class=\"nm\">"+it[0]+"</div>";box.appendChild(el);}}
+function mediaCards(box){box.innerHTML="";var M=LANG[li].media;
+  for(var k=0;k<M.length;k++){var el=document.createElement("div");el.className="mediacard"+(k===0?" sel":"");
+    el.innerHTML="<div class=\"big\" style=\"background:linear-gradient(150deg,"+M[k][1]+",#12121a)\">"+M[k][2]+"</div>"+
+      "<div class=\"t\">"+M[k][0]+"</div>";box.appendChild(el);}}
+function applyLang(){var L2=LANG[li];
+  document.querySelectorAll(".t-skin").forEach(function(e){e.textContent=L2.skin;});
+  document.querySelectorAll(".t-donate").forEach(function(e){e.textContent=L2.donate;});
+  document.querySelectorAll(".t-lan").forEach(function(e){e.textContent=L2.lan;});
+  document.getElementById("lang1").textContent=L2.n;document.getElementById("lang2").textContent=L2.n;
+  document.querySelectorAll(".i-date").forEach(function(e){e.textContent=L2.date;});
+  document.querySelectorAll(".i-wx").forEach(function(e){e.textContent=L2.wx;});
+  document.querySelectorAll(".i-badgeh").forEach(function(e){e.textContent=L2.badge;});
+  document.querySelectorAll(".i-page0").forEach(function(e){e.textContent=L2.pages[0];});
+  document.getElementById("pt").textContent=L2.pages[cur];
+  document.querySelectorAll(".i-tt").forEach(function(e){e.textContent=L2.tt;});
+  document.querySelectorAll(".i-tb").forEach(function(e){e.textContent=L2.tb;});
+  document.querySelectorAll(".i-run").forEach(function(e){e.textContent=L2.run;});
+  document.querySelectorAll(".i-stop").forEach(function(e){e.textContent=L2.stop;});
+  document.querySelectorAll(".i-back").forEach(function(e){e.textContent=L2.back;});
+  document.querySelectorAll(".i-back2").forEach(function(e){e.textContent=L2.back2;});
+  document.querySelectorAll(".i-qrh").forEach(function(e){e.textContent=L2.qrh;});
+  document.querySelectorAll(".i-dt").forEach(function(e){e.textContent=L2.dt;});
+  document.querySelectorAll(".i-db").forEach(function(e){e.textContent=L2.db;});
+  document.querySelectorAll(".i-dn").forEach(function(e){e.textContent=L2.dn;});
+  render();}
+function render(){var g=document.getElementById("grid"),g2=document.getElementById("grid2");
+  if(cur===2){g.style.display="none";g2.style.display="grid";mediaCards(g2);}
+  else{g.style.display="grid";g2.style.display="none";tiles(g,APPS,true);}}
+function paint(){var p=P[pi];
+  ["s1","s3","s4"].forEach(function(id,ix){
+    var st=document.getElementById(id), au=document.getElementById("au"+(ix===0?1:ix+1));
+    st.style.background="linear-gradient(165deg,"+p[1]+" 0%,"+p[2]+" 100%)";
+    au.style.background="radial-gradient(circle,"+p[3]+"55,transparent 70%)";
+    var big=st.querySelectorAll(".clock,.t-title,.d-title");
+    for(var i=0;i<big.length;i++)big[i].style.color=(p[7]?p[4]:p[3]);
+    st.querySelectorAll(".date,.ptitle,.nm,.mediacard .t").forEach(function(e){e.style.color=p[4];});
+    st.querySelectorAll(".wx,.badge .h,.t-body,.d-note,.ipl,.log").forEach(function(e){e.style.color=p[5];});
+    st.querySelectorAll(".badge .n,.dots").forEach(function(e){e.style.color=p[3];});
+    st.querySelectorAll(".arrow,.dbtn").forEach(function(e){e.style.color=p[3];e.style.borderColor=p[6];});
+    st.querySelectorAll(".ipbox").forEach(function(e){e.style.borderColor=p[6];});
+    st.querySelectorAll(".ip").forEach(function(e){e.style.color=p[3];});
+    var dk=st.querySelector(".dock");
+    if(dk){dk.style.background=(p[7]?"rgba(0,0,0,.05)":"rgba(255,255,255,.07)");
+           dk.style.borderColor=(p[7]?"rgba(0,0,0,.1)":"rgba(255,255,255,.14)");}});
+  document.getElementById("pn1").textContent=p[0];
+  var r=document.getElementById("rail");r.innerHTML="";
+  for(var i2=0;i2<P.length;i2++){var d=document.createElement("div");
+    d.className="sw"+(i2===pi?" on":"");
+    d.style.background="linear-gradient(160deg,"+P[i2][1]+" 0%,"+P[i2][2]+" 55%,"+P[i2][3]+" 220%)";
+    d.textContent=P[i2][0];
+    (function(k){d.onclick=function(){pi=k;paint();render();};})(i2);
+    r.appendChild(d);}
+  var q=P[8],s2=document.getElementById("s2");
+  s2.style.background="linear-gradient(165deg,"+q[1]+" 0%,"+q[2]+" 100%)";
+  document.getElementById("au2").style.background="radial-gradient(circle,"+q[3]+"44,transparent 70%)";
+  s2.querySelectorAll(".clock").forEach(function(e){e.style.color=q[4];});
+  s2.querySelectorAll(".date,.ptitle,.nm").forEach(function(e){e.style.color=q[4];});
+  s2.querySelectorAll(".wx,.badge .h").forEach(function(e){e.style.color=q[5];});
+  s2.querySelectorAll(".badge .n,.dots").forEach(function(e){e.style.color=q[3];});
+  s2.querySelectorAll(".arrow,.dbtn").forEach(function(e){e.style.color=q[3];e.style.borderColor=q[6];});
+  tiles(document.getElementById("gridL"),APPS,true);}
+document.getElementById("prev").onclick=function(){cur=(cur+2)%3;applyLang();};
+document.getElementById("next").onclick=function(){cur=(cur+1)%3;applyLang();};
+document.getElementById("lang1").onclick=function(){li=(li+1)%3;applyLang();};
+document.getElementById("lang2").onclick=function(){li=(li+1)%3;applyLang();};
+(function qr(){var c=document.getElementById("qr").getContext("2d");
+  var N=25,S=9,seed=42;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
+  c.fillStyle="#fff";c.fillRect(0,0,N*S,N*S);c.fillStyle="#11131B";
+  function finder(ox,oy){for(var y=0;y<7;y++)for(var x=0;x<7;x++){
+    var edge=(x===0||x===6||y===0||y===6),core=(x>=2&&x<=4&&y>=2&&y<=4);
+    if(edge||core)c.fillRect((ox+x)*S,(oy+y)*S,S,S);}}
+  finder(0,0);finder(N-7,0);finder(0,N-7);
+  for(var y=0;y<N;y++)for(var x=0;x<N;x++){var inF=(x<8&&y<8)||(x>=N-8&&y<8)||(x<8&&y>=N-8);
+    if(!inF&&rnd()<0.46)c.fillRect(x*S,y*S,S,S);}})();
+applyLang();paint();
+</script></body></html>
