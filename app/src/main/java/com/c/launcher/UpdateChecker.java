@@ -40,6 +40,11 @@ public final class UpdateChecker {
         default void onForceUpdate(String remoteVersion, String downloadUrl, String notes) {
             onUpdate(remoteVersion, downloadUrl, notes);
         }
+        /**
+         * 服务端 version.json 里的可选公告。同一个 id 只弹一次，
+         * 用来发"签名升级需卸载一次""线路维护"这类通知，不用发新版本。
+         */
+        default void onNotice(String id, String title, String body, String url) { }
     }
 
     private UpdateChecker() { }
@@ -96,6 +101,11 @@ public final class UpdateChecker {
         String mirror;
         /** 更新说明，来自 version.json 的 releaseNotes */
         String notes;
+        /** 可选公告：id 用于去重，同一 id 只弹一次 */
+        String noticeId;
+        String noticeTitle;
+        String noticeBody;
+        String noticeUrl;
     }
 
     private static class Rel {
@@ -135,11 +145,18 @@ public final class UpdateChecker {
                     @Override public void run() {
                         if (res.failed) {
                             cb.onError(res.err == null ? "network" : res.err);
-                        } else if (res.ver != null && res.url != null && isNewer(res.ver, cur)) {
+                            return;
+                        }
+                        if (res.ver != null && res.url != null && isNewer(res.ver, cur)) {
                             if (res.force) { cb.onForceUpdate(res.ver, downloadUrl(res.url, res.mirror), res.notes); }
                             else { cb.onUpdate(res.ver, downloadUrl(res.url, res.mirror), res.notes); }
-                        } else {
-                            cb.onLatest(res.ver);
+                            return;
+                        }
+                        cb.onLatest(res.ver);
+                        // 公告只在没有更新可推时出现，免得两个弹窗叠在一起
+                        if (res.noticeId != null && res.noticeId.length() > 0
+                                && res.noticeBody != null && res.noticeBody.length() > 0) {
+                            cb.onNotice(res.noticeId, res.noticeTitle, res.noticeBody, res.noticeUrl);
                         }
                     }
                 });
@@ -221,6 +238,13 @@ public final class UpdateChecker {
                 r.url = stringField(obj, "url");
                 r.force = "true".equalsIgnoreCase(stringField(obj, "force"));
                 r.notes = stringField(obj, "releaseNotes");
+                JSONObject notice = obj.optJSONObject("notice");
+                if (notice != null) {
+                    r.noticeId = stringField(notice, "id");
+                    r.noticeTitle = stringField(notice, "title");
+                    r.noticeBody = stringField(notice, "body");
+                    r.noticeUrl = stringField(notice, "url");
+                }
                 return r;
             } catch (JSONException e) {
                 return null;

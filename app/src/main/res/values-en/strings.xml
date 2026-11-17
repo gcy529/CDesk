@@ -29,6 +29,8 @@
     <string name="remote_stop">Stop remote</string>
     <string name="remote_hint">Phone and this device on the same Wi-Fi; scan and use it like a remote</string>
     <string name="remote_qr_hint">Scan to open the remote</string>
+    <string name="notice_ok">Got it</string>
+    <string name="notice_more">Details</string>
     <string name="no_apps">No apps found</string>
     <string name="launch_failed">cannot be opened</string>
     <string name="donate">Support</string>

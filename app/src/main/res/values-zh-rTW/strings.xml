@@ -28,6 +28,8 @@
     <string name="remote_stop">停止遙控</string>
     <string name="remote_hint">手機和本機連同一個 Wi-Fi，掃碼後像遙控器一樣操作桌面</string>
     <string name="remote_qr_hint">手機掃碼，開啟遙控器</string>
+    <string name="notice_ok">知道了</string>
+    <string name="notice_more">查看詳情</string>
     <string name="no_apps">找不到應用程式</string>
     <string name="launch_failed">無法開啟</string>
     <string name="donate">打賞</string>

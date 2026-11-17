@@ -15,6 +15,7 @@ android {
         signingConfigs {
             cdesk {
                 storeFile file(project.property('ksFile'))
+                storeType "PKCS12"
                 storePassword project.property('ksPass')
                 keyAlias project.property('keyAlias')
                 keyPassword project.property('keyPass')
@@ -26,8 +27,8 @@ android {
         applicationId project.hasProperty('appId') ? project.property('appId') : "com.c.launcher"
         minSdk 16
         targetSdk 34
-        versionCode 9
-        versionName "0.3.1"
+        versionCode 10
+        versionName "0.3.2"
         // 版本号只写这一处：桌面角标、设置页、更新检查的「当前版本」全读它。
         // 手抄进 strings.xml 会漂——四语曾一起停在 0.4.1，导致更新检查
         // 提示用户升级到已经装着的版本。
@@ -41,8 +42,12 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // 预览版先用 debug 签名，方便直接装车机
-            signingConfig signingConfigs.debug
+            // 有正式钥匙就用正式钥匙；没有才退回调试签名（只影响本地试编）
+            if (project.hasProperty('ksFile')) {
+                signingConfig signingConfigs.cdesk
+            } else {
+                signingConfig signingConfigs.debug
+            }
         }
         debug {
             minifyEnabled false

@@ -1,6 +1,7 @@
 package com.c.launcher;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -162,6 +163,10 @@ public class MainActivity extends Activity {
                 }
                 CLog.i("force update required: " + ver);
                 UpdatePrompt.show(MainActivity.this, ver, url, notes, true);
+            }
+
+            @Override public void onNotice(String id, String title, String body, final String url) {
+                showNoticeOnce(id, title, body, url);
             }
         });
 
@@ -446,6 +451,29 @@ public class MainActivity extends Activity {
         } else {
             tvPageHint.setVisibility(View.GONE);
         }
+    }
+
+    /** 服务端公告：同一个 id 只弹一次，点过「知道了」就不再打扰 */
+    private void showNoticeOnce(String id, String title, String body, final String url) {
+        if (id == null || id.length() == 0 || body == null || body.length() == 0) return;
+        SharedPreferences sp = getSharedPreferences("cdesk_update", MODE_PRIVATE);
+        if (id.equals(sp.getString("notice_shown_id", null))) return;
+        sp.edit().putString("notice_shown_id", id).apply();
+
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(title != null && title.length() > 0 ? title : getString(R.string.app_name));
+        b.setMessage(body);
+        b.setPositiveButton(R.string.notice_ok, null);
+        if (url != null && url.length() > 0) {
+            b.setNeutralButton(R.string.notice_more, new DialogInterface.OnClickListener() {
+                @Override public void onClick(DialogInterface d, int which) {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    } catch (Exception ignored) { }
+                }
+            });
+        }
+        b.show();
     }
 
     private void updatePageBar() {
