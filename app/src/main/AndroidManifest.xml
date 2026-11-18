@@ -18,6 +18,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- 手机遥控的音量键：普通权限，安装即授予，无运行时弹窗 -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- 开机自启遥控服务 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- 车机 / TV / 盒子没有触摸屏，必须声明为非必需，否则装不上 -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -155,6 +157,16 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="LAN remote control endpoint for the desktop" />
         </service>
+
+        <!-- 开机自启遥控服务：机器起来即拉起，免去手动进桌面 -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".CleanupActivity"

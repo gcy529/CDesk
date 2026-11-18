@@ -30,6 +30,8 @@
     <string name="remote_stop">停止遥控</string>
     <string name="remote_hint">手机和本机连同一个 Wi-Fi，扫码后像遥控器一样操作桌面</string>
     <string name="remote_qr_hint">手机扫码，打开遥控器</string>
+    <string name="remote_boot">开机自启遥控服务</string>
+    <string name="remote_boot_hint">开机后自动就绪，不用等手动进桌面；关掉则只在进桌面时启动</string>
     <string name="notice_ok">知道了</string>
     <string name="notice_more">查看详情</string>
     <string name="no_apps">没有找到应用</string>

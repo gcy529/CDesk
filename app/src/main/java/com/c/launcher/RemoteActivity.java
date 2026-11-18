@@ -1,11 +1,13 @@
 package com.c.launcher;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ public class RemoteActivity extends Activity {
     private Button btnToggle;
     private ImageView ivQr;
     private TextView tvQrHint;
+    private CheckBox ckBoot;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
     private boolean attached;
@@ -54,6 +57,17 @@ public class RemoteActivity extends Activity {
         btnToggle = (Button) findViewById(R.id.btnRemoteToggle);
         ivQr = (ImageView) findViewById(R.id.ivRemoteQr);
         tvQrHint = (TextView) findViewById(R.id.tvRemoteQrHint);
+        ckBoot = (CheckBox) findViewById(R.id.ckRemoteBoot);
+
+        final SharedPreferences sp = getSharedPreferences("cdesk_remote", MODE_PRIVATE);
+        ckBoot.setChecked(sp.getBoolean("auto_start", true));
+        ckBoot.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                boolean on = ((CheckBox) v).isChecked();
+                sp.edit().putBoolean("auto_start", on).apply();
+                CLog.i("remote auto-start -> " + on);
+            }
+        });
 
         findViewById(R.id.btnRemoteBack).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { finish(); }
