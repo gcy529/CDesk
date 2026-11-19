@@ -1,6 +1,6 @@
 <p align="center"><img src="assets/icon-512.png" width="88" alt="C桌面"></p>
 
-# C桌面 / CDesk
+# C桌面·轻享版 / CDesk Lite
 
 [中文](README.md) | [English](README.en.md)
 
@@ -8,6 +8,9 @@
 > 给老车机、电视盒子、Android TV 用的一块干净桌面。没有广告，没有推荐流。
 
 **官网（国内直连）：[https://gcy5.cn.mt](https://gcy5.cn.mt)** —— 功能介绍、安装步骤、常见问题、加群/反馈都在这。
+
+> **这是轻享版（稳定版）**：只做四件事的干净桌面——两页桌面、4K 壁纸、实时网速、局域网传文件。没有影音、没有遥控，体积最小、启动最快、运行最稳。
+> 想要手机扫码遥控、影音页、主题换肤？请选 **[全功能版（滚动测试）](https://github.com/gcy529/CDesk/tree/beta)**。两版签名统一，可互相覆盖安装。
 
 <p align="center">
   <img src="assets/monkeycode-dev-1.webp" width="420" alt="MonkeyCode 云端协作">
