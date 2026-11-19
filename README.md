@@ -34,16 +34,8 @@
 
 > 壁纸与更新发布、bug 反馈、功能建议，请到公众号「**韭菜超先生**」——丢失了 APK 也从这里找回。
 
-> 也可以直接进 QQ 群「**C桌面会员群**」（群号 **970805386**）：<https://qm.qq.com/q/aNyk2ZG3ZK> —— 安装求助、功能许愿、新版本先发群里。
-
-<p align="center">
-  <img src="assets/wechat-account.png" width="200" alt="公众号：韭菜超先生">
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/qq-group-qr.png" width="200" alt="QQ 群：C桌面会员群"><br>
-  <sub>微信扫码关注「韭菜超先生」</sub>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <sub>QQ 群 970805386 · <a href="https://qm.qq.com/q/aNyk2ZG3ZK">一键加群</a></sub>
-</p>
+> 也可以进 QQ 群「**C桌面会员群**」（群号 **970805386**）——安装求助、功能许愿、新版本先发群里。
+> 公众号二维码与一键加群入口见[官网](https://gcy5.cn.mt)。
 
 ---
 
@@ -53,11 +45,10 @@
 
 **可以先去官网 [gcy5.cn.mt](https://gcy5.cn.mt) 看一眼再决定装不装** —— 页面底部有完整下载入口。
 
-最新版见 [Releases](https://github.com/gcy529/CDesk/releases/latest)：
+最新版下载：
 
-- [GitHub 直链](https://github.com/gcy529/CDesk/releases/latest)（海外快）
-- [GHFast 加速](https://ghfast.top/https://github.com/gcy529/CDesk/releases/latest)（国内推荐）
-- [GH-Proxy 加速](https://gh-proxy.com/https://github.com/gcy529/CDesk/releases/latest)（备用）
+- [官网下载页](https://gcy5.cn.mt)（国内直连，推荐）
+- [GitHub Releases](https://github.com/gcy529/CDesk/releases/latest)（海外）
 
 每个版本附 SHA-256 校验值。装不上、下不动，到公众号「韭菜超先生」反馈。
 
@@ -129,18 +120,14 @@ app/src/main/
 ├── java/com/c/launcher/
 │   ├── MainActivity.java             桌面主界面：时钟 / 两页（应用 / 最近）/ 壁纸
 │   ├── AppAdapter.java               已安装应用列表（D-pad 可导航）
-│   ├── MediaAdapter.java             影音页入口卡片（直播 / 点播 / 音乐 / 书库）
-│   ├── BaseShellActivity.java        三个壳的公共链路：导入 → 解析 → 列表 → 点击
-│   ├── LiveShellActivity.java        直播播放（M3U / TXT#genre# / JSON）
-│   ├── VodShellActivity.java         点播播放（苹果CMS 采集接口）
+│   ├── BaseShellActivity.java        影音页公共链路：导入 → 解析 → 列表 → 点击
 │   ├── MusicShellActivity.java       音乐播放（M3U / TXT / JSON 歌单）
 │   ├── PlayerActivity.java           播放器：倍速 / 进度 / 换 UA / 断流重连
 │   ├── LibraryActivity.java          收藏 + 最近播放
 │   ├── PlaylistParser.java           播放列表解析（不依赖第三方库）
-│   ├── SourceApi.java                苹果CMS 接口客户端
-│   ├── TvBoxConfig.java              TVBox 配置解析（只认结构，不含源）
 │   ├── History.java / Favorites.java 最近播放与收藏（JSON 持久化）
 │   ├── ContentFilter.java            标题关键词过滤（设置里可关）
+│   ├── （影音扩展组件）               内容均由使用者自行导入，应用不内置、不分发任何内容源
 │   ├── WPManager.java                内置壁纸 + 日夜自动 + 按屏解码
 │   ├── CustomWallpapers.java         自定义图片壁纸（最多 3 张，私有目录）
 │   ├── WallpaperSettingsActivity.java 壁纸选择（缩略图卡片）
@@ -189,11 +176,7 @@ app/src/main/
 
 ## 支持 / Support
 
-如果这个项目让你的老车机多活了几年，欢迎打赏。**打赏不解锁任何功能，所有功能永远免费。**
-
-<p align="center">
-  <img src="assets/donate-qr.jpg" width="200" alt="赞赏码">
-</p>
+如果这个项目让你的老车机多活了几年，欢迎打赏，赞赏码见[官网](https://gcy5.cn.mt)。**打赏不解锁任何功能，所有功能永远免费。**
 
 **打赏不解锁任何功能；打赏码就是一张静态图片，不接任何支付 SDK。**
 
@@ -229,8 +212,7 @@ C桌面 的构建始于 **DeepSeek**：项目骨架、核心架构，以及包�
 后续的代码完成与持续开发，由云端的 **MonkeyCode** 与 **讯飞星辰 MaaS 平台** 协同支撑，
 用于代码生成、审查与多轮迭代。
 
-想体验同款开发流程，可用邀请码注册：
-[https://monkeycode-ai.com/?ic=01a05d37-4257-73f8-9552-92b1e62b7f41](https://monkeycode-ai.com/?ic=01a05d37-4257-73f8-9552-92b1e62b7f41)
+想体验同款开发流程，可访问 MonkeyCode 官网了解：[https://monkeycode-ai.com](https://monkeycode-ai.com)
 
 产品判断、取舍与发布由作者本人负责。上述平台均为开发辅助工具，本应用不是其官方产品，
 也未获得其背书或联合署名。
