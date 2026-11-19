@@ -125,6 +125,7 @@ public final class UpdateChecker {
                 .format(new java.util.Date());
         if (today.equals(p.getString(KEY_LAST, null))) return;
         if (act.getString(R.string.app_version).equals(p.getString(KEY_SKIP, null))) return;
+        p.edit().putString(KEY_LAST, today).apply();
         fetchAsync(act, cb);
     }
 
@@ -275,6 +276,32 @@ public final class UpdateChecker {
             }
             return best;
         } catch (Throwable t) {
+            // 单个 Release 对象（/releases/tags/{tag} 接口）：tag_name + assets[] 里找 APK
+            try {
+                JSONObject o = new JSONObject(json);
+                String tag = stringField(o, "tag_name");
+                String ver = tag.startsWith("v") ? tag.substring(1) : tag;
+                String apk = null;
+                JSONArray assets = o.optJSONArray("assets");
+                if (assets != null) {
+                    for (int i = 0; i < assets.length(); i++) {
+                        JSONObject a = assets.optJSONObject(i);
+                        if (a == null) continue;
+                        String u = stringField(a, "browser_download_url");
+                        if (u != null && u.endsWith(".apk") && !u.endsWith("app-debug.apk")) { apk = u; break; }
+                    }
+                }
+                if (!looksVer(ver) && apk != null) {
+                    java.util.regex.Matcher m = java.util.regex.Pattern
+                            .compile("CDesk-([0-9.]+?)-beta\\.apk").matcher(apk);
+                    if (m.find()) ver = m.group(1);
+                }
+                if (looksVer(ver) && isNewer(ver, cur) && apk != null) {
+                    Rel r = new Rel();
+                    r.tag = tag; r.ver = ver; r.apk = apk;
+                    return r;
+                }
+            } catch (Throwable ignored) { }
             return null;
         }
     }

@@ -118,6 +118,8 @@ public final class RemoteKeys {
         }
     }
 
+    private static boolean legacyMuted = false;
+
     @SuppressWarnings("deprecation")
     private static boolean mute(Context ctx) {
         try {
@@ -127,7 +129,8 @@ public final class RemoteKeys {
                 am.adjustStreamVolume(AudioManager.STREAM_MUSIC,
                         AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
             } else {
-                am.setStreamMute(AudioManager.STREAM_MUSIC, true);
+                legacyMuted = !legacyMuted;
+                am.setStreamMute(AudioManager.STREAM_MUSIC, legacyMuted);
             }
             return true;
         } catch (Throwable t) {

@@ -103,15 +103,26 @@ public class WallpaperSettingsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 41 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            File saved = CustomWallpapers.add(this, data.getData());
-            if (saved != null) {
-                WPManager.setAuto(this, false);
-                WPManager.setCustomPath(this, saved.getAbsolutePath());
-                Toast.makeText(this, R.string.wallpaper, Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this, R.string.shell_failed, Toast.LENGTH_SHORT).show();
-            }
+            final android.net.Uri uri = data.getData();
+            Toast.makeText(this, R.string.shell_loading, Toast.LENGTH_SHORT).show();
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    final File saved = CustomWallpapers.add(WallpaperSettingsActivity.this, uri);
+                    runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            if (isFinishing()) return;
+                            if (saved != null) {
+                                WPManager.setAuto(WallpaperSettingsActivity.this, false);
+                                WPManager.setCustomPath(WallpaperSettingsActivity.this, saved.getAbsolutePath());
+                                Toast.makeText(WallpaperSettingsActivity.this, R.string.wallpaper, Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(WallpaperSettingsActivity.this, R.string.shell_failed, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }).start();
         }
     }
 

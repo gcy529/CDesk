@@ -426,6 +426,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (miniListener != null) MusicKernel.get(this).removeListener(miniListener);
         ui.removeCallbacks(clockTick);
         super.onDestroy();
     }
@@ -947,6 +948,8 @@ public class MainActivity extends Activity {
         return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
     }
 
+    private MusicKernel.Listener miniListener;
+
     // ---------- 迷你播放条：音乐/电台在桌面继续播 ----------
     private void wireMiniPlaybar() {
         final View bar = findViewById(R.id.miniPlaybar);
@@ -955,7 +958,7 @@ public class MainActivity extends Activity {
         final TextView btnPause = (TextView) findViewById(R.id.btnMiniPause);
         final TextView btnStop = (TextView) findViewById(R.id.btnMiniStop);
 
-        MusicKernel.get(this).addListener(new MusicKernel.Listener() {
+        miniListener = new MusicKernel.Listener() {
             @Override public void onStateChanged(boolean playing, String t, String u, boolean isLive) {
                 if (isFinishing()) return;
                 if (tvTitle == null || btnPause == null || btnStop == null) return;
@@ -965,9 +968,10 @@ public class MainActivity extends Activity {
                 }
                 bar.setVisibility(View.VISIBLE);
                 tvTitle.setText(t);
-                btnPause.setText(playing ? "\u2759\u2759" : "\u25B6");
+                btnPause.setText(playing ? "❙❙" : "▶");
             }
-        });
+        };
+        MusicKernel.get(this).addListener(miniListener);
         if (btnPause != null) btnPause.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { MusicKernel.get(MainActivity.this).toggle(); }
         });

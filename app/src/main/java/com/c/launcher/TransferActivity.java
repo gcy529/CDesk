@@ -160,6 +160,7 @@ public class TransferActivity extends Activity {
         running = false;
         try { if (server != null) server.close(); } catch (IOException ignored) { }
         server = null;
+        closeClients();
         ui.post(new Runnable() {
             @Override public void run() {
                 if (isFinishing()) return;
@@ -213,13 +214,39 @@ public class TransferActivity extends Activity {
                 }
             }
         } catch (Throwable ignored) { }
+        try {
+            java.util.Enumeration<java.net.NetworkInterface> ifs = java.net.NetworkInterface.getNetworkInterfaces();
+            while (ifs != null && ifs.hasMoreElements()) {
+                java.net.NetworkInterface ni = ifs.nextElement();
+                if (!ni.isUp() || ni.isLoopback()) continue;
+                java.util.Enumeration<java.net.InetAddress> addrs = ni.getInetAddresses();
+                while (addrs.hasMoreElements()) {
+                    java.net.InetAddress a = addrs.nextElement();
+                    if (a.isLoopbackAddress() || a.isLinkLocalAddress()) continue;
+                    String host = a.getHostAddress();
+                    if (host != null && host.indexOf(':') < 0) return host;
+                }
+            }
+        } catch (Throwable ignored) { }
         return "127.0.0.1";
+    }
+
+    private final java.util.Set<Socket> clients = java.util.Collections.synchronizedSet(new java.util.HashSet<Socket>());
+
+    private void closeClients() {
+        synchronized (clients) {
+            for (Socket s : clients) {
+                try { if (s != null) s.close(); } catch (Throwable ignored) { }
+            }
+            clients.clear();
+        }
     }
 
     private void acceptLoop() {
         while (running) {
             try {
                 final Socket s = server.accept();
+                clients.add(s);
                 s.setSoTimeout(30000);
                 Thread t = new Thread(new Runnable() {
                     @Override public void run() { handle(s); }
@@ -273,6 +300,7 @@ public class TransferActivity extends Activity {
             }
         } catch (Throwable ignored) {
         } finally {
+            clients.remove(sock);
             try { if (out != null) out.flush(); } catch (Throwable ignored) { }
             try { if (sock != null) sock.close(); } catch (Throwable ignored) { }
         }
@@ -285,7 +313,7 @@ public class TransferActivity extends Activity {
         FileOutputStream fos = new FileOutputStream(f);
         byte[] buf = new byte[8192];
         try {
-            while (len < 0 || got < len) {
+            while (running && (len < 0 || got < len)) {
                 int want = buf.length;
                 if (len >= 0) want = (int) Math.min((long) buf.length, len - got);
                 int n = in.read(buf, 0, want);

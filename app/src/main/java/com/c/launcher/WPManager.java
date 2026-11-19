@@ -70,28 +70,22 @@ public final class WPManager {
         return (v < WP_MORNING || v > WP_CUSTOM) ? WP_MORNING : v;
     }
 
-    /** 老存档值 -> 新枚举。新存档已迁过会带 KEY_MIGRATED，这里只处理 0.7.9 前与中间态。 */
+    /** 老存档值 -> 新枚举。新存档已迁过会带 KEY_MIGRATED，这里只处理旧存档归一。 */
     private static int migrate(int old) {
-        // 0.7.9/0.7.10 中间态（含少女，3=晨光 4=金色时刻 是同一张 4k 的重编码）
-        if (old >= 0 && old <= 6) {
-            switch (old) {
-                case 0: return WP_MORNING;   // 旧少女(4k) -> 新晨光（同一张图）
-                case 1: return WP_NONE;      // 纯色
-                case 2: return WP_NIGHT;     // 鲸夜
-                case 3: return WP_MORNING;    // 旧晨光(重编码少女) -> 新晨光（同一张图）
-                case 4: return WP_DUSK;      // 旧金色时刻(4k日落) -> 新傍晚（同一张 4k）
-                case 5: return WP_CUSTOM;
-                case 6: return WP_MORNING;   // 旧薄荷已下线，回晨光
-            }
-        }
-        // 0.7.9 前老存档（无少女，0=纯色 1=鲸夜 2=晨光 3=金色）
+        // 0.7.9/0.7.10 中间态（含少女，3=晨光 4=金色时刻 是同一张 4k 的重编码）。
+        // 注意：0.7.9 前老存档（0=纯色 1=鲸夜 2=晨光 3=金色）与中间态在 0..3 上取值重叠，
+        // 存档里没有任何字段能区分两套格式，故统一按更近、存量更多的中间态映射归一；
+        // 0.7.9 前用户的壁纸偏好可能被归到相近壁纸，需手动重选一次。
         switch (old) {
-            case 0: return WP_NONE;
-            case 1: return WP_NIGHT;
-            case 2: return WP_MORNING;
-            case 3: return WP_DUSK;
+            case 0: return WP_MORNING;   // 旧少女(4k) -> 新晨光（同一张图）
+            case 1: return WP_NONE;      // 纯色
+            case 2: return WP_NIGHT;     // 鲸夜
+            case 3: return WP_MORNING;   // 旧晨光(重编码少女) -> 新晨光（同一张图）
+            case 4: return WP_DUSK;      // 旧金色时刻(4k日落) -> 新傍晚（同一张 4k）
+            case 5: return WP_CUSTOM;
+            case 6: return WP_MORNING;   // 旧薄荷已下线，回晨光
+            default: return WP_MORNING;
         }
-        return WP_MORNING;
     }
 
     public static void setWhich(Context c, int v) {

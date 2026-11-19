@@ -197,6 +197,8 @@ public class PlayerActivity extends Activity {
         }
     }
 
+    private long lastProgressSave = 0L;
+
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             if (tvClock != null) tvClock.setText(new SimpleDateFormat("HH:mm", Locale.US).format(new Date()));
@@ -211,7 +213,13 @@ public class PlayerActivity extends Activity {
                     int pct = dur > 0 ? (int) (buffered * 100 / dur) : 0;
                     tvBuf.setText("Buf " + Math.max(0, pct) + "%");
                 }
-                if (!live) saveProgress(pos);
+                if (!live) {
+                    long nowMs = System.currentTimeMillis();
+                    if (nowMs - lastProgressSave >= 15000) {
+                        lastProgressSave = nowMs;
+                        saveProgress(pos);
+                    }
+                }
             }
             ui.postDelayed(this, 1000);
         }
@@ -469,7 +477,7 @@ public class PlayerActivity extends Activity {
 
     private void saveProgress(long ms) {
         if (playKey.length() == 0) return;
-        sp().edit().putLong(playKey, ms).commit();
+        sp().edit().putLong(playKey, ms).apply();
         History.push(this, tvTitle == null ? "" : tvTitle.getText().toString(), url,
                 live ? "live" : "vod", ms);
     }
@@ -522,6 +530,7 @@ public class PlayerActivity extends Activity {
 
     @Override
     protected void onPause() {
+        if (player != null && prepared && !live) saveProgress(player.getCurrentPosition());
         super.onPause();
         if (player != null) player.setPlayWhenReady(false);
     }
@@ -533,6 +542,9 @@ public class PlayerActivity extends Activity {
         boolean isMusic = !live && url != null
                 && (url.startsWith("file") || url.startsWith("/storage") || url.startsWith("/sdcard"));
         if (isMusic && player != null) {
+            if (playerView != null) playerView.setPlayer(null);
+            player.removeListener(listener);
+            if (stats != null) player.removeAnalyticsListener(stats);
             MusicKernel.get(this).handoff(player, url, titleBackup, live);
             player = null;   // 内核接管，这里不再 release
         } else {
