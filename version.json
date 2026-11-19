@@ -1,8 +1,8 @@
 {
-  "version": "0.7.16",
-  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.16-beta.apk",
+  "version": "0.7.17",
+  "url": "https://github.com/gcy529/CDesk/releases/download/beta/CDesk-0.7.17-beta.apk",
   "sha256": "",
   "channel": "beta",
   "force": false,
-  "releaseNotes": "0.7.16 更新内容：\n- 桌面左侧常驻「互联遥控」二维码：开机自动就绪，一张码切换遥控 / 传文件\n- 遥控令牌落盘，地址跨重启固定\n- 补全手机遥控落地：RemoteService / RemoteKeys / RemoteActivity 与遥控页面\n- 稳定版与 beta 同一签名密钥，可互相覆盖，后续升级无需卸载"
+  "releaseNotes": "0.7.17 更新内容：\n- 应用内三语（简 / 繁 / EN）功能命名统一：频道 / 影视 / 音乐\n- 外部内容源表述统一为「通用订阅 / 采集接口」\n- 说明文档与官网文案同步统一\n- 仅文案调整，功能与逻辑零改动"
 }
