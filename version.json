@@ -1,9 +1,9 @@
 {
-  "version": "0.3.6.1",
-  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.6.1/app-debug.apk",
+  "version": "0.3.6.2",
+  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.6.2/app-debug.apk",
   "channel": "stable",
   "force": false,
-  "releaseNotes": "轻享版 0.3.6.1：遥控服务新增开机自启——机器一开机即自动就绪，手机扫桌面常驻二维码即可遥控或传文件，不用等手动进桌面。开机自启可在「设置 → 手机遥控」里关闭。",
+  "releaseNotes": "轻享版 0.3.6.2：网速悬浮窗改为 MB/s，按每秒兆字节显示，数值随速率自动调整小数位。",
   "notice": {
     "id": "2026-11-signature-rotate",
     "title": "签名升级说明",

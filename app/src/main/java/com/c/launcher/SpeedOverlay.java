@@ -90,7 +90,7 @@ public class SpeedOverlay {
         p.root.setGravity(Gravity.CENTER_VERTICAL);
 
         p.text = new TextView(ctx);
-        p.text.setText(prefix + "0.00");
+        p.text.setText(prefix + "0.00 M/s");
         p.text.setTextSize(12f);
         p.text.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
         p.text.setGravity(Gravity.CENTER);
@@ -124,15 +124,15 @@ public class SpeedOverlay {
         wm.addView(p.root, p.lp);
     }
 
-    /** 每秒由 SpeedService 回调，单位 Mbps */
-    public void updateSpeed(final double dlMbps, final double ulMbps) {
+    /** 每秒由 SpeedService 回调，单位 MB/s */
+    public void updateSpeed(final double dlMBps, final double ulMBps) {
         ui.post(new Runnable() {
             @Override public void run() {
                 if (!attached) return;
-                setText(down, "\u2193 ", fmt(dlMbps));
-                setText(up, "\u2191 ", fmt(ulMbps));
-                boolean dAct = dlMbps >= 0.05d;
-                boolean uAct = ulMbps >= 0.05d;
+                setText(down, "\u2193 ", fmt(dlMBps));
+                setText(up, "\u2191 ", fmt(ulMBps));
+                boolean dAct = dlMBps >= 0.006d;
+                boolean uAct = ulMBps >= 0.006d;
                 boolean changed = (dAct != downActive) || (uAct != upActive);
                 downActive = dAct;
                 upActive = uAct;
@@ -196,10 +196,10 @@ public class SpeedOverlay {
 
     public boolean isAttached() { return attached; }
 
-    private String fmt(double v) {
-        if (v >= 1000) return String.valueOf(Math.round(v));
-        if (v >= 100) return String.format(Locale.US, "%.0f", v);
-        return String.format(Locale.US, "%.2f", v);
+    private String fmt(double mBps) {
+        if (mBps >= 100) return Math.round(mBps) + " M/s";
+        if (mBps >= 10) return String.format(Locale.US, "%.1f M/s", mBps);
+        return String.format(Locale.US, "%.2f M/s", mBps);
     }
 
     private int dp(float v) {

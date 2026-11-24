@@ -91,8 +91,8 @@ public class SpeedService extends Service {
                 long at = System.currentTimeMillis();
                 long dt = at - lastAt;
                 if (dt > 0 && rx >= 0 && tx >= 0) {
-                    double dl = ((rx - lastRx) * 8.0 / 1000000.0) / (dt / 1000.0);
-                    double ul = ((tx - lastTx) * 8.0 / 1000000.0) / (dt / 1000.0);
+                    double dl = ((rx - lastRx) / 1000000.0) / (dt / 1000.0);
+                    double ul = ((tx - lastTx) / 1000000.0) / (dt / 1000.0);
                     if (dl < 0) dl = 0;
                     if (ul < 0) ul = 0;
                     if (sOverlay != null) sOverlay.updateSpeed(dl, ul);

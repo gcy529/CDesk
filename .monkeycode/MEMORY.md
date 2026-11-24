@@ -45,7 +45,7 @@ Entries discovered by the Agent during task execution should follow this format:
 - Context: Discovered by Agent while setting up local build env and diagnosing a CI Security Scan failure
 - Category: Environment Configuration | Build Methods | Troubleshooting & Debugging
 - Instructions:
-  - 本地构建环境：JDK17 在 `/opt/jdk17/jdk17`（AGENTS.md 写的 `/usr/lib/jvm/java-17-openjdk-amd64` 不存在）；Android SDK 在 `/opt/android-sdk`；`local.properties` 写 `sdk.dir=/opt/android-sdk`（该文件被 gitignore）。
+  - 本地构建环境：JDK17 在 `/opt/jdk17/jdk17`（AGENTS.md 写的 `/usr/lib/jvm/java-17-openjdk-amd64` 不存在）；Android SDK 在 `/opt/android-sdk`；`local.properties` 写 `sdk.dir=/opt/android-sdk`（该文件被 gitignore）。环境默认未预装，需自行补齐：Temurin 17 解压到 `/opt/jdk17/jdk17`；cmdline-tools 解压到 `/opt/android-sdk/cmdline-tools/latest`；`yes | sdkmanager --sdk_root=/opt/android-sdk "platform-tools" "platforms;android-34" "build-tools;34.0.0"`。
   - 本地构建命令（从项目根目录，走 `background_terminal_create` 受管后台终端，前置先 `background_terminal_list`）：`JAVA_HOME=/opt/jdk17/jdk17 ANDROID_HOME=/opt/android-sdk ./gradlew :app:assembleDebug`；release 同名换 `assembleRelease`（开 R8 + shrinkResources，本地约 2m49s 成功产出 `app/build/outputs/apk/release/app-release.apk`，峰值内存约 2.15 GiB）。
   - 单测/lint 本地命令：`JAVA_HOME=/opt/jdk17/jdk17 ./gradlew :app:testDebugUnitTest`、`./gradlew :app:lintDebug`（不触发 dexBuilder/R8）。CI `Tests` 工作流含 `unit-test` + `lint-api` 两 job，任一失败即整体红。
   - CI `Security Scan` 的 `Build & SAST (narvy-cli)` job 可能因 runner 拉 `repo.maven.apache.org` 返回 HTTP 429（Too Many Requests）导致 `:classpath` 依赖解析失败，属临时基础设施问题而非代码问题；用 `POST https://api.github.com/repos/{owner}/{repo}/actions/runs/{id}/rerun-failed-jobs` 重跑即可恢复绿。
