@@ -1,9 +1,9 @@
 {
-  "version": "0.3.6.3",
-  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.6.3/app-debug.apk",
+  "version": "0.3.6.4",
+  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.6.4/app-debug.apk",
   "channel": "stable",
   "force": false,
-  "releaseNotes": "轻享版 0.3.6.2：网速悬浮窗改为 MB/s，按每秒兆字节显示，数值随速率自动调整小数位。",
+  "releaseNotes": "轻享版 0.3.6.4：三张 4K 壁纸改用 WebP，画质几乎不变，安装包再小约 2MB。",
   "notice": {
     "id": "2026-11-signature-rotate",
     "title": "签名升级说明",
