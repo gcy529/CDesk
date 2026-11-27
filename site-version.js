@@ -41,8 +41,8 @@
     var shaEl = document.querySelector('.verify-val');
     if (shaEl) {
       // version.json 没写 sha256 时别把占位符露给用户
-      var en = document.documentElement.lang === 'en';
-      shaEl.textContent = d.sha || (en ? 'see release page' : '见 Release 页');
+      var trad = document.documentElement.lang === 'zh-TW';
+      shaEl.textContent = d.sha || (trad ? '見 Release 頁' : '见 Release 页');
     }
 
     document.documentElement.setAttribute('data-app-version', ver);

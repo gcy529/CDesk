@@ -142,7 +142,7 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1800);
   }
-  // 文案与 APK 内置四语资源同源：values / values-zh-rTW / values-en
+  // 文案与 APK 内置简繁资源同源：values / values-zh-rTW
   var I18N = {
     simp: {
       tabs: { recent: '最近', apps: '应用', media: '影音' },
@@ -169,33 +169,16 @@
         ['影視', '播放器入口 · 內容自行匯入'],
         ['音樂', '本機與匯入內容']
       ],
-      dock: ['桌布', '語言', '區域網路傳輸', '打賞'],
+      dock: ['桌布', '語言', '區域網路傳檔案', '打賞'],
       walls: { day: '日間鯨魚', sunset: '黃昏鯨魚', night: '夜間鯨魚' },
       toast: { wall: '桌布：', lang: '語言：', send: '示範：區域網路傳輸 QR Code', tip: '示範：讚賞碼', open: '示範：開啟 ' },
       date: function (d) {
         return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + ['週日', '週一', '週二', '週三', '週四', '週五', '週六'][d.getDay()];
       }
-    },
-    en: {
-      tabs: { recent: 'Recent', apps: 'Apps', media: 'Media' },
-      apps: ['CDesk', 'Maps', 'Music', 'Video', 'Radio', 'Bluetooth', 'Photos', 'Files', 'Browser', 'Weather', 'Settings', 'Dash Cam'],
-      recentWhen: ['2 hours ago', 'yesterday', 'yesterday', '3 days ago'],
-      media: [
-        ['Channels', 'Player entry · bring your own content'],
-        ['Movies', 'Player entry · bring your own content'],
-        ['Music', 'Local and imported content']
-      ],
-      dock: ['Wallpaper', 'Language', 'LAN Transfer', 'Support'],
-      walls: { day: 'Whale Day', sunset: 'Whale Sunset', night: 'Whale Night' },
-      toast: { wall: 'Wallpaper: ', lang: 'Language: ', send: 'Demo: LAN transfer QR code', tip: 'Demo: tip code', open: 'Demo: open ' },
-      date: function (d) {
-        var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()] + ', ' + m[d.getMonth()] + ' ' + d.getDate();
-      }
     }
   };
-  var langs = ['简', '繁', 'EN'];
-  var langKeys = ['simp', 'trad', 'en'];
+  var langs = ['简', '繁'];
+  var langKeys = ['simp', 'trad'];
   var langIndex = 0;
   function T() { return I18N[langKeys[langIndex]]; }
   function icon(paths) {
@@ -309,7 +292,7 @@
       applyWall(next, true);
       toast(t.toast.wall + t.walls[next]);
     } else if (act === 'lang') {
-      // 与 APK 一致的循环：简 -> 繁 -> EN -> 简，整个界面重绘
+      // 与 APK 一致的循环：简 -> 繁，整个界面重绘
       langIndex = (langIndex + 1) % langs.length;
       renderGrid();
       renderDock();

@@ -1,4 +1,4 @@
-const isEn = () => document.documentElement.lang === 'en';
+const isTrad = () => document.documentElement.lang === 'zh-TW';
 
 const navToggle = document.querySelector('.nav-toggle');
 const nav = document.getElementById('primary-nav');
@@ -7,7 +7,7 @@ const navLabel = navToggle.querySelector('.sr-only');
 function setNav(open) {
   nav.classList.toggle('is-open', open);
   navToggle.setAttribute('aria-expanded', String(open));
-  navLabel.textContent = open ? (isEn() ? 'Close menu' : '关闭导航') : (isEn() ? 'Open menu' : '打开导航');
+  navLabel.textContent = open ? (isTrad() ? '關閉導航' : '关闭导航') : (isTrad() ? '打開導航' : '打开导航');
 }
 
 navToggle.addEventListener('click', () => setNav(!nav.classList.contains('is-open')));
@@ -22,7 +22,7 @@ document.addEventListener('click', (event) => {
 });
 // 发版构建完成前，校验值还是占位符，先别把 __SIZE__ 直接摆给访客
 document.querySelectorAll('.verify-hash, .verify-val').forEach((el) => {
-  if (el.textContent.indexOf('__') !== -1) el.textContent = '发版后自动填入';
+  if (el.textContent.indexOf('__') !== -1) el.textContent = isTrad() ? '發版後自動填入' : '发版后自动填入';
 });
 const wideQuery = window.matchMedia('(min-width: 861px)');
 const closeOnWide = (event) => {
@@ -50,15 +50,18 @@ async function copyText(value) {
 
 const copyStatus = document.getElementById('copy-status');
 let copyTimer;
+document.addEventListener('cdesk:lang', () => {
+  if (copyStatus.textContent) copyStatus.textContent = '';
+});
 
 document.querySelectorAll('[data-copy]').forEach((button) => {
   button.addEventListener('click', async () => {
     const value = button.dataset.copy;
     try {
       await copyText(value);
-      copyStatus.textContent = isEn() ? 'Group ID copied' : '群号已复制';
+      copyStatus.textContent = isTrad() ? '群號已複製' : '群号已复制';
     } catch {
-      copyStatus.textContent = isEn() ? 'Copy failed — please copy it manually' : '复制失败，请手动复制群号';
+      copyStatus.textContent = isTrad() ? '複製失敗，請手動複製群號' : '复制失败，请手动复制群号';
     }
     clearTimeout(copyTimer);
     copyTimer = setTimeout(() => { copyStatus.textContent = ''; }, 2400);
@@ -73,9 +76,9 @@ document.querySelectorAll('[data-copy-target]').forEach((button) => {
     if (!target) return;
     try {
       await copyText(target.textContent.trim());
-      button.textContent = isEn() ? 'Copied' : '已复制';
+      button.textContent = isTrad() ? '已複製' : '已复制';
     } catch {
-      button.textContent = isEn() ? 'Copy failed' : '复制失败';
+      button.textContent = isTrad() ? '複製失敗' : '复制失败';
     }
     clearTimeout(timer);
     timer = setTimeout(() => { button.textContent = original; }, 1800);
