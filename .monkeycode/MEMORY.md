@@ -72,4 +72,11 @@ Entries discovered by the Agent during task execution should follow this format:
 - Date: 2026-11-27
 - Context: C桌面两个版本的长期语言策略
 - Instructions:
-  - 轻量纯净版和全功能版仅维护简体中文和繁体中文，后续迭代沿用这套语言策略。
+  - 轻享版（原轻量纯净版）和全功能版仅维护简体中文和繁体中文，后续迭代沿用这套语言策略。
+
+[User Instruction Summary]
+- Date: 2026-11-27
+- Context: 0.3.6.3 发版后的分发策略
+- Instructions:
+  - 0.3.6.3 是稳定版最后一次使用 GitHub Release 资产；之后的新版本改为网盘固定链接分发。
+  - 官网与对外文案不出现「网盘」字样，统一用常规下载入口表述。
