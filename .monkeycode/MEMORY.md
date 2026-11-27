@@ -79,4 +79,5 @@ Entries discovered by the Agent during task execution should follow this format:
 - Context: 0.3.6.3 发版后的分发策略
 - Instructions:
   - 0.3.6.3 是稳定版最后一次使用 GitHub Release 资产；之后的新版本改为网盘固定链接分发。
+  - 改用网盘的原因：国内用户看到未知名、未备案的域名容易产生顾虑，网盘形式更安全可靠。
   - 官网与对外文案不出现「网盘」字样，统一用常规下载入口表述。
