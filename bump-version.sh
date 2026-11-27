@@ -20,9 +20,7 @@ if [ -z "$cur_ver" ] || [ -z "$cur_code" ]; then
     exit 1
 fi
 
-IFS='.' read -r major minor patch <<< "$cur_ver"
-new_patch=$((patch + 1))
-new_ver="${major}.${minor}.${new_patch}"
+new_ver="${cur_ver%.*}.$(( ${cur_ver##*.} + 1 ))"
 new_code=$((cur_code + 1))
 
 echo "版本: $cur_ver -> $new_ver"
@@ -52,7 +50,7 @@ done
 GVER=$(grep -oP 'versionName "\K[^"]+' "$GRADLE")
 JVER=$(grep -oP '"version"\s*:\s*"\K[^"]+' version.json 2>/dev/null || echo "")
 HVER=$(grep -oP '当前版本 v\K[0-9.]+' index.html 2>/dev/null | head -1 || echo "")
-if [ "$GVER" != "$JVER" ] || [ "$GVER" != "$HVER" ]; then
+if [ "$GVER" != "$JVER" ] || { [ -n "$HVER" ] && [ "$GVER" != "$HVER" ]; }; then
     echo "版本仍不一致：gradle=$GVER json=$JVER index=$HVER" >&2
     exit 1
 fi

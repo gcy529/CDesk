@@ -24,17 +24,11 @@ import static org.junit.Assert.fail;
  * 查三件事：
  *  1. key 齐全——缺一个 key 就会静默回落到默认（中文），英文用户看到中文按钮；
  *  2. 占位符一致——%1$s 数量/序号错位会直接导致运行时崩溃或串词；
- *  3. EN 里不混中文——专名（公众号名）走白名单。
+ *  3. 繁体资源与默认资源保持同一组 key。
  */
 public class StringResourceParityTest {
 
-    /** 专有名词：微信公众号名本身就是中文，英文译名只是括号补充，允许保留 */
-    private static final List<String> EN_CJK_ALLOWLIST = new ArrayList<String>();
-    static {
-        EN_CJK_ALLOWLIST.add("wechat_name");
-    }
-
-    private static final String[] LOCALES = { "values-en", "values-zh-rTW" };
+    private static final String[] LOCALES = { "values-zh-rTW" };
     private static final Pattern FORMAT = Pattern.compile("%(?:\\d+\\$)?[a-zA-Z]");
     private static final Pattern CJK = Pattern.compile("[\\u4e00-\\u9fff]");
 
@@ -72,19 +66,6 @@ public class StringResourceParityTest {
             }
         }
         report(problems, "占位符错位");
-    }
-
-    @Test
-    public void englishStringsContainNoChinese() throws Exception {
-        Map<String, String> en = read("values-en");
-        List<String> problems = new ArrayList<String>();
-        for (Map.Entry<String, String> e : en.entrySet()) {
-            if (EN_CJK_ALLOWLIST.contains(e.getKey())) continue;
-            if (CJK.matcher(e.getValue()).find()) {
-                problems.add("values-en " + e.getKey() + " = " + e.getValue());
-            }
-        }
-        report(problems, "英文文案里混了中文");
     }
 
     private static List<String> placeholders(String s) {

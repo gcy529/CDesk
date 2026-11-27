@@ -1,6 +1,6 @@
 {
-  "version": "0.3.6.2",
-  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.6.2/app-debug.apk",
+  "version": "0.3.6.3",
+  "url": "https://github.com/gcy529/CDesk/releases/download/v0.3.6.3/app-debug.apk",
   "channel": "stable",
   "force": false,
   "releaseNotes": "轻享版 0.3.6.2：网速悬浮窗改为 MB/s，按每秒兆字节显示，数值随速率自动调整小数位。",

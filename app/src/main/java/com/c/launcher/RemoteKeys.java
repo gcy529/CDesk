@@ -55,6 +55,14 @@ public final class RemoteKeys {
         if (VOL_UP.equals(code)) return volume(ctx, AudioManager.ADJUST_RAISE);
         if (VOL_DOWN.equals(code)) return volume(ctx, AudioManager.ADJUST_LOWER);
         if (MUTE.equals(code)) return mute(ctx);
+        if ("OK_LONG".equals(code)) {
+            final Activity a = resumed.get();
+            if (!(a instanceof MainActivity)) return false;
+            a.runOnUiThread(new Runnable() {
+                @Override public void run() { ((MainActivity) a).onRemoteLongPress(); }
+            });
+            return true;
+        }
 
         final int keyCode = mapKey(code);
         if (keyCode < 0) return false;

@@ -236,6 +236,13 @@ public class MainActivity extends Activity {
             }
         });
 
+        gridApps.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (page == PAGE_APPS) showAppMenu(position);
+                return page == PAGE_APPS;
+            }
+        });
+
         // 遥控器 / 方向盘：在网格边缘按左右键翻页
         gridApps.setOnKeyListener(new View.OnKeyListener() {
             @Override public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -502,7 +509,7 @@ public class MainActivity extends Activity {
         List<AppAdapter.AppItem> all = adapter.allItems();
         List<AppAdapter.AppItem> list = new ArrayList<AppAdapter.AppItem>();
         if (page == PAGE_APPS) {
-            list.addAll(all);
+            list.addAll(AppArrangement.visible(this, all));
         } else if (page == PAGE_RECENT) {
             list.addAll(recentItems(all));
         }
@@ -554,6 +561,35 @@ public class MainActivity extends Activity {
         }
         tvPageDots.setText(dots.toString());
         tvPageDots.setTextColor(ThemeManager.current(this).accent);
+    }
+
+    public void onRemoteLongPress() {
+        if (page == PAGE_APPS && gridApps != null) showAppMenu(gridApps.getSelectedItemPosition());
+    }
+
+    private void showAppMenu(final int position) {
+        if (position < 0 || position >= adapter.getCount()) return;
+        final AppAdapter.AppItem item = adapter.getItem(position);
+        final String[] actions = new String[] {
+                getString(R.string.app_move_left), getString(R.string.app_move_right), getString(R.string.app_uninstall)
+        };
+        new AlertDialog.Builder(this).setTitle(item.label).setItems(actions, new DialogInterface.OnClickListener() {
+            @Override public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) AppArrangement.move(MainActivity.this, item.pkg, -1, adapter.allItems());
+                else if (which == 1) AppArrangement.move(MainActivity.this, item.pkg, 1, adapter.allItems());
+                else requestUninstall(item.pkg);
+                if (which < 2) { adapter.reload(); applyPage(page); }
+            }
+        }).show();
+    }
+
+    private void requestUninstall(String pkg) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + pkg));
+            startActivity(intent);
+        } catch (Throwable t) {
+            Toast.makeText(this, getString(R.string.app_uninstall_failed), Toast.LENGTH_SHORT).show();
+        }
     }
 
     /** 最近打开过的应用，最近的在最前 */

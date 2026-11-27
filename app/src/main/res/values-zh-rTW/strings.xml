@@ -69,6 +69,11 @@
     <string name="page_apps_empty">這裡會列出裝置上所有能開啟的應用程式</string>
     <string name="choose_home_hint">在彈出的視窗裡選「C桌面」，再點「永遠」</string>
     <string name="lang_auto">跟隨系統</string>
+    <string name="lang_toggle">簡 【繁】</string>
+    <string name="app_move_left">向左移動</string>
+    <string name="app_move_right">向右移動</string>
+    <string name="app_uninstall">解除安裝應用程式</string>
+    <string name="app_uninstall_failed">無法開啟系統解除安裝頁面</string>
     <string name="media_play">影視</string>
     <string name="media_music">音樂</string>
     <string name="media_soon">殼子正在做，敬請期待</string>

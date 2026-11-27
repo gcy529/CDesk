@@ -51,3 +51,25 @@ Entries discovered by the Agent during task execution should follow this format:
   - CI `Security Scan` 的 `Build & SAST (narvy-cli)` job 可能因 runner 拉 `repo.maven.apache.org` 返回 HTTP 429（Too Many Requests）导致 `:classpath` 依赖解析失败，属临时基础设施问题而非代码问题；用 `POST https://api.github.com/repos/{owner}/{repo}/actions/runs/{id}/rerun-failed-jobs` 重跑即可恢复绿。
   - 获取 GitHub API 鉴权 token：`printf 'protocol=https\nhost=github.com\n\n' | git credential fill` 可取到具备 repo 权限的 token，用于调 API（未鉴权限额极易耗尽，且 job 日志下载必须鉴权）。
   - 发版 SHA-256 回填流程：debug APK 属可复现构建（同源码 + 同签名 keystore → 字节与 SHA-256 一致），CI `android.yml` 每次推 beta/tag 都会重建并重传资产，故可「先出包 → 取 Release 资产 SHA-256 → 提交回填 version.json/官网」；回填提交触发的重建不会使哈希失效。稳定版走 tag `v*`（`prerelease:false`）、beta 推 `refs/heads/beta`（预发布）。
+
+[User Instruction Summary]
+- Date: 2026-11-26
+- Context: 用户明确 C管家/CDesk 的分发与更新策略
+- Instructions:
+  - 版本分发统一走「网盘推送新版本」：新版本 APK 传到用户自己的网盘，用固定分享链接分发，更新时替换同链接文件、链接不变。
+  - GitHub 只保留代码，不再上传安装包 / 不发 Release 资产；B站只做引流到网盘，公众号放教程码，下载后回公众号拿码解锁，形成闭环。
+
+[Project Knowledge Summary]
+- Date: 2026-11-26
+- Context: Discovered by Agent while pushing cbutler to gitcode
+- Category: Troubleshooting & Debugging | Operations & Deployment
+- Instructions:
+  - gitcode 账号为 `gcy5`（token 存 `/root/.gitcode_token`，勿回显）；gitcode v5 API 鉴权用 `<url>?access_token=$TOK` 查询参数，body/`Authorization: token` 头会 401。
+  - 仓库 `gcy5/cbutler` 在 gitcode 上已存在且为另一条完整历史（0.2.0、`v0.2.0` tag、逐文件「Rename app to C管家」提交），与本地 `/tmp/opencode/cbutler-src`（0.2.3 快照、无共同祖先）完全分叉；直接 push 被拒，强推会冲掉远程历史。推之前须先决定：推新分支（如 local-0.2.3）或备份远程后强推覆盖。
+  - cbutler 本地仓库需手动 `git config user.name/user.email`（默认无身份，commit 会失败）。
+
+[User Instruction Summary]
+- Date: 2026-11-27
+- Context: C桌面两个版本的长期语言策略
+- Instructions:
+  - 轻量纯净版和全功能版仅维护简体中文和繁体中文，后续迭代沿用这套语言策略。

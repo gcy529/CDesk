@@ -145,10 +145,16 @@
     (function (btn) {
       var c = btn.getAttribute('data-c');
       var isDir = (c === 'UP' || c === 'DOWN' || c === 'LEFT' || c === 'RIGHT' || c === 'VOLUP' || c === 'VOLDOWN');
+      var holdTimer;
+      var holdFired = false;
+      var releaseHandled = false;
 
       btn.addEventListener('touchstart', function (e) {
         e.preventDefault();
-        send(c);
+        holdFired = false;
+        releaseHandled = false;
+        if (c !== 'OK') send(c);
+        if (c === 'OK') holdTimer = setTimeout(function () { holdFired = true; send('OK_LONG'); }, 650);
         if (isDir) {
           clearTimeout(delayTimer);
           clearInterval(repeatTimer);
@@ -160,7 +166,10 @@
 
       btn.addEventListener('mousedown', function (e) {
         e.preventDefault();
-        send(c);
+        holdFired = false;
+        releaseHandled = false;
+        if (c !== 'OK') send(c);
+        if (c === 'OK') holdTimer = setTimeout(function () { holdFired = true; send('OK_LONG'); }, 650);
         if (isDir) {
           clearTimeout(delayTimer);
           clearInterval(repeatTimer);
@@ -171,7 +180,14 @@
       });
 
       ['touchend', 'touchcancel', 'mouseup', 'mouseleave'].forEach(function (ev) {
-        btn.addEventListener(ev, stopRepeat);
+        btn.addEventListener(ev, function () {
+          if (releaseHandled) return;
+          if (ev === 'touchcancel' || ev === 'mouseleave') { releaseHandled = true; clearTimeout(holdTimer); stopRepeat(); return; }
+          releaseHandled = true;
+          clearTimeout(holdTimer);
+          if (c === 'OK' && !holdFired) send('OK');
+          stopRepeat();
+        });
       });
     })(buttons[i]);
   }

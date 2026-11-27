@@ -19,7 +19,7 @@ launchers are slow, ugly, and full of ads. **CDesk does four things:**
 | 📶 Live network speed | Floating badges in both bottom corners, pure `TrafficStats` sampling |
 | 📁 LAN file transfer | Built-in HTTP server — scan a QR code from your phone and send APKs to the unit |
 
-Also: in-app language switch (Simplified / Traditional / English), IP-based weather. No first-run
+Also: in-app language switch (Simplified / Traditional), IP-based weather. No first-run
 pop-ups — the terms of use and the default-launcher guide live in Settings.
 
 > Wallpapers, updates, bug reports and suggestions: WeChat official account **韭菜超先生 (JiuCai Chao)** —
@@ -49,7 +49,7 @@ Material theme on v21+, `<queries>` for Android 11 package visibility, and
 
 - **Robolectric all-component smoke** — every Activity declared in the manifest is launched for
   real; new screens are covered automatically, plus row-click, media-card routing, page order,
-  four-locale string parity, and no hardcoded Chinese on the English UI (40+ cases)
+  and simplified/traditional string parity (40+ cases)
 - **lint `NewApi` + `UnspecifiedImmutableFlag`** — blocks minSdk-16 API misuse before merge
 
 ## Theming

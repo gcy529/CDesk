@@ -73,6 +73,11 @@
     <string name="page_apps_empty">这里会列出设备上所有能启动的应用</string>
     <string name="choose_home_hint">在弹出的窗口里选「C桌面」，再点「始终」</string>
     <string name="lang_auto">跟随系统</string>
+    <string name="lang_toggle">【简】 繁</string>
+    <string name="app_move_left">向左移动</string>
+    <string name="app_move_right">向右移动</string>
+    <string name="app_uninstall">卸载应用</string>
+    <string name="app_uninstall_failed">无法打开系统卸载页面</string>
     <string name="media_play">影视</string>
     <string name="media_music">音乐</string>
     <string name="media_soon">壳子正在做，敬请期待</string>
