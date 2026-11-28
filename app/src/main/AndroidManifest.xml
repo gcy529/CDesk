@@ -176,6 +176,16 @@
                 android:value="LAN remote control endpoint for the desktop" />
         </service>
 
+        <!-- 媒体悬浮卡片：监听系统 MediaSession，画中画方向可行性 PoC -->
+        <service
+            android:name=".MediaCardService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="System media session overlay for picture-in-picture PoC" />
+        </service>
+
         <activity
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
             android:screenOrientation="landscape"

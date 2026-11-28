@@ -8,6 +8,9 @@
     <string name="text_black">純黑</string>
     <string name="transfer">區域網路傳輸</string>
     <string name="notification_running">網速懸浮窗執行中</string>
+    <string name="notification_media_card">媒體懸浮卡片執行中</string>
+    <string name="media_card">媒體卡</string>
+    <string name="media_card_on">媒體卡：開</string>
     <string name="transfer_idle">未啟動</string>
     <string name="transfer_running">執行中，手機瀏覽器開啟上方位址</string>
     <string name="transfer_port_busy">連接埠被占用，請關閉其他服務後重試</string>

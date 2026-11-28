@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
     private Button btnPalette;
     private Button btnLang;
     private Button btnTransfer;
+    private Button btnMediaCard;
     private Button btnDonate;
     private GridView gridApps;
     private AppAdapter adapter;
@@ -151,6 +152,7 @@ public class MainActivity extends Activity {
         btnPalette = (Button) findViewById(R.id.btnPalette);
         btnLang = (Button) findViewById(R.id.btnLang);
         btnTransfer = (Button) findViewById(R.id.btnTransfer);
+        btnMediaCard = (Button) findViewById(R.id.btnMediaCard);
         btnDonate = (Button) findViewById(R.id.btnDonate);
         gridApps = (GridView) findViewById(R.id.gridApps);
 
@@ -278,6 +280,9 @@ public class MainActivity extends Activity {
         }
         btnTransfer.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { openTransfer(); }
+        });
+        btnMediaCard.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { toggleMediaCard(); }
         });
         btnDonate.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
@@ -417,6 +422,7 @@ public class MainActivity extends Activity {
         });
         ensureNotificationPermission();
         startSpeedService();
+        refreshMediaCardButton();
         ui.postDelayed(hubQrTick, 400);
         // 角标状态恢复：任何页面写过的状态在这里落回桌面
         android.content.SharedPreferences sp = getSharedPreferences("cdesk_status", 0);
@@ -942,6 +948,37 @@ public class MainActivity extends Activity {
             // 厂商 ROM（澎湃/Flyme/ColorOS 等）常限制后台服务启动，静默失败会让用户误以为功能坏了
             Toast.makeText(this, R.string.guardian_service_failed, Toast.LENGTH_LONG).show();
         }
+    }
+
+    /** 媒体悬浮卡片开关：没给悬浮窗权限先引导授权，再按当前状态启停服务 */
+    private void toggleMediaCard() {
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(this)) {
+            ensureOverlayPermission();
+            Toast.makeText(this, R.string.setup_overlay_off, Toast.LENGTH_LONG).show();
+            return;
+        }
+        Intent svc = new Intent(this, MediaCardService.class);
+        if (MediaCardService.isRunning()) {
+            svc.setAction(MediaCardService.ACTION_STOP);
+            try {
+                startService(svc);
+            } catch (Throwable ignored) {
+            }
+        } else {
+            svc.setAction(MediaCardService.ACTION_START);
+            try {
+                if (Build.VERSION.SDK_INT >= 26) startForegroundService(svc);
+                else startService(svc);
+            } catch (Throwable ignored) {
+            }
+        }
+        refreshMediaCardButton();
+    }
+
+    private void refreshMediaCardButton() {
+        if (btnMediaCard == null) return;
+        boolean on = MediaCardService.isRunning();
+        btnMediaCard.setText(on ? R.string.media_card_on : R.string.media_card);
     }
 
     private int dp(float v) {

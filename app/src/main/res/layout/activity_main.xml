@@ -375,6 +375,18 @@
                 android:focusable="true" />
 
             <Button
+                android:id="@+id/btnMediaCard"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_dock_item"
+                android:textColor="@color/text_primary"
+                android:text="@string/media_card"
+                android:textSize="16sp"
+                android:nextFocusUp="@+id/gridApps"
+                android:focusable="true" />
+
+            <Button
                 android:id="@+id/btnTransfer"
                 android:layout_width="0dp"
                 android:layout_height="56dp"

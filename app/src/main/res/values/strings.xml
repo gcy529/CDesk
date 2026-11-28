@@ -9,6 +9,9 @@
     <string name="text_black">纯黑</string>
     <string name="transfer">局域网传输</string>
     <string name="notification_running">网速悬浮窗运行中</string>
+    <string name="notification_media_card">媒体悬浮卡片运行中</string>
+    <string name="media_card">媒体卡</string>
+    <string name="media_card_on">媒体卡：开</string>
 
     <string name="transfer_idle">未启动</string>
     <string name="transfer_running">运行中，手机浏览器打开上方地址</string>

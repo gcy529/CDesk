@@ -8,6 +8,9 @@
     <string name="text_black">Black</string>
     <string name="transfer">LAN Transfer</string>
     <string name="notification_running">Speed overlay is running</string>
+    <string name="notification_media_card">Media card is running</string>
+    <string name="media_card">Media Card</string>
+    <string name="media_card_on">Media Card: On</string>
 
     <string name="transfer_idle">Idle</string>
     <string name="transfer_running">Running, open the address above on your phone</string>
