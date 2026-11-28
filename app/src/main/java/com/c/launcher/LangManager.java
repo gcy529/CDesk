@@ -1,6 +1,5 @@
 package com.c.launcher;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -8,70 +7,20 @@ import android.os.Build;
 import java.util.Locale;
 
 /**
- * 应用内语言切换：简 / 繁 / EN / 跟随系统，一个按钮循环。
+ * 应用语言：只做台繁体，不提供简体与其它语言切换。
  *
- * 原理：把 Activity 的 baseContext 包一层带指定 Locale 的 Configuration。
+ * wrap 把 Activity 的 baseContext 固定成台繁体 Locale，
+ * 保证系统语言是英文等其它语言时，界面仍显示台繁体资源。
  *  - API 17+ 用 createConfigurationContext（官方推荐，互不影响）
  *  - API 16 退回 updateConfiguration（已废弃但能用，minSdk 是 16 必须留着）
- * 切换后 recreate() 重走一遍生命周期即可，不需要重启进程。
  */
 public final class LangManager {
 
-    public static final int FOLLOW = -1;
-    public static final int SIMP = 0;
-    public static final int TRAD = 1;
-    public static final int ENG = 2;
-
-    private static final String PREFS = "cdesk_lang";
-    private static final String KEY = "lang";
-
     private LangManager() { }
-
-    public static int index(Context c) {
-        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY, FOLLOW);
-    }
-
-    public static void setIndex(Context c, int i) {
-        c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putInt(KEY, i).commit();
-    }
-
-    /** 循环切换：简 -> 繁 -> EN -> 简（只有三档，点三下回到原点）。
-     *  跟随系统只是"没设过"的初始状态，不再参与循环。 */
-    public static void cycle(Activity a) {
-        int i = index(a);
-        if (i == FOLLOW) i = SIMP;
-        else if (i == SIMP) i = TRAD;
-        else if (i == TRAD) i = ENG;
-        else i = SIMP;
-        setIndex(a, i);
-        a.recreate();
-    }
-
-    /** 语言按钮上显示的文字：三项全展示，当前语言高亮，让人一眼知道支持哪三种 */
-    public static String label(Context c) {
-        int i = index(c);
-        if (i == FOLLOW) {
-            // 跟随系统时不加标记，靠后缀说明
-            return "简·繁·EN";
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append(i == SIMP ? "【简】" : "简");
-        sb.append(" ");
-        sb.append(i == TRAD ? "【繁】" : "繁");
-        sb.append(" ");
-        sb.append(i == ENG ? "【EN】" : "EN");
-        return sb.toString();
-    }
 
     /** 在每个 Activity 的 attachBaseContext 里调用 */
     public static Context wrap(Context base) {
-        int i = index(base);
-        Locale loc;
-        if (i == SIMP) loc = Locale.SIMPLIFIED_CHINESE;
-        else if (i == TRAD) loc = Locale.TAIWAN;
-        else if (i == ENG) loc = Locale.ENGLISH;
-        else return base;
+        Locale loc = Locale.TAIWAN;
 
         if (Build.VERSION.SDK_INT >= 17) {
             // 必须拷贝原配置：空 Configuration 会把 fontScale 等已设字段一起覆盖掉，

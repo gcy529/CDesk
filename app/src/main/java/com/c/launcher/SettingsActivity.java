@@ -45,8 +45,7 @@ public class SettingsActivity extends Activity {
 
         final Button btnFilter = (Button) findViewById(R.id.btnSetFilter);
         Button btnWall = (Button) findViewById(R.id.btnSetWallpaper);
-        final Button btnOrient = (Button) findViewById(R.id.btnSetOrient);
-        Button btnLang = (Button) findViewById(R.id.btnSetLang);
+        final         Button btnOrient = (Button) findViewById(R.id.btnSetOrient);
         Button btnPlayer = (Button) findViewById(R.id.btnSetPlayer);
         Button btnUpdate = (Button) findViewById(R.id.btnSetUpdate);
         Button btnDisclaimer = (Button) findViewById(R.id.btnSetDisclaimer);
@@ -55,7 +54,7 @@ public class SettingsActivity extends Activity {
         final Button btnCleanup = (Button) findViewById(R.id.btnSetCleanup);
         final Button btnBack = (Button) findViewById(R.id.btnSetBack);
 
-        Button[] all = new Button[] { btnFilter, btnCore, btnWall, btnOrient, btnLang, btnPlayer, btnUpdate, btnDisclaimer, btnLog, btnCleanup, btnBack };
+        Button[] all = new Button[] { btnFilter, btnCore, btnWall, btnOrient, btnPlayer, btnUpdate, btnDisclaimer, btnLog, btnCleanup, btnBack };
         for (int i = 0; i < all.length; i++) {
             if (all[i] != null) ThemeManager.styleButton(all[i], p);
         }
@@ -89,11 +88,6 @@ public class SettingsActivity extends Activity {
                 btnOrient.setText(orientLabel(next));
                 CLog.i("desktop orient -> " + next);
             }
-        });
-
-        btnLang.setText(LangManager.label(this));
-        btnLang.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { LangManager.cycle(SettingsActivity.this); }
         });
 
         btnPlayer.setOnClickListener(new View.OnClickListener() {

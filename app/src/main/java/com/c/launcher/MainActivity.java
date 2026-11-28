@@ -61,7 +61,6 @@ public class MainActivity extends Activity {
     private TextView tvWeather;
     private TextView tvBadge;
     private Button btnPalette;
-    private Button btnLang;
     private Button btnTransfer;
     private Button btnMediaCard;
     private Button btnDonate;
@@ -89,7 +88,6 @@ public class MainActivity extends Activity {
     /** 实际生效的应用列数：fitContentLayout() 按屏宽算，小屏 3 列 / 车机大屏 4~6 列 */
     private int appCols = APP_COLS;
     private int page = PAGE_RECENT;
-    private int lastLang = -99;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
     private int curBgTop, curBgBottom;
@@ -150,7 +148,6 @@ public class MainActivity extends Activity {
             tvTicker.setFocusableInTouchMode(false);
         }
         btnPalette = (Button) findViewById(R.id.btnPalette);
-        btnLang = (Button) findViewById(R.id.btnLang);
         btnTransfer = (Button) findViewById(R.id.btnTransfer);
         btnMediaCard = (Button) findViewById(R.id.btnMediaCard);
         btnDonate = (Button) findViewById(R.id.btnDonate);
@@ -266,9 +263,6 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(MainActivity.this, WallpaperSettingsActivity.class));
                 return true;
             }
-        });
-        btnLang.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { LangManager.cycle(MainActivity.this); }
         });
         Button btnSettings = (Button) findViewById(R.id.btnSettings);
         if (btnSettings != null) {
@@ -647,7 +641,7 @@ public class MainActivity extends Activity {
             tvDate.setTextColor(dim);
             if (tvWeather != null) tvWeather.setTextColor(dim);
             tvBadge.setTextColor(dark ? 0xFFD9C2FF : 0xFF5A3FB0);
-            int[] ids = new int[] { R.id.btnPalette, R.id.btnLang, R.id.btnDonate, R.id.btnTransfer };
+            int[] ids = new int[] { R.id.btnPalette, R.id.btnDonate, R.id.btnTransfer, R.id.btnMediaCard };
             for (int id : ids) {
                 Button b = (Button) findViewById(id);
                 GradientDrawable gd = new GradientDrawable();
@@ -662,8 +656,6 @@ public class MainActivity extends Activity {
             dg.setColor(dark ? 0x40000000 : 0x33FFFFFF);
             dg.setStroke(dp(1), dark ? 0x59FFFFFF : 0x4D232B3A);
             dock.setBackgroundDrawable(dg);
-            btnLang.setText(LangManager.label(this));
-            lastLang = LangManager.index(this);
             updatePageBar();
             return;
         }
@@ -708,12 +700,10 @@ public class MainActivity extends Activity {
         }
         tvBadge.setText(p.isLight ? R.string.theme_light : R.string.theme_dark);
         tvBadge.setTextColor(p.accent);
-        int[] ids = new int[] { R.id.btnPalette, R.id.btnLang, R.id.btnDonate, R.id.btnTransfer };
+        int[] ids = new int[] { R.id.btnPalette, R.id.btnDonate, R.id.btnTransfer, R.id.btnMediaCard };
         for (int id : ids) {
             ThemeManager.styleButton((Button) findViewById(id), p);
         }
-        btnLang.setText(LangManager.label(this));
-        lastLang = LangManager.index(this);
     }
 
     /** 启动被点中的第三方应用；失败就提示，不让桌面卡住 */
